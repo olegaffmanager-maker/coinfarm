@@ -119,18 +119,3 @@ def get_top():
     top = [dict(row) for row in c.fetchall()]
     conn.close()
     return top
-
-@app.get("/user/{user_id}/friends")
-def get_friends(user_id: int):
-    conn = get_db()
-    c = conn.cursor()
-    c.execute("""
-        SELECT u.user_id, u.full_name, u.coins, u.level
-        FROM referrals r
-        JOIN users u ON u.user_id = r.referred_id
-        WHERE r.referrer_id = ?
-        ORDER BY u.coins DESC
-    """, (user_id,))
-    friends = [dict(row) for row in c.fetchall()]
-    conn.close()
-    return friends

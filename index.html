@@ -534,7 +534,7 @@
   <div class="card">
     <div class="card-title">Your referral link</div>
     <div class="ref-link-box" id="refLink" onclick="copyRef()">
-      Loading...
+      https://t.me/play1xfarmbot?start=ref_user
     </div>
     <button class="btn-primary" onclick="shareRef()">📤 Share Link</button>
   </div>
@@ -629,66 +629,18 @@ async function apiGetTop() {
 
 async function initUser() {
   const tg = window.Telegram?.WebApp;
-  if (!tg) {
-    // Браузер без Telegram — показываем заглушку
-    document.getElementById('refLink').textContent = 'Open in Telegram to get your link';
-    return;
-  }
+  if (!tg) return;
   const user = tg.initDataUnsafe?.user;
   if (!user) return;
 
-  // Сохраняем ID в игровом состоянии
-  g.telegramId = user.id;
-
-  // Получаем referrer из start_param (передаётся ботом через WebApp URL)
+  // Получаем referrer из start_param
   const startParam = tg.initDataUnsafe?.start_param;
   let referrerId = null;
   if (startParam && startParam.startsWith('ref_')) {
     referrerId = parseInt(startParam.replace('ref_', ''));
-    // Не засчитывать себя как реферала
-    if (referrerId === user.id) referrerId = null;
   }
 
   await apiRegister(user.id, user.username || '', user.first_name || '', referrerId);
-
-  // Обновляем реферальную ссылку
-  const refEl = document.getElementById('refLink');
-  if (refEl) refEl.textContent = getRefLink();
-
-  // Загружаем данные о друзьях с сервера
-  loadFriends(user.id);
-}
-
-async function loadFriends(userId) {
-  try {
-    // Загружаем данные юзера (количество рефералов + монеты)
-    const res = await fetch(`${API_URL}/user/${userId}`);
-    const data = await res.json();
-    if (data && data.referrals !== undefined) {
-      g.friends = data.referrals;
-      document.getElementById('friendCount').textContent = data.referrals;
-      if (data.coins > g.coins) {
-        g.coins = data.coins;
-        updateUI();
-      }
-    }
-
-    // Загружаем список друзей
-    const res2 = await fetch(`${API_URL}/user/${userId}/friends`);
-    const friends = await res2.json();
-    const listEl = document.getElementById('friendList');
-    if (friends.length === 0) {
-      listEl.innerHTML = '<p style="color:#888;font-size:13px;text-align:center;padding:16px">No friends yet. Share your link! 👆</p>';
-    } else {
-      listEl.innerHTML = friends.map(f => `
-        <div class="top-item">
-          <div class="top-rank">👤</div>
-          <div class="top-name">${f.full_name || 'Player'}</div>
-          <div class="top-coins">${Math.floor(f.coins).toLocaleString()} 🪙</div>
-        </div>
-      `).join('');
-    }
-  } catch(e) { console.log('Friends load error:', e); }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1067,17 +1019,17 @@ loadGame();
 updateUI();
 updateBoostsUI();
 
+// Update ref link on load
+setTimeout(() => {
+  const refEl = document.getElementById('refLink');
+  if (refEl) refEl.textContent = getRefLink();
+}, 500);
+
 // Telegram WebApp init
 if (window.Telegram?.WebApp) {
   window.Telegram.WebApp.ready();
   window.Telegram.WebApp.expand();
   initUser();
-} else {
-  // Браузер — показываем заглушку в ссылке
-  setTimeout(() => {
-    const refEl = document.getElementById('refLink');
-    if (refEl) refEl.textContent = 'Open in Telegram to get your link';
-  }, 100);
 }
 </script>
 </body>
