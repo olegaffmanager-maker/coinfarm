@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -406,10 +406,10 @@
 <!-- HEADER -->
 <div class="header">
   <div class="header-level">
-    Level <span id="headerLevel">1</span> • <span id="levelName">🪨 Новичок</span>
+    Level <span id="headerLevel">1</span> вЂў <span id="levelName">рџЄЁ РќРѕРІРёС‡РѕРє</span>
   </div>
   <div class="header-coins">
-    <span class="coin-icon">🪙</span>
+    <span class="coin-icon">рџЄ™</span>
     <span id="headerCoins">0</span>
   </div>
 </div>
@@ -431,27 +431,27 @@
   <div class="stats-row">
     <div class="stat-item">
       <div class="stat-value" id="statCoins">0</div>
-      <div class="stat-label">🪙 Coins</div>
+      <div class="stat-label">рџЄ™ Coins</div>
     </div>
     <div class="stat-item">
       <div class="stat-value" id="statPerClick">1</div>
-      <div class="stat-label">⛏️ Per Click</div>
+      <div class="stat-label">в›ЏпёЏ Per Click</div>
     </div>
     <div class="stat-item">
       <div class="stat-value" id="statClicks">0</div>
-      <div class="stat-label">🔥 Clicks</div>
+      <div class="stat-label">рџ”Ґ Clicks</div>
     </div>
   </div>
 
   <div class="combo-display" id="comboDisplay"></div>
 
   <div class="coin-area">
-    <button class="coin-btn" id="coinBtn" onclick="handleClick(event)">🪙</button>
+    <button class="coin-btn" id="coinBtn" onclick="handleClick(event)">рџЄ™</button>
   </div>
 
   <div class="energy-wrap">
     <div class="energy-info">
-      <span>⚡ Energy</span>
+      <span>вљЎ Energy</span>
       <span id="energyText">500/500</span>
     </div>
     <div class="energy-bar">
@@ -462,11 +462,11 @@
 
 <!-- BOOSTS PAGE -->
 <div class="page" id="pageBoosts">
-  <div class="page-title">⚡ Boosts</div>
+  <div class="page-title">вљЎ Boosts</div>
 
   <div class="section-title">Free Boosts</div>
   <div class="boost-item" onclick="useBoost('turbo')">
-    <div class="boost-icon">🚀</div>
+    <div class="boost-icon">рџљЂ</div>
     <div class="boost-info">
       <div class="boost-name">Turbo</div>
       <div class="boost-desc">x5 coins for 20 seconds</div>
@@ -474,7 +474,7 @@
     <div class="boost-cost" id="turboCount">3/3</div>
   </div>
   <div class="boost-item" onclick="useBoost('energy')">
-    <div class="boost-icon">⚡</div>
+    <div class="boost-icon">вљЎ</div>
     <div class="boost-info">
       <div class="boost-name">Full Energy</div>
       <div class="boost-desc">Restore all energy</div>
@@ -484,46 +484,46 @@
 
   <div class="section-title">Upgrades</div>
   <div class="boost-item" onclick="buyUpgrade('multitap')">
-    <div class="boost-icon">👆</div>
+    <div class="boost-icon">рџ‘†</div>
     <div class="boost-info">
       <div class="boost-name">Multitap</div>
       <div class="boost-desc">+1 coin per click</div>
     </div>
-    <div class="boost-cost" id="multitapCost">500 🪙</div>
+    <div class="boost-cost" id="multitapCost">500 рџЄ™</div>
   </div>
   <div class="boost-item" onclick="buyUpgrade('maxenergy')">
-    <div class="boost-icon">🔋</div>
+    <div class="boost-icon">рџ”‹</div>
     <div class="boost-info">
       <div class="boost-name">Energy Limit</div>
       <div class="boost-desc">+500 max energy</div>
     </div>
-    <div class="boost-cost" id="maxenergyCost">1000 🪙</div>
+    <div class="boost-cost" id="maxenergyCost">1000 рџЄ™</div>
   </div>
   <div class="boost-item" onclick="buyUpgrade('recharge')">
-    <div class="boost-icon">⚡</div>
+    <div class="boost-icon">вљЎ</div>
     <div class="boost-info">
       <div class="boost-name">Recharging Speed</div>
       <div class="boost-desc">2x faster energy regen</div>
     </div>
-    <div class="boost-cost" id="rechargeCost">2000 🪙</div>
+    <div class="boost-cost" id="rechargeCost">2000 рџЄ™</div>
   </div>
 </div>
 
 <!-- ACHIEVEMENTS PAGE -->
 <div class="page" id="pageAchieve">
-  <div class="page-title">🏅 Achievements</div>
+  <div class="page-title">рџЏ… Achievements</div>
   <div id="achieveList"></div>
 </div>
 
 <!-- TOP PAGE -->
 <div class="page" id="pageTop">
-  <div class="page-title">🏆 Top Players</div>
+  <div class="page-title">рџЏ† Top Players</div>
   <div id="topList"></div>
 </div>
 
 <!-- FRIENDS PAGE -->
 <div class="page" id="pageFriends">
-  <div class="page-title">👥 Friends</div>
+  <div class="page-title">рџ‘Ґ Friends</div>
   <div class="card">
     <div class="card-title">Earn with friends!</div>
     <p style="color:#aaa;font-size:13px;line-height:1.6">
@@ -536,10 +536,10 @@
     <div class="ref-link-box" id="refLink" onclick="copyRef()">
       Loading...
     </div>
-    <button class="btn-primary" onclick="shareRef()">📤 Share Link</button>
+    <button class="btn-primary" onclick="shareRef()">рџ“¤ Share Link</button>
   </div>
   <div class="card">
-    <div class="card-title">👥 Your friends: <span id="friendCount">0</span></div>
+    <div class="card-title">рџ‘Ґ Your friends: <span id="friendCount">0</span></div>
     <div id="friendList"></div>
   </div>
 </div>
@@ -547,23 +547,23 @@
 <!-- BOTTOM MENU -->
 <div class="bottom-menu">
   <div class="menu-item active" id="menuMine" onclick="showPage('mine')">
-    <span>⛏️</span>
+    <span>в›ЏпёЏ</span>
     <span>Mine</span>
   </div>
   <div class="menu-item" id="menuBoosts" onclick="showPage('boosts')">
-    <span>⚡</span>
+    <span>вљЎ</span>
     <span>Boosts</span>
   </div>
   <div class="menu-item" id="menuAchieve" onclick="showPage('achieve')">
-    <span>🏅</span>
+    <span>рџЏ…</span>
     <span>Goals</span>
   </div>
   <div class="menu-item" id="menuTop" onclick="showPage('top')">
-    <span>🏆</span>
+    <span>рџЏ†</span>
     <span>Top</span>
   </div>
   <div class="menu-item" id="menuFriends" onclick="showPage('friends')">
-    <span>👥</span>
+    <span>рџ‘Ґ</span>
     <span>Friends</span>
   </div>
 </div>
@@ -571,21 +571,21 @@
 <!-- LEVEL UP OVERLAY -->
 <div class="levelup-overlay" id="levelupOverlay" onclick="closeLevelUp()">
   <div class="levelup-card">
-    <div class="levelup-emoji" id="levelupEmoji">🎉</div>
+    <div class="levelup-emoji" id="levelupEmoji">рџЋ‰</div>
     <div class="levelup-title">LEVEL UP!</div>
     <div class="levelup-sub" id="levelupSub">You reached level 2</div>
-    <button class="btn-primary" onclick="closeLevelUp()">Continue 🚀</button>
+    <button class="btn-primary" onclick="closeLevelUp()">Continue рџљЂ</button>
   </div>
 </div>
 
 <!-- LUCKY OVERLAY -->
-<div class="lucky-overlay" id="luckyOverlay">🍀 LUCKY! +50 coins!</div>
+<div class="lucky-overlay" id="luckyOverlay">рџЌЂ LUCKY! +50 coins!</div>
 
 <script>
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  API SERVER
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 const API_URL = 'https://coinfarm-production.up.railway.app';
 
 async function apiRegister(userId, username, fullName, referrerId) {
@@ -630,38 +630,38 @@ async function apiGetTop() {
 async function initUser() {
   const tg = window.Telegram?.WebApp;
   if (!tg) {
-    // Браузер без Telegram — показываем заглушку
+    // Р‘СЂР°СѓР·РµСЂ Р±РµР· Telegram вЂ” РїРѕРєР°Р·С‹РІР°РµРј Р·Р°РіР»СѓС€РєСѓ
     document.getElementById('refLink').textContent = 'Open in Telegram to get your link';
     return;
   }
   const user = tg.initDataUnsafe?.user;
   if (!user) return;
 
-  // Сохраняем ID в игровом состоянии
+  // РЎРѕС…СЂР°РЅСЏРµРј ID РІ РёРіСЂРѕРІРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё
   g.telegramId = user.id;
 
-  // Получаем referrer из start_param (передаётся ботом через WebApp URL)
+  // РџРѕР»СѓС‡Р°РµРј referrer РёР· start_param (РїРµСЂРµРґР°С‘С‚СЃСЏ Р±РѕС‚РѕРј С‡РµСЂРµР· WebApp URL)
   const startParam = tg.initDataUnsafe?.start_param;
   let referrerId = null;
   if (startParam && startParam.startsWith('ref_')) {
     referrerId = parseInt(startParam.replace('ref_', ''));
-    // Не засчитывать себя как реферала
+    // РќРµ Р·Р°СЃС‡РёС‚С‹РІР°С‚СЊ СЃРµР±СЏ РєР°Рє СЂРµС„РµСЂР°Р»Р°
     if (referrerId === user.id) referrerId = null;
   }
 
   await apiRegister(user.id, user.username || '', user.first_name || '', referrerId);
 
-  // Обновляем реферальную ссылку
+  // РћР±РЅРѕРІР»СЏРµРј СЂРµС„РµСЂР°Р»СЊРЅСѓСЋ СЃСЃС‹Р»РєСѓ
   const refEl = document.getElementById('refLink');
   if (refEl) refEl.textContent = getRefLink();
 
-  // Загружаем данные о друзьях с сервера
+  // Р—Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ Рѕ РґСЂСѓР·СЊСЏС… СЃ СЃРµСЂРІРµСЂР°
   loadFriends(user.id);
 }
 
 async function loadFriends(userId) {
   try {
-    // Загружаем данные юзера (количество рефералов + монеты)
+    // Р—Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ СЋР·РµСЂР° (РєРѕР»РёС‡РµСЃС‚РІРѕ СЂРµС„РµСЂР°Р»РѕРІ + РјРѕРЅРµС‚С‹)
     const res = await fetch(`${API_URL}/user/${userId}`);
     const data = await res.json();
     if (data && data.referrals !== undefined) {
@@ -673,41 +673,41 @@ async function loadFriends(userId) {
       }
     }
 
-    // Загружаем список друзей
+    // Р—Р°РіСЂСѓР¶Р°РµРј СЃРїРёСЃРѕРє РґСЂСѓР·РµР№
     const res2 = await fetch(`${API_URL}/user/${userId}/friends`);
     const friends = await res2.json();
     const listEl = document.getElementById('friendList');
     if (friends.length === 0) {
-      listEl.innerHTML = '<p style="color:#888;font-size:13px;text-align:center;padding:16px">No friends yet. Share your link! 👆</p>';
+      listEl.innerHTML = '<p style="color:#888;font-size:13px;text-align:center;padding:16px">No friends yet. Share your link! рџ‘†</p>';
     } else {
       listEl.innerHTML = friends.map(f => `
         <div class="top-item">
-          <div class="top-rank">👤</div>
+          <div class="top-rank">рџ‘¤</div>
           <div class="top-name">${f.full_name || 'Player'}</div>
-          <div class="top-coins">${Math.floor(f.coins).toLocaleString()} 🪙</div>
+          <div class="top-coins">${Math.floor(f.coins).toLocaleString()} рџЄ™</div>
         </div>
       `).join('');
     }
   } catch(e) { console.log('Friends load error:', e); }
 }
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  GAME STATE
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 const LEVELS = [0,100,300,700,1500,3000,6000,12000,25000,50000,100000];
-const LEVEL_NAMES = ["","🪨 Newbie","⛏️ Miner","🥉 Bronze","🥈 Silver","🥇 Gold","💎 Diamond","👑 King","🌟 Legend","🔥 Master","🚀 God"];
+const LEVEL_NAMES = ["","рџЄЁ Newbie","в›ЏпёЏ Miner","рџҐ‰ Bronze","рџҐ€ Silver","рџҐ‡ Gold","рџ’Ћ Diamond","рџ‘‘ King","рџЊџ Legend","рџ”Ґ Master","рџљЂ God"];
 
 const ACHIEVEMENTS = [
-  {id:"first",   name:"🎯 First Click",       desc:"Click for the first time",     req:()=>g.clicks>=1,       reward:10},
-  {id:"c100",    name:"⛏️ 100 Clicks",        desc:"Click 100 times",               req:()=>g.clicks>=100,     reward:25},
-  {id:"c1000",   name:"💪 1K Clicks",         desc:"Click 1000 times",              req:()=>g.clicks>=1000,    reward:100},
-  {id:"m100",    name:"💰 100 Coins",         desc:"Earn 100 coins",                req:()=>g.coins>=100,      reward:10},
-  {id:"m1000",   name:"💎 1K Coins",          desc:"Earn 1,000 coins",              req:()=>g.coins>=1000,     reward:50},
-  {id:"m10000",  name:"👑 10K Coins",         desc:"Earn 10,000 coins",             req:()=>g.coins>=10000,    reward:200},
-  {id:"m100000", name:"🚀 100K Coins",        desc:"Earn 100,000 coins",            req:()=>g.coins>=100000,   reward:1000},
-  {id:"lv5",     name:"🥇 Level 5",           desc:"Reach level 5",                 req:()=>g.level>=5,        reward:500},
-  {id:"lv10",    name:"🚀 Max Level",         desc:"Reach max level",               req:()=>g.level>=10,       reward:5000},
-  {id:"combo10", name:"🔥 Combo x10",         desc:"Get 10x combo",                 req:()=>g.maxCombo>=10,    reward:50},
+  {id:"first",   name:"рџЋЇ First Click",       desc:"Click for the first time",     req:()=>g.clicks>=1,       reward:10},
+  {id:"c100",    name:"в›ЏпёЏ 100 Clicks",        desc:"Click 100 times",               req:()=>g.clicks>=100,     reward:25},
+  {id:"c1000",   name:"рџ’Є 1K Clicks",         desc:"Click 1000 times",              req:()=>g.clicks>=1000,    reward:100},
+  {id:"m100",    name:"рџ’° 100 Coins",         desc:"Earn 100 coins",                req:()=>g.coins>=100,      reward:10},
+  {id:"m1000",   name:"рџ’Ћ 1K Coins",          desc:"Earn 1,000 coins",              req:()=>g.coins>=1000,     reward:50},
+  {id:"m10000",  name:"рџ‘‘ 10K Coins",         desc:"Earn 10,000 coins",             req:()=>g.coins>=10000,    reward:200},
+  {id:"m100000", name:"рџљЂ 100K Coins",        desc:"Earn 100,000 coins",            req:()=>g.coins>=100000,   reward:1000},
+  {id:"lv5",     name:"рџҐ‡ Level 5",           desc:"Reach level 5",                 req:()=>g.level>=5,        reward:500},
+  {id:"lv10",    name:"рџљЂ Max Level",         desc:"Reach max level",               req:()=>g.level>=10,       reward:5000},
+  {id:"combo10", name:"рџ”Ґ Combo x10",         desc:"Get 10x combo",                 req:()=>g.maxCombo>=10,    reward:50},
 ];
 
 let g = {
@@ -750,12 +750,12 @@ function saveGame() {
   apiSave();
 }
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  CLICK HANDLER
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 function handleClick(e) {
   if (g.energy <= 0) {
-    showFloatText("❌ No energy!", e.clientX, e.clientY, "#ff4444");
+    showFloatText("вќЊ No energy!", e.clientX, e.clientY, "#ff4444");
     return;
   }
 
@@ -792,7 +792,7 @@ function handleClick(e) {
 
   // Float text
   let text = `+${reward}`;
-  if (comboBonus > 0) text = `+${reward} 🔥x${g.combo}`;
+  if (comboBonus > 0) text = `+${reward} рџ”Ґx${g.combo}`;
   showFloatText(text, e.clientX, e.clientY, "#FFD700");
 
   // Update combo display
@@ -823,7 +823,7 @@ function showFloatText(text, x, y, color) {
 function updateComboDisplay() {
   const el = document.getElementById('comboDisplay');
   if (g.combo >= 3) {
-    el.textContent = `🔥 COMBO x${g.combo}!`;
+    el.textContent = `рџ”Ґ COMBO x${g.combo}!`;
     el.style.color = g.combo >= 10 ? '#ff4444' : g.combo >= 5 ? '#ff8c00' : '#FFD700';
     el.classList.add('active');
     setTimeout(() => el.classList.remove('active'), 300);
@@ -832,9 +832,9 @@ function updateComboDisplay() {
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  LEVEL SYSTEM
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 function getLevel(coins) {
   let level = 1;
   for (let i = 0; i < LEVELS.length; i++) {
@@ -870,15 +870,15 @@ function showLucky() {
   el.classList.add('show');
 }
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  ACHIEVEMENTS
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 function checkAchievements() {
   ACHIEVEMENTS.forEach(a => {
     if (!g.achievements[a.id] && a.req()) {
       g.achievements[a.id] = true;
       g.coins += a.reward;
-      showFloatText(`🏅 ${a.name} +${a.reward}!`, window.innerWidth/2, window.innerHeight/2, '#FFD700');
+      showFloatText(`рџЏ… ${a.name} +${a.reward}!`, window.innerWidth/2, window.innerHeight/2, '#FFD700');
     }
   });
 }
@@ -894,15 +894,15 @@ function renderAchievements() {
           <div class="achieve-name">${a.name}</div>
           <div class="achieve-desc">${a.desc}</div>
         </div>
-        <div class="achieve-reward">${done ? '✅' : `+${a.reward}🪙`}</div>
+        <div class="achieve-reward">${done ? 'вњ…' : `+${a.reward}рџЄ™`}</div>
       </div>
     `;
   }).join('');
 }
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  BOOSTS
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 function useBoost(type) {
   if (type === 'turbo') {
     if (g.turboLeft <= 0) { alert('No turbo left!'); return; }
@@ -951,16 +951,16 @@ function buyUpgrade(type) {
 function updateBoostsUI() {
   document.getElementById('turboCount').textContent = `${g.turboLeft}/3`;
   document.getElementById('energyBoostCount').textContent = `${g.energyBoostLeft}/3`;
-  document.getElementById('multitapCost').textContent = `${g.multitapCost} 🪙`;
-  document.getElementById('maxenergyCost').textContent = `${g.maxenergyCost} 🪙`;
-  document.getElementById('rechargeCost').textContent = `${g.rechargeCost} 🪙`;
+  document.getElementById('multitapCost').textContent = `${g.multitapCost} рџЄ™`;
+  document.getElementById('maxenergyCost').textContent = `${g.maxenergyCost} рџЄ™`;
+  document.getElementById('rechargeCost').textContent = `${g.rechargeCost} рџЄ™`;
 }
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  TOP & FRIENDS
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 async function renderTop() {
-  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+  const medals = ['рџҐ‡','рџҐ€','рџҐ‰','4пёЏвѓЈ','5пёЏвѓЈ','6пёЏвѓЈ','7пёЏвѓЈ','8пёЏвѓЈ','9пёЏвѓЈ','рџ”џ'];
   document.getElementById('topList').innerHTML = '<div style="text-align:center;color:#aaa;padding:20px">Loading...</div>';
   
   const topData = await apiGetTop();
@@ -975,7 +975,7 @@ async function renderTop() {
     <div class="top-item">
       <div class="top-rank">${medals[i] || (i+1)}</div>
       <div class="top-name">${p.full_name || 'Player'}</div>
-      <div class="top-coins">${Math.floor(p.coins).toLocaleString()} 🪙</div>
+      <div class="top-coins">${Math.floor(p.coins).toLocaleString()} рџЄ™</div>
     </div>
   `).join('');
 }
@@ -988,7 +988,7 @@ function getRefLink() {
 function copyRef() {
   const link = getRefLink();
   navigator.clipboard?.writeText(link).catch(()=>{});
-  document.getElementById('refLink').textContent = '✅ Copied!';
+  document.getElementById('refLink').textContent = 'вњ… Copied!';
   setTimeout(() => {
     document.getElementById('refLink').textContent = link;
   }, 2000);
@@ -1003,9 +1003,9 @@ function shareRef() {
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  UI UPDATE
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 function updateUI() {
   const coins = Math.floor(g.coins);
   const level = getLevel(g.coins);
@@ -1024,7 +1024,7 @@ function updateUI() {
   const pct = Math.min(100, Math.floor((g.coins - curReq) / (nextReq - curReq) * 100));
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressPct').textContent = pct + '%';
-  document.getElementById('progressLabel').textContent = `Lv${level} → Lv${level+1}`;
+  document.getElementById('progressLabel').textContent = `Lv${level} в†’ Lv${level+1}`;
 
   // Energy
   const energyPct = (g.energy / g.maxEnergy * 100);
@@ -1032,9 +1032,9 @@ function updateUI() {
   document.getElementById('energyText').textContent = `${Math.floor(g.energy)}/${g.maxEnergy}`;
 }
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  NAVIGATION
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
@@ -1047,9 +1047,9 @@ function showPage(page) {
   if (page === 'boosts') updateBoostsUI();
 }
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  ENERGY REGEN
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 setInterval(() => {
   if (g.energy < g.maxEnergy) {
     g.energy = Math.min(g.maxEnergy, g.energy + g.rechargeRate);
@@ -1060,9 +1060,9 @@ setInterval(() => {
 // Auto-save every 5 seconds
 setInterval(saveGame, 5000);
 
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 //  INIT
-// ═══════════════════════════════════════════════════════
+// в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 loadGame();
 updateUI();
 updateBoostsUI();
@@ -1073,7 +1073,7 @@ if (window.Telegram?.WebApp) {
   window.Telegram.WebApp.expand();
   initUser();
 } else {
-  // Браузер — показываем заглушку в ссылке
+  // Р‘СЂР°СѓР·РµСЂ вЂ” РїРѕРєР°Р·С‹РІР°РµРј Р·Р°РіР»СѓС€РєСѓ РІ СЃСЃС‹Р»РєРµ
   setTimeout(() => {
     const refEl = document.getElementById('refLink');
     if (refEl) refEl.textContent = 'Open in Telegram to get your link';
@@ -1082,3 +1082,4 @@ if (window.Telegram?.WebApp) {
 </script>
 </body>
 </html>
+
