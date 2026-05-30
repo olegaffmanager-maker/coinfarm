@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CoinFarm</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .header-level {
+    font-size: 13px;
+    color: #aaa;
+  }
+  .header-level span {
+    color: #FFD700;
+    font-weight: bold;
+  }
+  .header-coins {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .header-coins .coin-icon { font-size: 22px; }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    padding: 10px 20px;
+    background: rgba(0,0,0,0.2);
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD700, #FF6B35);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: flex;
+    justify-content: space-around;
+    padding: 14px 20px;
+  }
+  .stat-item {
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #FFD700;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  /* COIN BUTTON */
+  .coin-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+  }
+  .coin-btn {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #FFE066, #FFD700, #FF8C00, #B8860B);
+    border: none;
+    cursor: pointer;
+    position: relative;
+    box-shadow:
+      0 0 30px rgba(255, 215, 0, 0.6),
+      0 0 60px rgba(255, 165, 0, 0.3),
+      inset 0 -10px 20px rgba(0,0,0,0.3);
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .coin-btn:active {
+    transform: scale(0.93);
+    box-shadow:
+      0 0 15px rgba(255, 215, 0, 0.4),
+      0 0 30px rgba(255, 165, 0, 0.2),
+      inset 0 -5px 10px rgba(0,0,0,0.3);
+  }
+  .coin-btn::after {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 30%;
+    height: 20%;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+  }
+
+  /* FLOATING COINS */
+  .float-coin {
+    position: fixed;
+    font-size: 22px;
+    font-weight: bold;
+    color: #FFD700;
+    pointer-events: none;
+    z-index: 1000;
+    animation: floatUp 1s ease-out forwards;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-120px) scale(1.3); }
+  }
+
+  /* COMBO DISPLAY */
+  .combo-display {
+    text-align: center;
+    height: 30px;
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: opacity 0.3s;
+  }
+  .combo-display.active {
+    animation: comboPulse 0.3s ease;
+  }
+  @keyframes comboPulse {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+
+  /* ENERGY BAR */
+  .energy-wrap {
+    padding: 0 20px 10px;
+  }
+  .energy-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 4px;
+  }
+  .energy-bar {
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .energy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00b4db, #0083b0);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+  }
+
+  /* BOTTOM MENU */
+  .bottom-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(15, 12, 41, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 20px;
+  }
+  .menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 12px;
+    transition: background 0.2s;
+    font-size: 22px;
+  }
+  .menu-item span {
+    font-size: 11px;
+    color: #888;
+  }
+  .menu-item.active span { color: #FFD700; }
+  .menu-item:active { background: rgba(255,255,255,0.1); }
+
+  /* PAGES */
+  .page { display: none; padding: 16px 20px 100px; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #FFD700;
+  }
+
+  /* BOOST ITEMS */
+  .boost-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .boost-item:active { background: rgba(255,255,255,0.1); }
+  .boost-icon { font-size: 32px; }
+  .boost-info { flex: 1; }
+  .boost-name { font-size: 14px; font-weight: bold; }
+  .boost-desc { font-size: 12px; color: #888; margin-top: 2px; }
+  .boost-cost { color: #FFD700; font-weight: bold; font-size: 14px; }
+
+  /* ACHIEVEMENTS */
+  .achieve-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .achieve-item.done { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); }
+  .achieve-icon { font-size: 28px; }
+  .achieve-info { flex: 1; }
+  .achieve-name { font-size: 14px; font-weight: bold; }
+  .achieve-desc { font-size: 11px; color: #888; margin-top: 2px; }
+  .achieve-reward { color: #FFD700; font-size: 13px; font-weight: bold; }
+
+  /* TOP LIST */
+  .top-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .top-rank { font-size: 22px; width: 32px; text-align: center; }
+  .top-name { flex: 1; font-size: 14px; font-weight: bold; }
+  .top-coins { color: #FFD700; font-weight: bold; }
+
+  /* REF */
+  .ref-link-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #aaa;
+    word-break: break-all;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .ref-link-box:active { background: rgba(255,255,255,0.1); }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #FFD700, #FF8C00);
+    border: none;
+    border-radius: 14px;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    margin-top: 8px;
+  }
+  .btn-primary:active { transform: scale(0.97); opacity: 0.9; }
+
+  /* LEVEL UP OVERLAY */
+  .levelup-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .levelup-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .levelup-card {
+    background: linear-gradient(135deg, #302b63, #24243e);
+    border: 2px solid #FFD700;
+    border-radius: 24px;
+    padding: 40px 30px;
+    text-align: center;
+    animation: levelUpAnim 0.5s ease;
+  }
+  @keyframes levelUpAnim {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .levelup-emoji { font-size: 60px; margin-bottom: 16px; }
+  .levelup-title { font-size: 28px; font-weight: bold; color: #FFD700; margin-bottom: 8px; }
+  .levelup-sub { font-size: 16px; color: #aaa; margin-bottom: 24px; }
+
+  /* LUCKY OVERLAY */
+  .lucky-overlay {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    border-radius: 16px;
+    padding: 16px 24px;
+    text-align: center;
+    z-index: 1500;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .lucky-overlay.show {
+    animation: luckyAnim 2s ease forwards;
+  }
+  @keyframes luckyAnim {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(0); }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #FFD700;
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #aaa;
+    margin: 16px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-level">
+    Level <span id="headerLevel">1</span> • <span id="levelName">🪨 Новичок</span>
+  </div>
+  <div class="header-coins">
+    <span class="coin-icon">🪙</span>
+    <span id="headerCoins">0</span>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-info">
+    <span id="progressLabel">Level 1</span>
+    <span id="progressPct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- PAGES -->
+<!-- MINE PAGE -->
+<div class="page active" id="pageMine">
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-value" id="statCoins">0</div>
+      <div class="stat-label">🪙 Coins</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="statPerClick">1</div>
+      <div class="stat-label">⛏️ Per Click</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="statClicks">0</div>
+      <div class="stat-label">🔥 Clicks</div>
+    </div>
+  </div>
+
+  <div class="combo-display" id="comboDisplay"></div>
+
+  <div class="coin-area">
+    <button class="coin-btn" id="coinBtn" onclick="handleClick(event)">🪙</button>
+  </div>
+
+  <div class="energy-wrap">
+    <div class="energy-info">
+      <span>⚡ Energy</span>
+      <span id="energyText">500/500</span>
+    </div>
+    <div class="energy-bar">
+      <div class="energy-fill" id="energyFill" style="width:100%"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOSTS PAGE -->
+<div class="page" id="pageBoosts">
+  <div class="page-title">⚡ Boosts</div>
+
+  <div class="section-title">Free Boosts</div>
+  <div class="boost-item" onclick="useBoost('turbo')">
+    <div class="boost-icon">🚀</div>
+    <div class="boost-info">
+      <div class="boost-name">Turbo</div>
+      <div class="boost-desc">x5 coins for 20 seconds</div>
+    </div>
+    <div class="boost-cost" id="turboCount">3/3</div>
+  </div>
+  <div class="boost-item" onclick="useBoost('energy')">
+    <div class="boost-icon">⚡</div>
+    <div class="boost-info">
+      <div class="boost-name">Full Energy</div>
+      <div class="boost-desc">Restore all energy</div>
+    </div>
+    <div class="boost-cost" id="energyBoostCount">3/3</div>
+  </div>
+
+  <div class="section-title">Upgrades</div>
+  <div class="boost-item" onclick="buyUpgrade('multitap')">
+    <div class="boost-icon">👆</div>
+    <div class="boost-info">
+      <div class="boost-name">Multitap</div>
+      <div class="boost-desc">+1 coin per click</div>
+    </div>
+    <div class="boost-cost" id="multitapCost">500 🪙</div>
+  </div>
+  <div class="boost-item" onclick="buyUpgrade('maxenergy')">
+    <div class="boost-icon">🔋</div>
+    <div class="boost-info">
+      <div class="boost-name">Energy Limit</div>
+      <div class="boost-desc">+500 max energy</div>
+    </div>
+    <div class="boost-cost" id="maxenergyCost">1000 🪙</div>
+  </div>
+  <div class="boost-item" onclick="buyUpgrade('recharge')">
+    <div class="boost-icon">⚡</div>
+    <div class="boost-info">
+      <div class="boost-name">Recharging Speed</div>
+      <div class="boost-desc">2x faster energy regen</div>
+    </div>
+    <div class="boost-cost" id="rechargeCost">2000 🪙</div>
+  </div>
+</div>
+
+<!-- ACHIEVEMENTS PAGE -->
+<div class="page" id="pageAchieve">
+  <div class="page-title">🏅 Achievements</div>
+  <div id="achieveList"></div>
+</div>
+
+<!-- TOP PAGE -->
+<div class="page" id="pageTop">
+  <div class="page-title">🏆 Top Players</div>
+  <div id="topList"></div>
+</div>
+
+<!-- FRIENDS PAGE -->
+<div class="page" id="pageFriends">
+  <div class="page-title">👥 Friends</div>
+  <div class="card">
+    <div class="card-title">Earn with friends!</div>
+    <p style="color:#aaa;font-size:13px;line-height:1.6">
+      +100 coins for each friend you invite<br>
+      +20% bonus from all their earnings
+    </p>
+  </div>
+  <div class="card">
+    <div class="card-title">Your referral link</div>
+    <div class="ref-link-box" id="refLink" onclick="copyRef()">
+      Loading...
+    </div>
+    <button class="btn-primary" onclick="shareRef()">📤 Share Link</button>
+  </div>
+  <div class="card">
+    <div class="card-title">👥 Your friends: <span id="friendCount">0</span></div>
+    <div id="friendList"></div>
+  </div>
+</div>
+
+<!-- BOTTOM MENU -->
+<div class="bottom-menu">
+  <div class="menu-item active" id="menuMine" onclick="showPage('mine')">
+    <span>⛏️</span>
+    <span>Mine</span>
+  </div>
+  <div class="menu-item" id="menuBoosts" onclick="showPage('boosts')">
+    <span>⚡</span>
+    <span>Boosts</span>
+  </div>
+  <div class="menu-item" id="menuAchieve" onclick="showPage('achieve')">
+    <span>🏅</span>
+    <span>Goals</span>
+  </div>
+  <div class="menu-item" id="menuTop" onclick="showPage('top')">
+    <span>🏆</span>
+    <span>Top</span>
+  </div>
+  <div class="menu-item" id="menuFriends" onclick="showPage('friends')">
+    <span>👥</span>
+    <span>Friends</span>
+  </div>
+</div>
+
+<!-- LEVEL UP OVERLAY -->
+<div class="levelup-overlay" id="levelupOverlay" onclick="closeLevelUp()">
+  <div class="levelup-card">
+    <div class="levelup-emoji" id="levelupEmoji">🎉</div>
+    <div class="levelup-title">LEVEL UP!</div>
+    <div class="levelup-sub" id="levelupSub">You reached level 2</div>
+    <button class="btn-primary" onclick="closeLevelUp()">Continue 🚀</button>
+  </div>
+</div>
+
+<!-- LUCKY OVERLAY -->
+<div class="lucky-overlay" id="luckyOverlay">🍀 LUCKY! +50 coins!</div>
+
+<script>
+
+// ═══════════════════════════════════════════════════════
+//  API SERVER
+// ═══════════════════════════════════════════════════════
+const API_URL = 'https://coinfarm-production.up.railway.app';
+
+async function apiRegister(userId, username, fullName, referrerId) {
+  try {
+    await fetch(API_URL + '/user/register', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        user_id: userId,
+        username: username,
+        full_name: fullName,
+        referrer_id: referrerId || null
+      })
+    });
+  } catch(e) { console.log('Register error:', e); }
+}
+
+async function apiSave() {
+  const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+  if (!userId) return;
+  try {
+    await fetch(API_URL + '/user/save', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        user_id: userId,
+        coins: g.coins,
+        clicks: g.clicks,
+        level: g.level
+      })
+    });
+  } catch(e) { console.log('Save error:', e); }
+}
+
+async function apiGetTop() {
+  try {
+    const res = await fetch(API_URL + '/top');
+    return await res.json();
+  } catch(e) { return []; }
+}
+
+async function initUser() {
+  const tg = window.Telegram?.WebApp;
+  if (!tg) {
+    // Браузер без Telegram — показываем заглушку
+    document.getElementById('refLink').textContent = 'Open in Telegram to get your link';
+    return;
+  }
+  const user = tg.initDataUnsafe?.user;
+  if (!user) return;
+
+  // Сохраняем ID в игровом состоянии
+  g.telegramId = user.id;
+
+  // Получаем referrer из start_param (передаётся ботом через WebApp URL)
+  const startParam = tg.initDataUnsafe?.start_param;
+  let referrerId = null;
+  if (startParam && startParam.startsWith('ref_')) {
+    referrerId = parseInt(startParam.replace('ref_', ''));
+    // Не засчитывать себя как реферала
+    if (referrerId === user.id) referrerId = null;
+  }
+
+  await apiRegister(user.id, user.username || '', user.first_name || '', referrerId);
+
+  // Обновляем реферальную ссылку
+  const refEl = document.getElementById('refLink');
+  if (refEl) refEl.textContent = getRefLink();
+
+  // Загружаем данные о друзьях с сервера
+  loadFriends(user.id);
+}
+
+async function loadFriends(userId) {
+  try {
+    // Загружаем данные юзера (количество рефералов + монеты)
+    const res = await fetch(`${API_URL}/user/${userId}`);
+    const data = await res.json();
+    if (data && data.referrals !== undefined) {
+      g.friends = data.referrals;
+      document.getElementById('friendCount').textContent = data.referrals;
+      if (data.coins > g.coins) {
+        g.coins = data.coins;
+        updateUI();
+      }
+    }
+
+    // Загружаем список друзей
+    const res2 = await fetch(`${API_URL}/user/${userId}/friends`);
+    const friends = await res2.json();
+    const listEl = document.getElementById('friendList');
+    if (friends.length === 0) {
+      listEl.innerHTML = '<p style="color:#888;font-size:13px;text-align:center;padding:16px">No friends yet. Share your link! 👆</p>';
+    } else {
+      listEl.innerHTML = friends.map(f => `
+        <div class="top-item">
+          <div class="top-rank">👤</div>
+          <div class="top-name">${f.full_name || 'Player'}</div>
+          <div class="top-coins">${Math.floor(f.coins).toLocaleString()} 🪙</div>
+        </div>
+      `).join('');
+    }
+  } catch(e) { console.log('Friends load error:', e); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════════════════
+const LEVELS = [0,100,300,700,1500,3000,6000,12000,25000,50000,100000];
+const LEVEL_NAMES = ["","🪨 Newbie","⛏️ Miner","🥉 Bronze","🥈 Silver","🥇 Gold","💎 Diamond","👑 King","🌟 Legend","🔥 Master","🚀 God"];
+
+const ACHIEVEMENTS = [
+  {id:"first",   name:"🎯 First Click",       desc:"Click for the first time",     req:()=>g.clicks>=1,       reward:10},
+  {id:"c100",    name:"⛏️ 100 Clicks",        desc:"Click 100 times",               req:()=>g.clicks>=100,     reward:25},
+  {id:"c1000",   name:"💪 1K Clicks",         desc:"Click 1000 times",              req:()=>g.clicks>=1000,    reward:100},
+  {id:"m100",    name:"💰 100 Coins",         desc:"Earn 100 coins",                req:()=>g.coins>=100,      reward:10},
+  {id:"m1000",   name:"💎 1K Coins",          desc:"Earn 1,000 coins",              req:()=>g.coins>=1000,     reward:50},
+  {id:"m10000",  name:"👑 10K Coins",         desc:"Earn 10,000 coins",             req:()=>g.coins>=10000,    reward:200},
+  {id:"m100000", name:"🚀 100K Coins",        desc:"Earn 100,000 coins",            req:()=>g.coins>=100000,   reward:1000},
+  {id:"lv5",     name:"🥇 Level 5",           desc:"Reach level 5",                 req:()=>g.level>=5,        reward:500},
+  {id:"lv10",    name:"🚀 Max Level",         desc:"Reach max level",               req:()=>g.level>=10,       reward:5000},
+  {id:"combo10", name:"🔥 Combo x10",         desc:"Get 10x combo",                 req:()=>g.maxCombo>=10,    reward:50},
+];
+
+let g = {
+  coins: 0,
+  clicks: 0,
+  level: 1,
+  perClick: 1,
+  energy: 500,
+  maxEnergy: 500,
+  rechargeRate: 1,
+  combo: 0,
+  maxCombo: 0,
+  lastClick: 0,
+  turboActive: false,
+  turboLeft: 3,
+  energyBoostLeft: 3,
+  multitapLevel: 1,
+  multitapCost: 500,
+  maxenergyLevel: 1,
+  maxenergyCost: 1000,
+  rechargeLevel: 1,
+  rechargeCost: 2000,
+  achievements: {},
+  friends: 0,
+};
+
+// Load from localStorage
+function loadGame() {
+  const saved = localStorage.getItem('coinfarm_save');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      Object.assign(g, data);
+    } catch(e) {}
+  }
+}
+
+function saveGame() {
+  localStorage.setItem('coinfarm_save', JSON.stringify(g));
+  apiSave();
+}
+
+// ═══════════════════════════════════════════════════════
+//  CLICK HANDLER
+// ═══════════════════════════════════════════════════════
+function handleClick(e) {
+  if (g.energy <= 0) {
+    showFloatText("❌ No energy!", e.clientX, e.clientY, "#ff4444");
+    return;
+  }
+
+  const now = Date.now();
+  if (now - g.lastClick < 1500) {
+    g.combo++;
+  } else {
+    g.combo = 1;
+  }
+  g.lastClick = now;
+  g.maxCombo = Math.max(g.maxCombo, g.combo);
+
+  let reward = g.perClick;
+  if (g.turboActive) reward *= 5;
+
+  // Combo bonus
+  let comboBonus = 0;
+  if (g.combo >= 10) comboBonus = 20;
+  else if (g.combo >= 5) comboBonus = 10;
+  else if (g.combo >= 3) comboBonus = 5;
+
+  // Lucky (5% chance)
+  let lucky = false;
+  if (Math.random() < 0.05) {
+    lucky = true;
+    reward += 50;
+    showLucky();
+  }
+
+  reward += comboBonus;
+  g.coins += reward;
+  g.clicks++;
+  g.energy = Math.max(0, g.energy - 1);
+
+  // Float text
+  let text = `+${reward}`;
+  if (comboBonus > 0) text = `+${reward} 🔥x${g.combo}`;
+  showFloatText(text, e.clientX, e.clientY, "#FFD700");
+
+  // Update combo display
+  updateComboDisplay();
+
+  // Check level up
+  checkLevelUp();
+
+  // Check achievements
+  checkAchievements();
+
+  // Update UI
+  updateUI();
+  saveGame();
+}
+
+function showFloatText(text, x, y, color) {
+  const el = document.createElement('div');
+  el.className = 'float-coin';
+  el.textContent = text;
+  el.style.left = (x - 20) + 'px';
+  el.style.top = (y - 20) + 'px';
+  el.style.color = color;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+function updateComboDisplay() {
+  const el = document.getElementById('comboDisplay');
+  if (g.combo >= 3) {
+    el.textContent = `🔥 COMBO x${g.combo}!`;
+    el.style.color = g.combo >= 10 ? '#ff4444' : g.combo >= 5 ? '#ff8c00' : '#FFD700';
+    el.classList.add('active');
+    setTimeout(() => el.classList.remove('active'), 300);
+  } else {
+    el.textContent = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  LEVEL SYSTEM
+// ═══════════════════════════════════════════════════════
+function getLevel(coins) {
+  let level = 1;
+  for (let i = 0; i < LEVELS.length; i++) {
+    if (coins >= LEVELS[i]) level = i + 1;
+  }
+  return Math.min(level, LEVELS.length);
+}
+
+function checkLevelUp() {
+  const newLevel = getLevel(g.coins);
+  if (newLevel > g.level) {
+    g.level = newLevel;
+    g.perClick = newLevel;
+    showLevelUp(newLevel);
+  }
+}
+
+function showLevelUp(level) {
+  const overlay = document.getElementById('levelupOverlay');
+  document.getElementById('levelupEmoji').textContent = LEVEL_NAMES[level].split(' ')[0];
+  document.getElementById('levelupSub').textContent = `You reached ${LEVEL_NAMES[level]}!`;
+  overlay.classList.add('show');
+}
+
+function closeLevelUp() {
+  document.getElementById('levelupOverlay').classList.remove('show');
+}
+
+function showLucky() {
+  const el = document.getElementById('luckyOverlay');
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════════
+//  ACHIEVEMENTS
+// ═══════════════════════════════════════════════════════
+function checkAchievements() {
+  ACHIEVEMENTS.forEach(a => {
+    if (!g.achievements[a.id] && a.req()) {
+      g.achievements[a.id] = true;
+      g.coins += a.reward;
+      showFloatText(`🏅 ${a.name} +${a.reward}!`, window.innerWidth/2, window.innerHeight/2, '#FFD700');
+    }
+  });
+}
+
+function renderAchievements() {
+  const list = document.getElementById('achieveList');
+  list.innerHTML = ACHIEVEMENTS.map(a => {
+    const done = g.achievements[a.id];
+    return `
+      <div class="achieve-item ${done ? 'done' : ''}">
+        <div class="achieve-icon">${a.name.split(' ')[0]}</div>
+        <div class="achieve-info">
+          <div class="achieve-name">${a.name}</div>
+          <div class="achieve-desc">${a.desc}</div>
+        </div>
+        <div class="achieve-reward">${done ? '✅' : `+${a.reward}🪙`}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  BOOSTS
+// ═══════════════════════════════════════════════════════
+function useBoost(type) {
+  if (type === 'turbo') {
+    if (g.turboLeft <= 0) { alert('No turbo left!'); return; }
+    g.turboLeft--;
+    g.turboActive = true;
+    document.getElementById('coinBtn').style.boxShadow = '0 0 50px rgba(255,100,0,0.9), 0 0 100px rgba(255,50,0,0.5)';
+    setTimeout(() => {
+      g.turboActive = false;
+      document.getElementById('coinBtn').style.boxShadow = '';
+    }, 20000);
+  } else if (type === 'energy') {
+    if (g.energyBoostLeft <= 0) { alert('No energy boost left!'); return; }
+    g.energyBoostLeft--;
+    g.energy = g.maxEnergy;
+  }
+  updateBoostsUI();
+  saveGame();
+}
+
+function buyUpgrade(type) {
+  if (type === 'multitap') {
+    if (g.coins < g.multitapCost) { alert('Not enough coins!'); return; }
+    g.coins -= g.multitapCost;
+    g.multitapLevel++;
+    g.perClick++;
+    g.multitapCost = Math.floor(g.multitapCost * 2.5);
+  } else if (type === 'maxenergy') {
+    if (g.coins < g.maxenergyCost) { alert('Not enough coins!'); return; }
+    g.coins -= g.maxenergyCost;
+    g.maxenergyLevel++;
+    g.maxEnergy += 500;
+    g.energy = Math.min(g.energy + 500, g.maxEnergy);
+    g.maxenergyCost = Math.floor(g.maxenergyCost * 2.5);
+  } else if (type === 'recharge') {
+    if (g.coins < g.rechargeCost) { alert('Not enough coins!'); return; }
+    g.coins -= g.rechargeCost;
+    g.rechargeLevel++;
+    g.rechargeRate *= 2;
+    g.rechargeCost = Math.floor(g.rechargeCost * 2.5);
+  }
+  updateBoostsUI();
+  updateUI();
+  saveGame();
+}
+
+function updateBoostsUI() {
+  document.getElementById('turboCount').textContent = `${g.turboLeft}/3`;
+  document.getElementById('energyBoostCount').textContent = `${g.energyBoostLeft}/3`;
+  document.getElementById('multitapCost').textContent = `${g.multitapCost} 🪙`;
+  document.getElementById('maxenergyCost').textContent = `${g.maxenergyCost} 🪙`;
+  document.getElementById('rechargeCost').textContent = `${g.rechargeCost} 🪙`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOP & FRIENDS
+// ═══════════════════════════════════════════════════════
+async function renderTop() {
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+  document.getElementById('topList').innerHTML = '<div style="text-align:center;color:#aaa;padding:20px">Loading...</div>';
+  
+  const topData = await apiGetTop();
+  
+  // Add current user if not in top
+  const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+  const userName = window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name || 'You';
+  
+  let displayTop = topData.length > 0 ? topData : [{full_name: userName, coins: g.coins, level: g.level}];
+  
+  document.getElementById('topList').innerHTML = displayTop.map((p,i) => `
+    <div class="top-item">
+      <div class="top-rank">${medals[i] || (i+1)}</div>
+      <div class="top-name">${p.full_name || 'Player'}</div>
+      <div class="top-coins">${Math.floor(p.coins).toLocaleString()} 🪙</div>
+    </div>
+  `).join('');
+}
+
+function getRefLink() {
+  const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || g.telegramId || Date.now();
+  return `https://t.me/play1xfarmbot?start=ref_${userId}`;
+}
+
+function copyRef() {
+  const link = getRefLink();
+  navigator.clipboard?.writeText(link).catch(()=>{});
+  document.getElementById('refLink').textContent = '✅ Copied!';
+  setTimeout(() => {
+    document.getElementById('refLink').textContent = link;
+  }, 2000);
+}
+
+function shareRef() {
+  const link = getRefLink();
+  if (window.Telegram?.WebApp) {
+    window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}`);
+  } else {
+    copyRef();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI UPDATE
+// ═══════════════════════════════════════════════════════
+function updateUI() {
+  const coins = Math.floor(g.coins);
+  const level = getLevel(g.coins);
+  g.level = level;
+
+  document.getElementById('headerCoins').textContent = coins.toLocaleString();
+  document.getElementById('headerLevel').textContent = level;
+  document.getElementById('levelName').textContent = LEVEL_NAMES[level] || '';
+  document.getElementById('statCoins').textContent = coins.toLocaleString();
+  document.getElementById('statPerClick').textContent = g.perClick * (g.turboActive ? 5 : 1);
+  document.getElementById('statClicks').textContent = g.clicks.toLocaleString();
+
+  // Progress bar
+  const curReq = LEVELS[level-1] || 0;
+  const nextReq = LEVELS[level] || LEVELS[LEVELS.length-1];
+  const pct = Math.min(100, Math.floor((g.coins - curReq) / (nextReq - curReq) * 100));
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressLabel').textContent = `Lv${level} → Lv${level+1}`;
+
+  // Energy
+  const energyPct = (g.energy / g.maxEnergy * 100);
+  document.getElementById('energyFill').style.width = energyPct + '%';
+  document.getElementById('energyText').textContent = `${Math.floor(g.energy)}/${g.maxEnergy}`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+
+  document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
+  document.getElementById('menu' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
+
+  if (page === 'achieve') renderAchievements();
+  if (page === 'top') renderTop();
+  if (page === 'boosts') updateBoostsUI();
+}
+
+// ═══════════════════════════════════════════════════════
+//  ENERGY REGEN
+// ═══════════════════════════════════════════════════════
+setInterval(() => {
+  if (g.energy < g.maxEnergy) {
+    g.energy = Math.min(g.maxEnergy, g.energy + g.rechargeRate);
+    updateUI();
+  }
+}, 1000);
+
+// Auto-save every 5 seconds
+setInterval(saveGame, 5000);
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+loadGame();
+updateUI();
+updateBoostsUI();
+
+// Telegram WebApp init
+if (window.Telegram?.WebApp) {
+  window.Telegram.WebApp.ready();
+  window.Telegram.WebApp.expand();
+  initUser();
+} else {
+  // Браузер — показываем заглушку в ссылке
+  setTimeout(() => {
+    const refEl = document.getElementById('refLink');
+    if (refEl) refEl.textContent = 'Open in Telegram to get your link';
+  }, 100);
+}
+</script>
+</body>
+</html>
