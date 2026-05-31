@@ -62,6 +62,10 @@ async def cmd_start(message: types.Message):
         f"🔑 Earn XKEY for exclusive rewards\n"
         f"🏆 Compete in the leaderboard\n"
         f"💰 XSPC token launches Q4 2026!\n\n"
+        f"<b>📋 Commands:</b>\n"
+        f"/promo — get daily promo code 🎁\n"
+        f"/notify — enable daily reminders 🔔\n"
+        f"/stats — game statistics 📊\n\n"
         f"Tap below to start your space journey! 👇",
         reply_markup=builder.as_markup(),
         parse_mode="HTML",
@@ -167,7 +171,14 @@ async def send_daily_notifications():
 
 async def main():
     logging.info("🚀 XSPACECOIN Bot started!")
-    # Запускаем уведомления параллельно
+    # Устанавливаем команды бота (видны в меню /)
+    await bot.set_my_commands([
+        types.BotCommand(command="start",  description="🚀 Launch XSPACECOIN game"),
+        types.BotCommand(command="play",   description="🎮 Open the game"),
+        types.BotCommand(command="promo",  description="🎁 Get daily promo code"),
+        types.BotCommand(command="notify", description="🔔 Enable daily reminders"),
+        types.BotCommand(command="stats",  description="📊 Game statistics"),
+    ])
     asyncio.create_task(send_daily_notifications())
     await dp.start_polling(bot)
 
