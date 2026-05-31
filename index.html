@@ -67,6 +67,28 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 .boost-card-cost { font-size: 11px; font-weight: 700; font-family: Orbitron, monospace; color: var(--gold); }
 .boost-card-category { font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 
+/* MINE PAGE ANIMATIONS */
+@keyframes pulseGlow {
+  0%,100% { opacity:0.5; transform:scale(1); }
+  50% { opacity:1; transform:scale(1.3); }
+}
+@keyframes bounceIcon {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-4px); }
+}
+@keyframes arrowPulse {
+  0%,100% { transform:translateX(0); opacity:0.7; }
+  50% { transform:translateX(4px); opacity:1; }
+}
+@keyframes tonPulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(0,136,204,0.4); }
+  50% { box-shadow:0 0 0 6px rgba(0,136,204,0); }
+}
+@keyframes starFloat {
+  0% { transform:translateY(0) rotate(0deg); opacity:1; }
+  100% { transform:translateY(-30px) rotate(180deg); opacity:0; }
+}
+
 /* PLANET NAME BADGE */
 .planet-name-badge {
   position:relative; z-index:10;
@@ -115,113 +137,186 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 .coin-btn:active{transform:scale(0.91);}
 
 /* ПЛАНЕТЫ по уровням */
-/* Lv1-2: Земля */
+/* ═══ ALL PLANETS CSS ═══ */
+
+/* MERCURY — grey, cratered */
+.planet-mercury{
+  background:radial-gradient(circle at 38% 32%, #d4d4d4 0%, #9e9e9e 35%, #757575 65%, #424242 100%);
+  box-shadow:0 0 40px rgba(180,180,180,0.5),0 0 80px rgba(150,150,150,0.2),inset 0 -15px 30px rgba(0,0,0,0.6);
+}
+.planet-mercury::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:
+    radial-gradient(circle 15px at 30% 35%, rgba(0,0,0,0.5) 0%, transparent 100%),
+    radial-gradient(circle 10px at 60% 55%, rgba(0,0,0,0.4) 0%, transparent 100%),
+    radial-gradient(circle 8px at 45% 65%, rgba(0,0,0,0.3) 0%, transparent 100%),
+    radial-gradient(circle 12px at 70% 30%, rgba(0,0,0,0.4) 0%, transparent 100%),
+    radial-gradient(circle 6px at 25% 60%, rgba(0,0,0,0.3) 0%, transparent 100%);
+  pointer-events:none;
+}
+
+/* VENUS — toxic yellow-orange with swirling clouds */
+.planet-venus{
+  background:radial-gradient(circle at 38% 32%, #fff176 0%, #ffcc44 25%, #ff8f00 55%, #e65100 80%, #bf360c 100%);
+  box-shadow:0 0 50px rgba(255,200,0,0.6),0 0 100px rgba(255,150,0,0.3),inset 0 -15px 30px rgba(0,0,0,0.4);
+}
+.planet-venus::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:
+    repeating-linear-gradient(25deg, rgba(255,255,150,0.2) 0px, rgba(255,255,150,0.2) 6px, transparent 6px, transparent 14px),
+    repeating-linear-gradient(-15deg, rgba(255,180,0,0.15) 0px, rgba(255,180,0,0.15) 8px, transparent 8px, transparent 18px);
+  pointer-events:none;animation:planetSpin 18s linear infinite;
+}
+
+/* EARTH — blue oceans, green continents */
 .planet-earth{
-  background:radial-gradient(circle at 40% 35%,#4fc3f7 0%,#1976d2 25%,#0d47a1 50%,#01579b 70%,#002171 100%);
+  background:radial-gradient(circle at 40% 35%, #4fc3f7 0%, #1976d2 25%, #0d47a1 50%, #01579b 70%, #002171 100%);
   box-shadow:0 0 50px rgba(0,100,255,0.6),0 0 100px rgba(0,50,200,0.3),inset 0 -15px 30px rgba(0,0,0,0.5);
 }
 .planet-earth::after{
   content:'';position:absolute;inset:0;border-radius:50%;
   background:
-    radial-gradient(ellipse 35% 20% at 35% 40%,rgba(34,139,34,0.85) 0%,transparent 100%),
-    radial-gradient(ellipse 25% 30% at 65% 55%,rgba(34,139,34,0.7) 0%,transparent 100%),
-    radial-gradient(ellipse 20% 15% at 25% 65%,rgba(34,139,34,0.6) 0%,transparent 100%),
-    radial-gradient(ellipse 40% 15% at 50% 20%,rgba(255,255,255,0.5) 0%,transparent 100%),
-    radial-gradient(ellipse 30% 10% at 30% 75%,rgba(255,255,255,0.4) 0%,transparent 100%);
-  pointer-events:none;
-  animation:planetSpin 25s linear infinite;
+    radial-gradient(ellipse 35% 20% at 35% 40%, rgba(34,139,34,0.85) 0%, transparent 100%),
+    radial-gradient(ellipse 25% 30% at 65% 55%, rgba(34,139,34,0.7) 0%, transparent 100%),
+    radial-gradient(ellipse 20% 15% at 25% 65%, rgba(34,139,34,0.6) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 15% at 50% 20%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(ellipse 30% 10% at 30% 75%, rgba(255,255,255,0.4) 0%, transparent 100%);
+  pointer-events:none;animation:planetSpin 25s linear infinite;
 }
 
-/* Lv3-4: Марс */
+/* MARS — red desert with dust storms */
 .planet-mars{
-  background:radial-gradient(circle at 38% 32%,#ff8a65 0%,#d84315 30%,#bf360c 60%,#7f2701 100%);
+  background:radial-gradient(circle at 38% 32%, #ff8a65 0%, #d84315 30%, #bf360c 60%, #7f2701 100%);
   box-shadow:0 0 50px rgba(255,80,0,0.6),0 0 100px rgba(200,50,0,0.3),inset 0 -15px 30px rgba(0,0,0,0.5);
 }
 .planet-mars::after{
   content:'';position:absolute;inset:0;border-radius:50%;
   background:
-    radial-gradient(ellipse 20% 15% at 45% 35%,rgba(139,69,19,0.8) 0%,transparent 100%),
-    radial-gradient(ellipse 30% 10% at 60% 60%,rgba(101,55,0,0.6) 0%,transparent 100%),
-    radial-gradient(ellipse 15% 20% at 30% 55%,rgba(120,40,0,0.7) 0%,transparent 100%),
-    radial-gradient(ellipse 25% 8% at 70% 30%,rgba(255,200,150,0.3) 0%,transparent 100%);
-  pointer-events:none;
-  animation:planetSpin 20s linear infinite;
+    radial-gradient(ellipse 20% 15% at 45% 35%, rgba(139,69,19,0.8) 0%, transparent 100%),
+    radial-gradient(ellipse 30% 10% at 60% 60%, rgba(101,55,0,0.6) 0%, transparent 100%),
+    radial-gradient(ellipse 15% 20% at 30% 55%, rgba(120,40,0,0.7) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 8% at 50% 25%, rgba(255,150,100,0.3) 0%, transparent 100%);
+  pointer-events:none;animation:planetSpin 20s linear infinite;
 }
 
-/* Lv5-6: Юпитер */
+/* JUPITER — gas giant with bands and great red spot */
 .planet-jupiter{
-  background:radial-gradient(circle at 38% 32%,#ffcc80 0%,#ff9800 20%,#f57c00 40%,#e65100 60%,#bf360c 80%,#8d3302 100%);
-  box-shadow:0 0 50px rgba(255,150,0,0.6),0 0 100px rgba(200,100,0,0.3),inset 0 -15px 30px rgba(0,0,0,0.4);
+  background:radial-gradient(circle at 38% 32%, #ffcc80 0%, #ff9800 20%, #f57c00 40%, #e65100 60%, #bf360c 80%, #8d3302 100%);
+  box-shadow:0 0 60px rgba(255,150,0,0.7),0 0 120px rgba(200,100,0,0.4),inset 0 -15px 30px rgba(0,0,0,0.4);
 }
 .planet-jupiter::after{
   content:'';position:absolute;inset:0;border-radius:50%;
   background:
     repeating-linear-gradient(0deg,
-      rgba(180,80,0,0.4) 0px, rgba(180,80,0,0.4) 12px,
-      transparent 12px, transparent 20px,
-      rgba(255,180,50,0.3) 20px, rgba(255,180,50,0.3) 30px,
-      transparent 30px, transparent 40px,
-      rgba(150,50,0,0.4) 40px, rgba(150,50,0,0.4) 52px,
-      transparent 52px, transparent 60px
+      rgba(180,80,0,0.45) 0px, rgba(180,80,0,0.45) 10px,
+      transparent 10px, transparent 18px,
+      rgba(255,180,50,0.3) 18px, rgba(255,180,50,0.3) 26px,
+      transparent 26px, transparent 34px,
+      rgba(150,50,0,0.4) 34px, rgba(150,50,0,0.4) 44px,
+      transparent 44px, transparent 52px
     ),
-    radial-gradient(ellipse 30% 20% at 35% 55%,rgba(200,50,0,0.7) 0%,transparent 100%);
-  pointer-events:none;
-  animation:planetSpin 15s linear infinite;
+    radial-gradient(ellipse 22% 16% at 38% 56%, rgba(200,50,0,0.8) 0%, transparent 100%);
+  pointer-events:none;animation:planetSpin 12s linear infinite;
 }
 
-/* Lv7-8: Нептун */
+/* SATURN — golden with CSS rings */
+.planet-saturn{
+  background:radial-gradient(circle at 38% 32%, #fff9c4 0%, #f9a825 30%, #e65100 60%, #bf360c 85%, #7f2300 100%);
+  box-shadow:0 0 60px rgba(255,200,50,0.7),0 0 120px rgba(200,150,0,0.4),inset 0 -15px 30px rgba(0,0,0,0.4);
+}
+.planet-saturn::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:repeating-linear-gradient(0deg,
+    rgba(200,120,0,0.35) 0px, rgba(200,120,0,0.35) 8px,
+    transparent 8px, transparent 16px,
+    rgba(255,200,100,0.2) 16px, rgba(255,200,100,0.2) 22px,
+    transparent 22px, transparent 30px
+  );
+  pointer-events:none;animation:planetSpin 22s linear infinite;
+}
+
+/* URANUS — pale cyan ice giant tilted */
+.planet-uranus{
+  background:radial-gradient(circle at 38% 32%, #e0f7fa 0%, #80cbc4 25%, #00897b 55%, #004d40 80%, #002921 100%);
+  box-shadow:0 0 50px rgba(100,220,210,0.6),0 0 100px rgba(0,200,180,0.3),inset 0 -15px 30px rgba(0,0,0,0.5);
+}
+.planet-uranus::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:
+    repeating-linear-gradient(80deg,
+      rgba(150,255,240,0.15) 0px, rgba(150,255,240,0.15) 6px,
+      transparent 6px, transparent 14px
+    ),
+    radial-gradient(ellipse 60% 20% at 50% 45%, rgba(255,255,255,0.15) 0%, transparent 100%);
+  pointer-events:none;animation:planetSpin 30s linear infinite;
+}
+
+/* NEPTUNE — deep dark blue with storms */
 .planet-neptune{
-  background:radial-gradient(circle at 38% 32%,#80deea 0%,#00acc1 25%,#006064 55%,#003540 80%,#001820 100%);
-  box-shadow:0 0 50px rgba(0,200,220,0.6),0 0 100px rgba(0,150,180,0.3),inset 0 -15px 30px rgba(0,0,0,0.5);
+  background:radial-gradient(circle at 38% 32%, #5c6bc0 0%, #1565c0 25%, #0d47a1 50%, #002171 75%, #000d3d 100%);
+  box-shadow:0 0 60px rgba(0,80,255,0.7),0 0 120px rgba(0,50,200,0.4),inset 0 -15px 30px rgba(0,0,0,0.6);
 }
 .planet-neptune::after{
   content:'';position:absolute;inset:0;border-radius:50%;
   background:
     repeating-linear-gradient(15deg,
-      rgba(0,200,255,0.2) 0px, rgba(0,200,255,0.2) 8px,
-      transparent 8px, transparent 18px,
-      rgba(0,150,200,0.15) 18px, rgba(0,150,200,0.15) 25px,
-      transparent 25px, transparent 35px
+      rgba(100,150,255,0.2) 0px, rgba(100,150,255,0.2) 6px,
+      transparent 6px, transparent 16px
     ),
-    radial-gradient(ellipse 40% 15% at 50% 40%,rgba(255,255,255,0.2) 0%,transparent 100%);
-  pointer-events:none;
-  animation:planetSpin 18s linear infinite;
+    radial-gradient(ellipse 35% 20% at 60% 40%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(ellipse 20% 12% at 35% 60%, rgba(200,220,255,0.2) 0%, transparent 100%);
+  pointer-events:none;animation:planetSpin 16s linear infinite;
 }
 
-/* Lv9: Сатурн */
-.planet-saturn{
-  background:radial-gradient(circle at 38% 32%,#fff9c4 0%,#f9a825 30%,#e65100 60%,#bf360c 85%,#7f2300 100%);
-  box-shadow:0 0 50px rgba(255,200,50,0.6),0 0 100px rgba(200,150,0,0.3),inset 0 -15px 30px rgba(0,0,0,0.4);
+/* PLUTO — icy grey-pink dwarf */
+.planet-pluto{
+  background:radial-gradient(circle at 38% 32%, #f8bbd0 0%, #9e9e9e 30%, #616161 60%, #37474f 85%, #1c2832 100%);
+  box-shadow:0 0 30px rgba(150,150,200,0.5),0 0 60px rgba(100,100,150,0.2),inset 0 -15px 30px rgba(0,0,0,0.6);
 }
-.planet-saturn::after{
+.planet-pluto::after{
   content:'';position:absolute;inset:0;border-radius:50%;
   background:
-    repeating-linear-gradient(0deg,
-      rgba(200,120,0,0.3) 0px, rgba(200,120,0,0.3) 10px,
-      transparent 10px, transparent 18px,
-      rgba(255,200,100,0.2) 18px, rgba(255,200,100,0.2) 26px,
-      transparent 26px, transparent 34px
-    );
-  pointer-events:none;
-  animation:planetSpin 22s linear infinite;
+    radial-gradient(ellipse 40% 30% at 45% 40%, rgba(255,180,200,0.4) 0%, transparent 100%),
+    radial-gradient(circle 12px at 55% 55%, rgba(0,0,0,0.4) 0%, transparent 100%),
+    radial-gradient(circle 8px at 35% 60%, rgba(0,0,0,0.3) 0%, transparent 100%);
+  pointer-events:none;animation:planetSpin 35s linear infinite;
 }
 
-/* Lv10: Звезда */
-.planet-star{
-  background:radial-gradient(circle at 50% 50%,#ffffff 0%,#fff9c4 15%,#ffeb3b 30%,#ff9800 55%,#e64a19 75%,#b71c1c 100%);
-  box-shadow:0 0 60px rgba(255,200,0,0.9),0 0 120px rgba(255,100,0,0.6),0 0 200px rgba(255,50,0,0.3),inset 0 -10px 30px rgba(0,0,0,0.3);
-  animation:starPulse 2s ease-in-out infinite;
+/* NIBIRU — mysterious dark red rogue planet */
+.planet-nibiru{
+  background:radial-gradient(circle at 38% 32%, #ff6090 0%, #c62828 30%, #7b0000 60%, #3e0000 85%, #1a0000 100%);
+  box-shadow:0 0 70px rgba(255,0,80,0.8),0 0 140px rgba(200,0,50,0.5),0 0 200px rgba(150,0,30,0.3),inset 0 -15px 30px rgba(0,0,0,0.6);
+  animation:nibiruPulse 3s ease-in-out infinite;
 }
-.planet-star::after{
+.planet-nibiru::after{
   content:'';position:absolute;inset:0;border-radius:50%;
   background:
-    radial-gradient(circle at 50% 50%,rgba(255,255,255,0.8) 0%,transparent 40%),
-    repeating-conic-gradient(rgba(255,200,0,0.3) 0deg 10deg,transparent 10deg 20deg);
-  pointer-events:none;
-  animation:starRotate 3s linear infinite;
+    repeating-conic-gradient(rgba(255,50,100,0.15) 0deg 20deg, transparent 20deg 40deg),
+    radial-gradient(circle at 50% 50%, rgba(255,100,150,0.2) 0%, transparent 60%);
+  pointer-events:none;animation:planetSpin 8s linear infinite;
 }
-@keyframes starPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.05);filter:brightness(1.2)}}
-@keyframes starRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes nibiruPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+
+/* SUN — blazing star */
+.planet-sun{
+  background:radial-gradient(circle at 50% 50%, #ffffff 0%, #fff9c4 10%, #ffeb3b 25%, #ff9800 50%, #e64a19 75%, #b71c1c 100%);
+  box-shadow:
+    0 0 80px rgba(255,220,0,1.0),
+    0 0 160px rgba(255,150,0,0.8),
+    0 0 250px rgba(255,50,0,0.5),
+    0 0 400px rgba(200,0,0,0.3),
+    inset 0 -10px 30px rgba(0,0,0,0.2);
+  animation:sunPulse 1.5s ease-in-out infinite;
+}
+.planet-sun::after{
+  content:'';position:absolute;inset:-10px;border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 45%, rgba(255,200,0,0.4) 55%, transparent 70%),
+    repeating-conic-gradient(rgba(255,255,0,0.3) 0deg 8deg, transparent 8deg 16deg);
+  pointer-events:none;animation:sunRotate 4s linear infinite;
+}
+@keyframes sunPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.3)}}
+@keyframes sunRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 @keyframes planetSpin{
   from{background-position:0% 50%,0 0,0 0,0 0,0 0,0 0,0 0}
@@ -406,6 +501,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="header-left">
     <div class="header-level">LEVEL <span id="headerLevel">1</span></div>
     <div class="header-name" id="levelName">🪨 Newbie</div>
+    <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;cursor:pointer;" onclick="showPage('whitepaper')">🌍 <span id="playerCounter">...</span> players</div>
   </div>
   <!-- KEYS DISPLAY -->
   <div style="display:flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,200,0,0.25);border-radius:20px;padding:5px 12px;cursor:pointer;" onclick="showPage('keys')">
@@ -416,7 +512,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <span id="headerPlanetIcon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;"></span>
     <span class="c-num" id="headerCoins">0</span>
   </div>
-  <div class="league-badge" id="leagueBadge">⚪ IRON</div>
+  <div style="display:flex;align-items:center;gap:6px;">
+    <div style="width:32px;height:32px;border-radius:50%;background:rgba(0,136,204,0.15);border:1px solid rgba(0,136,204,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;" onclick="openTon()" title="TON Wallet" id="tonBtn">🌐</div>
+    <div class="league-badge" id="leagueBadge">⚪ IRON</div>
+  </div>
 </div>
 
 <div class="progress-wrap">
@@ -494,6 +593,58 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 </div>
 
     </div>
+
+    <!-- EARN TASKS PREVIEW -->
+    <div style="width:100%;padding:0 16px 8px;">
+      <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,245,255,0.05));border:1px solid rgba(0,255,136,0.2);border-radius:14px;padding:12px 14px;cursor:pointer;" onclick="showPage('earn')">
+        <!-- Animated glow effect -->
+        <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:radial-gradient(circle,rgba(0,255,136,0.3),transparent);border-radius:50%;animation:pulseGlow 2s ease-in-out infinite;pointer-events:none;"></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:26px;animation:bounceIcon 1.5s ease-in-out infinite;">🤝</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:#00ff88;">Earn Tasks</div>
+            <div style="font-size:11px;color:#4a6080;margin-top:1px;" id="earnTasksPreview">Complete tasks → get bonus XSPC</div>
+          </div>
+          <div style="font-size:18px;color:#00ff88;animation:arrowPulse 1s ease-in-out infinite;">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP WALLET / LEADERBOARD PREVIEW -->
+    <div style="width:100%;padding:0 16px 8px;">
+      <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,100,0,0.05));border:1px solid rgba(255,215,0,0.2);border-radius:14px;padding:12px 14px;cursor:pointer;" onclick="showPage('top')">
+        <!-- Star particles effect -->
+        <div style="position:absolute;inset:0;pointer-events:none;" id="starParticlesWrap"></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:26px;">🏆</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:#FFD700;">Top Players</div>
+            <div style="font-size:11px;color:#4a6080;margin-top:1px;" id="topPreviewText">See who leads the galaxy</div>
+          </div>
+          <!-- TON wallet status inline -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;" onclick="event.stopPropagation();openTon()">
+            <div style="width:34px;height:34px;border-radius:50%;background:rgba(0,136,204,0.15);border:2px solid rgba(0,136,204,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;animation:tonPulse 2s ease-in-out infinite;" id="tonBtnMain">🌐</div>
+            <div style="font-size:8px;color:#4a6080;font-family:Orbitron,monospace;" id="tonStatusMain">TON</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHITEPAPER + LAUNCH DAYS -->
+    <div style="width:100%;padding:0 16px 10px;display:flex;gap:10px;">
+      <div style="flex:2;position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(123,47,255,0.08));border:1px solid rgba(0,245,255,0.25);border-radius:14px;padding:12px 14px;cursor:pointer;" onclick="showPage('whitepaper')">
+        <div style="position:absolute;top:-15px;right:-15px;width:60px;height:60px;background:radial-gradient(circle,rgba(0,245,255,0.2),transparent);border-radius:50%;pointer-events:none;"></div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:4px;">XSPACECOIN</div>
+        <div style="font-size:13px;font-weight:700;color:var(--accent);">📄 Whitepaper</div>
+        <div style="font-size:10px;color:#4a6080;margin-top:2px;">Tokenomics & Roadmap →</div>
+      </div>
+      <div style="flex:1;background:linear-gradient(135deg,rgba(255,100,0,0.1),rgba(255,200,0,0.06));border:1px solid rgba(255,150,0,0.3);border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;" onclick="showPage('whitepaper')">
+        <div style="font-size:9px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:4px;">LAUNCH IN</div>
+        <div style="font-family:Orbitron,monospace;font-size:24px;font-weight:900;color:#FFD700;line-height:1;" id="launchDaysMain">---</div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:3px;">DAYS</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -714,6 +865,208 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 </div>
 
+<!-- PARTNER TASKS PAGE -->
+<div class="page" id="pageEarn">
+  <div style="background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(123,47,255,0.06));border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;">
+    <div style="font-size:36px;margin-bottom:6px;">🤝</div>
+    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;">EARN MORE XSPC</div>
+    <div style="font-size:12px;color:#4a6080;">Complete tasks to earn bonus coins</div>
+  </div>
+
+  <div class="section-title">📱 Social Tasks</div>
+  <div id="partnerTasksList"></div>
+
+  <div class="section-title" style="margin-top:14px;">📰 News & Updates</div>
+  <div id="newsFeed"></div>
+</div>
+
+<!-- ACHIEVEMENTS PAGE -->
+<div class="page" id="pageAchieve">
+  <div style="display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;">
+    <div>
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;">COMPLETED</div>
+      <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;" id="achieveCount">0/20</div>
+    </div>
+    <div style="font-size:40px;">🏅</div>
+  </div>
+  <div id="achieveList"></div>
+</div>
+
+<!-- MINI GAME PAGE -->
+<div class="page" id="pageMini">
+  <div style="background:linear-gradient(135deg,rgba(255,100,0,0.1),rgba(255,200,0,0.06));border:1px solid rgba(255,150,0,0.25);border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;">
+    <div style="font-size:11px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:4px;">MINI GAME</div>
+    <div style="font-size:20px;font-weight:900;font-family:Orbitron,monospace;color:#FFD700;">🎮 GUESS THE NUMBER</div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;">3 free games per day</div>
+  </div>
+
+  <div style="text-align:center;margin-bottom:14px;">
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;">GAMES LEFT TODAY</div>
+    <div style="font-family:Orbitron,monospace;font-size:28px;font-weight:700;color:#FFD700;" id="miniGamesLeft">3</div>
+  </div>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;text-align:center;" id="miniGameArea">
+    <div style="font-size:14px;color:#4a6080;margin-bottom:16px;" id="miniGameMsg">I'm thinking of a number between 1 and 100</div>
+    <div style="font-size:48px;margin-bottom:16px;" id="miniGameEmoji">🤔</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:12px;">
+      <input id="miniGuessInput" type="number" min="1" max="100" placeholder="1-100" style="width:120px;padding:12px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:18px;text-align:center;outline:none;font-family:Orbitron,monospace;">
+    </div>
+    <button onclick="submitMiniGuess()" id="miniGuessBtn" style="padding:12px 32px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#000;font-weight:700;font-size:15px;cursor:pointer;font-family:Rajdhani,sans-serif;">GUESS!</button>
+    <div style="margin-top:12px;font-size:13px;color:#4a6080;" id="miniHintText"></div>
+    <div style="margin-top:8px;font-size:11px;color:#4a6080;font-family:Orbitron,monospace;" id="miniAttemptsLeft"></div>
+  </div>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;">
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:10px;">🏆 REWARDS</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Guess in 1 try</span><span style="color:#FFD700;font-family:Orbitron,monospace;">10,000 🪐</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Guess in 3 tries</span><span style="color:#FFD700;font-family:Orbitron,monospace;">5,000 🪐</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Guess in 5 tries</span><span style="color:#FFD700;font-family:Orbitron,monospace;">2,000 🪐</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Guess in 7 tries</span><span style="color:#FFD700;font-family:Orbitron,monospace;">500 🪐</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- WHITEPAPER PAGE -->
+<div class="page" id="pageWhitepaper">
+
+  <!-- Hero -->
+  <div style="background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(123,47,255,0.08));border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:14px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:8px;">🪐</div>
+    <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:900;color:var(--accent);letter-spacing:2px;">XSPACECOIN</div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;font-family:Orbitron,monospace;letter-spacing:3px;">WHITEPAPER v1.0</div>
+    <div style="margin-top:12px;font-size:13px;color:var(--text);line-height:1.6;">The first tap-to-earn space mining game on Telegram with real token economics on TON blockchain</div>
+  </div>
+
+  <!-- Token Launch Countdown -->
+  <div style="background:linear-gradient(135deg,rgba(255,50,100,0.1),rgba(255,150,0,0.08));border:1px solid rgba(255,100,0,0.3);border-radius:16px;padding:16px;margin-bottom:14px;text-align:center;">
+    <div style="font-size:11px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:10px;">🚀 TOKEN LAUNCH COUNTDOWN</div>
+    <div style="display:flex;justify-content:center;gap:12px;" id="countdownTimer">
+      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.3);border-radius:12px;padding:10px 14px;min-width:60px;">
+        <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="cdDays">000</div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">DAYS</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.3);border-radius:12px;padding:10px 14px;min-width:60px;">
+        <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="cdHours">00</div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">HOURS</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.3);border-radius:12px;padding:10px 14px;min-width:60px;">
+        <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="cdMins">00</div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">MINS</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.3);border-radius:12px;padding:10px 14px;min-width:60px;">
+        <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="cdSecs">00</div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">SECS</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:#4a6080;">Target: <span style="color:#ff9500;font-family:Orbitron,monospace;" id="launchDateText">Q4 2026</span></div>
+  </div>
+
+  <!-- Tokenomics -->
+  <div class="section-title">💎 Tokenomics</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;">TOTAL SUPPLY</div>
+      <div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:var(--accent);">21,000,000,000</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">XSPC Tokens</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;">PLAYERS SHARE</div>
+      <div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#00ff88;">60%</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">12.6B XSPC</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;">MIN WITHDRAWAL</div>
+      <div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#FFD700;">100,000</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">XSPC required</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;">BLOCKCHAIN</div>
+      <div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#0088cc;">TON</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">The Open Network</div>
+    </div>
+  </div>
+
+  <!-- Token Distribution -->
+  <div class="section-title">📊 Distribution</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="width:12px;height:12px;border-radius:50%;background:#00ff88;flex-shrink:0;"></div>
+      <div style="flex:1;font-size:13px;">Players & Community</div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#00ff88;">60%</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="width:12px;height:12px;border-radius:50%;background:#00f5ff;flex-shrink:0;"></div>
+      <div style="flex:1;font-size:13px;">Liquidity Pool (DEX)</div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#00f5ff;">20%</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="width:12px;height:12px;border-radius:50%;background:#7b2fff;flex-shrink:0;"></div>
+      <div style="flex:1;font-size:13px;">Development & Team</div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#7b2fff;">10%</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="width:12px;height:12px;border-radius:50%;background:#FFD700;flex-shrink:0;"></div>
+      <div style="flex:1;font-size:13px;">Marketing & Partners</div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#FFD700;">10%</div>
+    </div>
+  </div>
+
+  <!-- Roadmap -->
+  <div class="section-title">🗺️ Roadmap</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+    <div style="padding:12px 14px;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.25);border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="font-size:13px;font-weight:700;color:#00ff88;">✅ Phase 1 — Launch</div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">Q2 2026</div>
+      </div>
+      <div style="font-size:11px;color:#4a6080;">Game launch, referral system, daily tasks, leaderboard</div>
+    </div>
+    <div style="padding:12px 14px;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.2);border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="font-size:13px;font-weight:700;color:var(--accent);">🔄 Phase 2 — Growth</div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">Q3 2026</div>
+      </div>
+      <div style="font-size:11px;color:#4a6080;">Clans, tournaments, partner tasks, 1M players</div>
+    </div>
+    <div style="padding:12px 14px;background:rgba(123,47,255,0.06);border:1px solid rgba(123,47,255,0.2);border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="font-size:13px;font-weight:700;color:#7b2fff;">⏳ Phase 3 — Token</div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">Q4 2026</div>
+      </div>
+      <div style="font-size:11px;color:#4a6080;">XSPC token launch on TON, DEX listing, withdrawal opens</div>
+    </div>
+    <div style="padding:12px 14px;background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.15);border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="font-size:13px;font-weight:700;color:#FFD700;">🔮 Phase 4 — Exchange</div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">Q1 2027</div>
+      </div>
+      <div style="font-size:11px;color:#4a6080;">CEX listings, NFT planets, cross-platform expansion</div>
+    </div>
+  </div>
+
+  <!-- Your progress towards withdrawal -->
+  <div class="section-title">💰 Your Withdrawal Status</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+      <div style="font-size:12px;color:#4a6080;">Your balance</div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;color:#FFD700;" id="wpBalance">0 XSPC</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+      <div style="font-size:12px;color:#4a6080;">Required for withdrawal</div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;color:var(--accent);">100,000 XSPC</div>
+    </div>
+    <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:8px;">
+      <div id="wpProgressBar" style="height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:10px;transition:width 0.5s;width:0%;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;">
+      <div style="font-size:11px;color:#4a6080;" id="wpProgressText">0% to withdrawal</div>
+      <div style="font-size:11px;color:#4a6080;" id="wpRemaining">100,000 more needed</div>
+    </div>
+  </div>
+
+</div>
+
 <!-- KEYS PAGE -->
 <div class="page" id="pageKeys">
 
@@ -731,6 +1084,55 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="font-size:15px;font-weight:700;margin-bottom:4px;" id="chestTitle">Open Daily Chest</div>
     <div style="font-size:12px;color:#4a6080;" id="chestDesc">Contains 1-3 XKEY + bonus XSPC</div>
     <div style="margin-top:10px;" id="chestTimer"></div>
+  </div>
+
+  <!-- TON Wallet button -->
+  <div style="background:linear-gradient(135deg,rgba(0,136,204,0.1),rgba(0,170,255,0.05));border:1px solid rgba(0,136,204,0.25);border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openTon()">
+    <div style="font-size:32px;">🌐</div>
+    <div style="flex:1;">
+      <div style="font-size:14px;font-weight:700;color:#00aaff;">TON Wallet</div>
+      <div style="font-size:11px;color:#4a6080;margin-top:2px;" id="tonWalletStatus">Connect to prepare for token withdrawal</div>
+    </div>
+    <div style="font-size:20px;">→</div>
+  </div>
+
+  <!-- Quick access grid -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+    <div style="background:linear-gradient(135deg,rgba(123,47,255,0.1),rgba(0,245,255,0.05));border:1px solid rgba(123,47,255,0.25);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('wheel')">
+      <div style="font-size:28px;margin-bottom:4px;">🎰</div>
+      <div style="font-size:12px;font-weight:700;color:var(--accent);">Fortune Wheel</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;" id="wheelStatusInKeys">Ready!</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(255,150,0,0.1),rgba(255,50,100,0.05));border:1px solid rgba(255,150,0,0.25);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('top')">
+      <div style="font-size:28px;margin-bottom:4px;">🏆</div>
+      <div style="font-size:12px;font-weight:700;color:#ff9500;">Leaderboard</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">Top players</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,245,255,0.04));border:1px solid rgba(0,255,136,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('earn')">
+      <div style="font-size:28px;margin-bottom:4px;">🤝</div>
+      <div style="font-size:12px;font-weight:700;color:#00ff88;">Earn Tasks</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">Get bonus XSPC</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,100,0,0.04));border:1px solid rgba(255,215,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('achieve')">
+      <div style="font-size:28px;margin-bottom:4px;">🏅</div>
+      <div style="font-size:12px;font-weight:700;color:#FFD700;">Achievements</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;" id="achieveCountKeys">0/20 done</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(123,47,255,0.04));border:1px solid rgba(0,245,255,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('whitepaper')">
+      <div style="font-size:28px;margin-bottom:4px;">📄</div>
+      <div style="font-size:12px;font-weight:700;color:var(--accent);">Whitepaper</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">Token & Roadmap</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(255,100,0,0.08),rgba(255,200,0,0.04));border:1px solid rgba(255,150,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('mini')">
+      <div style="font-size:28px;margin-bottom:4px;">🎮</div>
+      <div style="font-size:12px;font-weight:700;color:#ff9500;">Mini Game</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;" id="miniGamesLeftKeys">3 games left</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(123,47,255,0.08),rgba(0,245,255,0.04));border:1px solid rgba(123,47,255,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('stats')">
+      <div style="font-size:28px;margin-bottom:4px;">📊</div>
+      <div style="font-size:12px;font-weight:700;color:var(--accent2);">My Stats</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">Profile & records</div>
+    </div>
   </div>
 
   <!-- How to earn keys -->
@@ -831,10 +1233,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="menu-item" id="menuBoosts" onclick="showPage('boosts')"><span class="m-icon">⚡</span><span>Boosts</span></div>
   <div class="menu-item" id="menuCards" onclick="showPage('cards')"><span class="m-icon">📈</span><span>Cards</span></div>
   <div class="menu-item" id="menuCombo" onclick="showPage('combo')"><span class="m-icon">⚡</span><span>Combo</span></div>
-  <div class="menu-item" id="menuWheel" onclick="showPage('wheel')"><span class="m-icon">🎰</span><span>Wheel</span></div>
 
-  <div class="menu-item" id="menuTop" onclick="showPage('top')"><span class="m-icon">🏆</span><span>Top</span></div>
-  <div class="menu-item" id="menuStats" onclick="showPage('stats')"><span class="m-icon">📊</span><span>Stats</span></div>
+
+
   <div class="menu-item" id="menuFriends" onclick="showPage('friends')"><span class="m-icon">👥</span><span>Friends</span></div>
 </div>
 
@@ -899,6 +1300,24 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   </div>
 </div>
 
+<!-- TON WALLET MODAL -->
+<div class="overlay" id="tonOverlay" onclick="closeTon()">
+  <div class="overlay-card" onclick="event.stopPropagation()">
+    <div style="font-size:48px;margin-bottom:8px;">🌐</div>
+    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:var(--accent);margin-bottom:6px;">TON WALLET</div>
+    <div style="font-size:12px;color:#4a6080;margin-bottom:16px;">Connect your wallet to prepare for XSPC token withdrawal</div>
+    <div id="tonWalletContent">
+      <div style="background:rgba(0,245,255,0.06);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;font-size:12px;color:#4a6080;">
+        📋 Your XSPC balance will be ready for withdrawal when the token launches
+      </div>
+      <input id="tonAddressInput" placeholder="Enter your TON wallet address" style="width:100%;padding:12px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:13px;margin-bottom:10px;outline:none;font-family:Orbitron,monospace;">
+      <button onclick="saveTonWallet()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0088cc,#00aaff);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:8px;">💾 Save Wallet</button>
+      <div id="tonSavedAddr" style="font-size:11px;color:#00ff88;text-align:center;"></div>
+    </div>
+    <button onclick="closeTon()" style="width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:12px;color:#4a6080;font-size:13px;cursor:pointer;margin-top:8px;">Close</button>
+  </div>
+</div>
+
 <div class="lucky-toast" id="luckyToast">🍀 LUCKY! +50 XSPC!</div>
 
 <script>
@@ -910,12 +1329,17 @@ async function apiGetTop(){try{return await(await fetch(API_URL+'/top')).json();
 
 // PLANETS CONFIG
 const PLANETS = [
-  {minLevel:1,  name:"Earth",   emoji:"🌍", cssClass:"planet-earth",   color:"#1976d2", desc:"Blue planet, cradle of life",        glowColor:"rgba(0,100,255,0.7)"},
-  {minLevel:5,  name:"Mars",    emoji:"🔴", cssClass:"planet-mars",    color:"#d84315", desc:"The Red Planet, harsh and barren",   glowColor:"rgba(255,80,0,0.7)"},
-  {minLevel:15, name:"Jupiter", emoji:"🟠", cssClass:"planet-jupiter", color:"#f57c00", desc:"Gas giant with raging storms",       glowColor:"rgba(255,150,0,0.7)"},
-  {minLevel:25, name:"Neptune", emoji:"🔵", cssClass:"planet-neptune", color:"#00acc1", desc:"Icy giant of the outer solar system",glowColor:"rgba(0,200,220,0.7)"},
-  {minLevel:30, name:"Saturn",  emoji:"💍", cssClass:"planet-saturn",  color:"#f9a825", desc:"Ringed wonder of the cosmos",        glowColor:"rgba(255,200,50,0.7)"},
-  {minLevel:50, name:"Star",    emoji:"⭐", cssClass:"planet-star",    color:"#ffeb3b", desc:"You became a living star!",          glowColor:"rgba(255,220,0,0.9)"},
+  {minLevel:1,  name:"Mercury", emoji:"☿",  cssClass:"planet-mercury", color:"#b0b0b0", desc:"Closest to the Sun, scorching hot", glowColor:"rgba(180,180,180,0.7)"},
+  {minLevel:5,  name:"Venus",   emoji:"♀",  cssClass:"planet-venus",   color:"#ffcc44", desc:"Toxic clouds, hellish surface",     glowColor:"rgba(255,200,0,0.7)"},
+  {minLevel:10, name:"Earth",   emoji:"🌍", cssClass:"planet-earth",   color:"#1976d2", desc:"Blue planet, cradle of life",       glowColor:"rgba(0,100,255,0.7)"},
+  {minLevel:15, name:"Mars",    emoji:"🔴", cssClass:"planet-mars",    color:"#d84315", desc:"The Red Planet, harsh and barren",  glowColor:"rgba(255,80,0,0.7)"},
+  {minLevel:25, name:"Jupiter", emoji:"🟠", cssClass:"planet-jupiter", color:"#f57c00", desc:"Gas giant with raging storms",      glowColor:"rgba(255,150,0,0.7)"},
+  {minLevel:35, name:"Saturn",  emoji:"💍", cssClass:"planet-saturn",  color:"#f9a825", desc:"Ringed wonder of the cosmos",       glowColor:"rgba(255,200,50,0.7)"},
+  {minLevel:40, name:"Uranus",  emoji:"🔵", cssClass:"planet-uranus",  color:"#80cbc4", desc:"The ice giant on its side",         glowColor:"rgba(100,220,210,0.7)"},
+  {minLevel:45, name:"Neptune", emoji:"💙", cssClass:"planet-neptune", color:"#1565c0", desc:"Stormy blue giant of deep space",   glowColor:"rgba(0,80,255,0.7)"},
+  {minLevel:50, name:"Pluto",   emoji:"🩶", cssClass:"planet-pluto",   color:"#9e9e9e", desc:"Dwarf planet at the edge",          glowColor:"rgba(150,150,200,0.7)"},
+  {minLevel:55, name:"Nibiru",  emoji:"🌑", cssClass:"planet-nibiru",  color:"#ff3366", desc:"Mysterious rogue planet",           glowColor:"rgba(255,0,100,0.8)"},
+  {minLevel:60, name:"Sun",     emoji:"☀️", cssClass:"planet-sun",     color:"#ffeb3b", desc:"You became the Sun itself!",        glowColor:"rgba(255,220,0,1.0)"},
 ];
 
 function getPlanetForLevel(lv){
@@ -929,20 +1353,23 @@ const LEVELS=[
   27000,35000,45000,57000,71000,87000,106000,128000,154000,184000,
   220000,262000,311000,368000,434000,510000,597000,696000,808000,935000,
   1080000,1244000,1430000,1641000,1881000,2154000,2464000,2816000,3214000,3664000,
-  4172000,4744000,5387000,6108000,6915000,7816000,8820000,9936000,11175000,12550000
+  4172000,4744000,5387000,6108000,6915000,7816000,8820000,9936000,11175000,12550000,
+  14100000,15800000,17700000,19800000,22100000,24700000,27600000,30800000,34400000,38400000
 ];
 const LEVEL_NAMES=[
   "",
-  "🪨 Newbie","⛏️ Miner","🥉 Bronze","🥈 Silver","🥇 Gold",
-  "💎 Diamond I","💎 Diamond II","💎 Diamond III","👑 King I","👑 King II",
-  "🌟 Legend I","🌟 Legend II","🌟 Legend III","🔥 Master I","🔥 Master II",
-  "🔥 Master III","🚀 Elite I","🚀 Elite II","🚀 Elite III","🚀 Elite IV",
-  "🌌 Cosmic I","🌌 Cosmic II","🌌 Cosmic III","🌌 Cosmic IV","🌌 Cosmic V",
-  "⚡ Titan I","⚡ Titan II","⚡ Titan III","⚡ Titan IV","⚡ Titan V",
-  "🔱 Warlord I","🔱 Warlord II","🔱 Warlord III","🔱 Warlord IV","🔱 Warlord V",
-  "👁️ Overlord I","👁️ Overlord II","👁️ Overlord III","👁️ Overlord IV","👁️ Overlord V",
-  "🌠 Astral I","🌠 Astral II","🌠 Astral III","🌠 Astral IV","🌠 Astral V",
-  "☀️ Solar I","☀️ Solar II","☀️ Solar III","☀️ Solar IV","⭐ XSPACE GOD"
+  "☿ Mercury I","☿ Mercury II","☿ Mercury III","☿ Mercury IV","♀ Venus I",
+  "♀ Venus II","♀ Venus III","♀ Venus IV","♀ Venus V","🌍 Earth I",
+  "🌍 Earth II","🌍 Earth III","🌍 Earth IV","🌍 Earth V","🔴 Mars I",
+  "🔴 Mars II","🔴 Mars III","🔴 Mars IV","🔴 Mars V","🔴 Mars VI",
+  "🔴 Mars VII","🔴 Mars VIII","🔴 Mars IX","🔴 Mars X","🟠 Jupiter I",
+  "🟠 Jupiter II","🟠 Jupiter III","🟠 Jupiter IV","🟠 Jupiter V","🟠 Jupiter VI",
+  "🟠 Jupiter VII","🟠 Jupiter VIII","🟠 Jupiter IX","🟠 Jupiter X","💍 Saturn I",
+  "💍 Saturn II","💍 Saturn III","💍 Saturn IV","💍 Saturn V","💍 Saturn VI",
+  "🔵 Uranus I","🔵 Uranus II","🔵 Uranus III","🔵 Uranus IV","💙 Neptune I",
+  "💙 Neptune II","💙 Neptune III","💙 Neptune IV","💙 Neptune V","🩶 Pluto I",
+  "🩶 Pluto II","🩶 Pluto III","🩶 Pluto IV","🩶 Pluto V","🌑 Nibiru I",
+  "🌑 Nibiru II","🌑 Nibiru III","🌑 Nibiru IV","🌑 Nibiru V","☀️ SUN GOD"
 ];
 const LEAGUES=[
   {name:"Iron",     icon:"⚪",min:0,         color:"#aaa"},
@@ -1013,6 +1440,14 @@ function loadGame(){
   try{const s=localStorage.getItem('xspacecoin_v2');if(s)Object.assign(g,JSON.parse(s));}catch(e){}
   const today=new Date().toDateString();
   if(g.lastTaskReset!==today){g.lastTaskReset=today;g.dailyTasksDone={};g.todaySpins=0;g.loggedIn=1;}
+  // Recalculate level from coins to fix stale level
+  const correctLevel = getLevel(g.coins);
+  if(correctLevel > g.level) g.level = correctLevel;
+  // Recalculate perClick from level + multitap
+  g.perClick = g.level + ((g.multitapLevel||1) - 1);
+  // Fix maxEnergy — should be 500 + level*100 + maxenergy upgrades
+  const baseEnergy = 500 + (g.level - 1) * 100 + ((g.maxenergyLevel||1) - 1) * 500;
+  if(g.maxEnergy < baseEnergy) g.maxEnergy = baseEnergy;
 
   // Offline energy recovery — restore energy based on time away
   if(g.lastSaveTime){
@@ -1169,7 +1604,7 @@ function updatePlanet(level, isInit){
   g.currentPlanetName=planet.name;
 
   // Update CSS class
-  btn.classList.remove('planet-earth','planet-mars','planet-jupiter','planet-neptune','planet-saturn','planet-star');
+  btn.classList.remove('planet-mercury','planet-venus','planet-earth','planet-mars','planet-jupiter','planet-saturn','planet-uranus','planet-neptune','planet-pluto','planet-nibiru','planet-sun');
   btn.classList.add(planet.cssClass);
 
   // Saturn rings
@@ -1197,7 +1632,7 @@ function updatePlanet(level, isInit){
 function closePlanetUnlock(){document.getElementById('planetUnlockOverlay').classList.remove('show');}
 
 // ═══ LEVEL ═══
-function getLevel(c){let l=1;for(let i=0;i<LEVELS.length;i++)if(c>=LEVELS[i])l=i+1;return Math.min(l,50);}
+function getLevel(c){let l=1;for(let i=0;i<LEVELS.length;i++)if(c>=LEVELS[i])l=i+1;return Math.min(l,60);}
 function getLeague(c){let league=LEAGUES[0];for(const l of LEAGUES)if(c>=l.min)league=l;return league;}
 
 function checkLevelUp(){
@@ -1205,9 +1640,7 @@ function checkLevelUp(){
   if(nl>g.level){
     const gained = nl - g.level;
     g.level = nl;
-    // perClick = level bonus + multitap upgrades (не перезаписываем апгрейды!)
-    g.perClick = nl + (g.multitapLevel - 1);
-    // +100 max energy per level
+    g.perClick = nl + ((g.multitapLevel||1) - 1);
     g.maxEnergy += gained * 100;
     g.energy = g.maxEnergy;
     document.getElementById('levelupEmoji').textContent=LEVEL_NAMES[nl].split(' ')[0];
@@ -1216,6 +1649,9 @@ function checkLevelUp(){
     updatePlanet(nl, false);
     renderBoostCards();
 updateKeysUI();
+renderPartnerTasks();
+updatePlayerCounter();
+updateCountdown();
     updatePassive();
     checkKeyReward(g.level - gained, g.level);
   }
@@ -1435,6 +1871,9 @@ async function loadFriends(userId){
 
 // ═══ UI UPDATE ═══
 function updateUI(){
+  // Recalc level only upward, never down
+  const realLv = getLevel(g.coins);
+  if(realLv > g.level) { g.level = realLv; g.perClick = realLv + ((g.multitapLevel||1)-1); }
   const coins=Math.floor(g.coins),lv=g.level;
   const league=getLeague(coins);
   document.getElementById('headerCoins').textContent=coins.toLocaleString();
@@ -1450,7 +1889,7 @@ function updateUI(){
   const pct=Math.max(0,Math.min(100,Math.floor((g.coins-curReq)/(nextReq-curReq)*100)));
   document.getElementById('progressFill').style.width=pct+'%';
   document.getElementById('progressPct').textContent=pct+'%';
-  document.getElementById('progressLabel').textContent=`Lv${lv} → Lv${lv<50?lv+1:'MAX'}`;
+  document.getElementById('progressLabel').textContent=`Lv${lv} → Lv${lv<60?lv+1:'MAX'}`;
   const ePct=g.energy/g.maxEnergy*100;
   document.getElementById('energyFill').style.width=ePct+'%';
   document.getElementById('energyText').textContent=`${Math.floor(g.energy)}/${g.maxEnergy}`;
@@ -1461,14 +1900,33 @@ function updateUI(){
 function showPage(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
-  document.getElementById('page'+page[0].toUpperCase()+page.slice(1)).classList.add('active');
-  document.getElementById('menu'+page[0].toUpperCase()+page.slice(1)).classList.add('active');
+  const pageEl = document.getElementById('page'+page[0].toUpperCase()+page.slice(1));
+  const menuEl = document.getElementById('menu'+page[0].toUpperCase()+page.slice(1));
+  if(pageEl) pageEl.classList.add('active');
+  if(menuEl) menuEl.classList.add('active');
   if(page==='top')renderTop();
   if(page==='boosts'){updateBoostsUI();renderBoostCards();}
   if(page==='cards'){renderFullCards();}
-  if(page==='keys'){updateKeysUI();}
+  if(page==='keys'){
+    updateKeysUI();
+    const today = new Date().toDateString();
+    const wsik = document.getElementById('wheelStatusInKeys');
+    if(wsik) { wsik.textContent = g.lastSpinDate===today?'🔒 Tomorrow':'✅ Ready!'; wsik.style.color=g.lastSpinDate===today?'#4a6080':'#00ff88'; }
+    const ack = document.getElementById('achieveCountKeys');
+    if(ack) ack.textContent = `${Object.keys(g.achievements||{}).length}/20 done`;
+    const mgk = document.getElementById('miniGamesLeftKeys');
+    if(mgk) { const left=3-(g.miniGamesDate===today?g.miniGamesUsed||0:0); mgk.textContent=`${left} games left`; mgk.style.color=left>0?'#00ff88':'#4a6080'; }
+    // Show TON wallet status
+    const tonBtn = document.getElementById('tonBtn');
+    if(tonBtn) tonBtn.style.borderColor = g.tonWallet?'rgba(0,255,136,0.5)':'rgba(0,136,204,0.3)';
+  }
   if(page==='stats'){renderStats();}
   if(page==='combo'){comboSelected=[];renderCombo();}
+  if(page==='mine'){initMinePageEffects();}
+  if(page==='earn'){renderPartnerTasks();}
+  if(page==='whitepaper'){updateCountdown();updateWhitepaperProgress();}
+  if(page==='achieve'){renderAchievements();}
+  if(page==='mini'){startMiniGame();}
   if(page==='wheel'){renderTasks();renderWheelLegend();updateWheelBtn();}
 
 }
@@ -2276,6 +2734,331 @@ function checkKeyReward(oldLevel, newLevel) {
     g.keys += (newMilestone - oldMilestone);
     showFloat(`🔑 +${newMilestone - oldMilestone} KEY!`, window.innerWidth/2, 150, '#FFD700');
     updateKeysUI();
+  }
+}
+
+
+
+// ═══ WHITEPAPER & TOKEN LAUNCH ═══
+const LAUNCH_DATE = new Date('2026-12-01T00:00:00Z');
+
+function updateCountdown() {
+  const now = new Date();
+  const diff = LAUNCH_DATE - now;
+  if(diff <= 0) {
+    ['cdDays','cdHours','cdMins','cdSecs'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent='00'; });
+    const lt = document.getElementById('launchDateText');
+    if(lt) lt.textContent = '🚀 LAUNCHED!';
+    return;
+  }
+  const days = Math.floor(diff/86400000);
+  const hours = Math.floor((diff%86400000)/3600000);
+  const mins = Math.floor((diff%3600000)/60000);
+  const secs = Math.floor((diff%60000)/1000);
+  const el = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=String(v).padStart(2,'0'); };
+  el('cdDays', String(days).padStart(3,'0'));
+  el('cdHours', hours);
+  el('cdMins', mins);
+  el('cdSecs', secs);
+  const dMain = document.getElementById('launchDaysMain');
+  if(dMain) dMain.textContent = days;
+}
+
+function updateWhitepaperProgress() {
+  const coins = Math.floor(g.coins);
+  const required = 100000;
+  const pct = Math.min(100, (coins/required*100)).toFixed(1);
+  const el = id => document.getElementById(id);
+  if(el('wpBalance')) el('wpBalance').textContent = coins.toLocaleString() + ' XSPC';
+  if(el('wpProgressBar')) el('wpProgressBar').style.width = pct + '%';
+  if(el('wpProgressText')) el('wpProgressText').textContent = pct + '% to withdrawal';
+  const remaining = Math.max(0, required - coins);
+  if(el('wpRemaining')) el('wpRemaining').textContent = remaining > 0 ? remaining.toLocaleString() + ' more needed' : '✅ Ready to withdraw!';
+}
+
+// Fake but convincing player counter based on time
+function updatePlayerCounter() {
+  const base = 12847;
+  const hoursSinceLaunch = Math.floor((Date.now() - new Date('2026-05-31').getTime()) / 3600000);
+  const count = base + hoursSinceLaunch * 3 + Math.floor(Math.random() * 10);
+  const el = document.getElementById('playerCounter');
+  if(el) el.textContent = count.toLocaleString();
+}
+
+setInterval(updateCountdown, 1000);
+setInterval(updatePlayerCounter, 30000);
+
+// ═══ PARTNER TASKS ═══
+const PARTNER_TASKS = [
+  {id:'tg_channel',  name:'Join XSPACECOIN Channel', icon:'📢', desc:'Subscribe to our Telegram channel', reward:5000,  rewardKey:0, url:'https://t.me/xspacecoin',     type:'telegram'},
+  {id:'tg_chat',     name:'Join Community Chat',     icon:'💬', desc:'Join our community discussion',    reward:3000,  rewardKey:0, url:'https://t.me/xspacecoin_chat', type:'telegram'},
+  {id:'share_game',  name:'Share the Game',          icon:'📤', desc:'Share XSPACECOIN with friends',    reward:2000,  rewardKey:1, url:'',                              type:'share'},
+  {id:'invite_3',    name:'Invite 3 Friends',        icon:'👥', desc:'Have 3 referrals',                reward:10000, rewardKey:1, url:'',                              type:'referral', need:3},
+  {id:'invite_10',   name:'Invite 10 Friends',       icon:'🚀', desc:'Have 10 referrals',               reward:50000, rewardKey:3, url:'',                              type:'referral', need:10},
+  {id:'reach_lv10',  name:'Reach Level 10',          icon:'🏆', desc:'Become a Diamond miner',          reward:8000,  rewardKey:1, url:'',                              type:'level', need:10},
+  {id:'reach_lv25',  name:'Reach Level 25',          icon:'🌌', desc:'Reach Cosmic rank',               reward:30000, rewardKey:2, url:'',                              type:'level', need:25},
+];
+
+const NEWS_ITEMS = [
+  {date:'Today', icon:'🚀', title:'XSPACECOIN Launch!', text:'Welcome to XSPACECOIN — the space mining game on Telegram. Invite friends and earn XSPC!'},
+  {date:'Coming Soon', icon:'🌐', title:'TON Token Launch', text:'XSPC token will be launched on TON blockchain. Connect your wallet now to prepare!'},
+  {date:'Coming Soon', icon:'🏆', title:'Season 2', text:'Season 2 will bring new planets, clans, and PvP battles. Stay tuned!'},
+  {date:'Coming Soon', icon:'💎', title:'NFT Planets', text:'Exclusive NFT planet skins will be available for top players!'},
+];
+
+function renderPartnerTasks() {
+  const done = g.partnerTasksDone || {};
+  const list = document.getElementById('partnerTasksList');
+  if(!list) return;
+
+  list.innerHTML = PARTNER_TASKS.map(t => {
+    const isDone = done[t.id];
+    // Check auto-completable tasks
+    let autoComplete = false;
+    if(t.type === 'referral' && (g.friends||0) >= t.need) autoComplete = true;
+    if(t.type === 'level' && g.level >= t.need) autoComplete = true;
+    const canClaim = autoComplete && !isDone;
+
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:${isDone?'rgba(0,255,136,0.04)':'var(--card)'};border:1px solid ${isDone?'rgba(0,255,136,0.2)':'var(--border)'};border-radius:14px;margin-bottom:8px;">
+      <div style="font-size:28px;flex-shrink:0;">${t.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:700;">${t.name}</div>
+        <div style="font-size:11px;color:#4a6080;margin-top:2px;">${t.desc}</div>
+        <div style="font-size:11px;color:#FFD700;margin-top:2px;">+${t.reward.toLocaleString()} 🪐 ${t.rewardKey>0?`+${t.rewardKey} 🔑`:''}</div>
+      </div>
+      <div style="flex-shrink:0;">
+        ${isDone
+          ? '<span style="color:#00ff88;font-size:20px;">✅</span>'
+          : canClaim
+            ? `<button onclick="claimPartnerTask('${t.id}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;font-weight:700;font-size:12px;">CLAIM</button>`
+            : t.type==='telegram'||t.type==='share'
+              ? `<button onclick="doPartnerTask('${t.id}','${t.url}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:rgba(0,245,255,0.1);border:1px solid var(--border);color:var(--text);font-weight:700;font-size:12px;">GO →</button>`
+              : `<span style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;">${t.type==='referral'?`${g.friends||0}/${t.need}`:`Lv${g.level}/${t.need}`}</span>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+
+  // Render news
+  const news = document.getElementById('newsFeed');
+  if(news) {
+    news.innerHTML = NEWS_ITEMS.map(n => `
+      <div style="display:flex;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;">
+        <div style="font-size:28px;flex-shrink:0;">${n.icon}</div>
+        <div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+            <div style="font-size:13px;font-weight:700;">${n.title}</div>
+            <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">${n.date}</div>
+          </div>
+          <div style="font-size:12px;color:#4a6080;line-height:1.4;">${n.text}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function doPartnerTask(id, url) {
+  if(!g.partnerTasksDone) g.partnerTasksDone = {};
+  if(!g.partnerTasksPending) g.partnerTasksPending = {};
+  g.partnerTasksPending[id] = Date.now();
+  saveGame();
+  if(url) {
+    if(window.Telegram?.WebApp) window.Telegram.WebApp.openTelegramLink(url);
+    else window.open(url, '_blank');
+  }
+  // After 3 seconds enable claim
+  setTimeout(() => {
+    const task = PARTNER_TASKS.find(t=>t.id===id);
+    if(task && !g.partnerTasksDone[id]) {
+      g.partnerTasksDone[id] = true;
+      g.coins += task.reward;
+      if(task.rewardKey > 0) g.keys = (g.keys||0) + task.rewardKey;
+      showFloat(`+${task.reward.toLocaleString()} XSPC!`, window.innerWidth/2, 200, '#FFD700');
+      updateUI(); updateKeysUI(); saveGame();
+      renderPartnerTasks();
+    }
+  }, 3000);
+}
+
+function claimPartnerTask(id) {
+  const task = PARTNER_TASKS.find(t=>t.id===id);
+  if(!task) return;
+  if(!g.partnerTasksDone) g.partnerTasksDone = {};
+  g.partnerTasksDone[id] = true;
+  g.coins += task.reward;
+  if(task.rewardKey > 0) g.keys = (g.keys||0) + task.rewardKey;
+  showFloat(`+${task.reward.toLocaleString()} XSPC!`, window.innerWidth/2, 200, '#FFD700');
+  updateUI(); updateKeysUI(); saveGame();
+  renderPartnerTasks();
+}
+
+// ═══ ACHIEVEMENTS PAGE ═══
+function renderAchievements() {
+  const list = document.getElementById('achieveList');
+  if(!list) return;
+  const done = g.achievements || {};
+  const count = Object.keys(done).length;
+  const countEl = document.getElementById('achieveCount');
+  if(countEl) countEl.textContent = `${count}/${ACHIEVEMENTS.length}`;
+
+  list.innerHTML = ACHIEVEMENTS.map(a => {
+    const isDone = done[a.id];
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:${isDone?'rgba(255,215,0,0.06)':'var(--card)'};border:1px solid ${isDone?'rgba(255,215,0,0.25)':'var(--border)'};border-radius:14px;margin-bottom:8px;">
+      <div style="font-size:28px;">${a.name.split(' ')[0]}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:700;">${a.name}</div>
+        <div style="font-size:11px;color:#4a6080;margin-top:2px;">${a.desc}</div>
+        <div style="font-size:11px;color:#FFD700;margin-top:2px;">+${a.reward.toLocaleString()} 🪐</div>
+      </div>
+      <div>${isDone?'<span style="font-size:24px;">✅</span>':'<span style="font-size:20px;opacity:0.3;">🔒</span>'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ TON WALLET ═══
+function openTon() {
+  const overlay = document.getElementById('tonOverlay');
+  if(overlay) overlay.classList.add('show');
+  const input = document.getElementById('tonAddressInput');
+  if(input && g.tonWallet) input.value = g.tonWallet;
+  const saved = document.getElementById('tonSavedAddr');
+  if(saved && g.tonWallet) saved.textContent = `✅ Saved: ${g.tonWallet.slice(0,8)}...${g.tonWallet.slice(-6)}`;
+  const status = document.getElementById('tonWalletStatus');
+  if(status) status.textContent = g.tonWallet ? `✅ ${g.tonWallet.slice(0,8)}...${g.tonWallet.slice(-6)}` : 'Connect to prepare for token withdrawal';
+}
+function closeTon() { document.getElementById('tonOverlay')?.classList.remove('show'); }
+function saveTonWallet() {
+  const input = document.getElementById('tonAddressInput');
+  const addr = input?.value?.trim();
+  if(!addr || addr.length < 10) { showToast("Enter valid TON address!"); return; }
+  g.tonWallet = addr;
+  saveGame();
+  const saved = document.getElementById('tonSavedAddr');
+  if(saved) saved.textContent = `✅ Saved: ${addr.slice(0,8)}...${addr.slice(-6)}`;
+  const status = document.getElementById('tonWalletStatus');
+  if(status) status.textContent = `✅ ${addr.slice(0,8)}...${addr.slice(-6)}`;
+  showToast("✅ Wallet saved!");
+}
+
+// ═══ MINI GAME ═══
+let miniSecret = 0, miniAttempts = 0, miniMaxAttempts = 7, miniGameOver = false;
+
+function startMiniGame() {
+  const today = new Date().toDateString();
+  if(g.miniGamesDate !== today) { g.miniGamesDate = today; g.miniGamesUsed = 0; }
+  const left = 3 - (g.miniGamesUsed || 0);
+  const leftEl = document.getElementById('miniGamesLeft');
+  if(leftEl) leftEl.textContent = left;
+  if(left <= 0) {
+    document.getElementById('miniGameMsg').textContent = 'No games left today! Come back tomorrow.';
+    document.getElementById('miniGameEmoji').textContent = '😴';
+    document.getElementById('miniGuessBtn').style.display = 'none';
+    document.getElementById('miniGuessInput').style.display = 'none';
+    return;
+  }
+  miniSecret = Math.floor(Math.random() * 100) + 1;
+  miniAttempts = 0;
+  miniGameOver = false;
+  document.getElementById('miniGameMsg').textContent = "I'm thinking of a number between 1 and 100";
+  document.getElementById('miniGameEmoji').textContent = '🤔';
+  document.getElementById('miniGuessInput').value = '';
+  document.getElementById('miniGuessInput').style.display = 'block';
+  document.getElementById('miniGuessBtn').style.display = 'inline-block';
+  document.getElementById('miniGuessBtn').textContent = 'GUESS!';
+  document.getElementById('miniHintText').textContent = '';
+  document.getElementById('miniAttemptsLeft').textContent = `Attempts: 0/${miniMaxAttempts}`;
+}
+
+function submitMiniGuess() {
+  if(miniGameOver) { startMiniGame(); return; }
+  const input = document.getElementById('miniGuessInput');
+  const guess = parseInt(input.value);
+  if(isNaN(guess) || guess < 1 || guess > 100) { showToast("Enter a number 1-100!"); return; }
+  miniAttempts++;
+  document.getElementById('miniAttemptsLeft').textContent = `Attempts: ${miniAttempts}/${miniMaxAttempts}`;
+
+  if(guess === miniSecret) {
+    // WIN
+    miniGameOver = true;
+    g.miniGamesUsed = (g.miniGamesUsed||0) + 1;
+    const rewards = [10000,10000,5000,5000,5000,2000,500];
+    const reward = rewards[miniAttempts-1] || 500;
+    g.coins += reward;
+    document.getElementById('miniGameEmoji').textContent = '🎉';
+    document.getElementById('miniGameMsg').textContent = `Correct! It was ${miniSecret}!`;
+    document.getElementById('miniHintText').textContent = `+${reward.toLocaleString()} XSPC earned in ${miniAttempts} tries!`;
+    document.getElementById('miniHintText').style.color = '#00ff88';
+    document.getElementById('miniGuessBtn').textContent = 'Play Again';
+    document.getElementById('miniGuessInput').style.display = 'none';
+    const leftEl = document.getElementById('miniGamesLeft');
+    if(leftEl) leftEl.textContent = 3-(g.miniGamesUsed||0);
+    showFloat(`+${reward.toLocaleString()} XSPC!`, window.innerWidth/2, 200, '#FFD700');
+    updateUI(); saveGame();
+  } else if(miniAttempts >= miniMaxAttempts) {
+    // LOSE
+    miniGameOver = true;
+    g.miniGamesUsed = (g.miniGamesUsed||0) + 1;
+    document.getElementById('miniGameEmoji').textContent = '😔';
+    document.getElementById('miniGameMsg').textContent = `Game over! It was ${miniSecret}`;
+    document.getElementById('miniHintText').textContent = 'Better luck next time!';
+    document.getElementById('miniHintText').style.color = '#ff3366';
+    document.getElementById('miniGuessBtn').textContent = 'Try Again';
+    document.getElementById('miniGuessInput').style.display = 'none';
+    const leftEl = document.getElementById('miniGamesLeft');
+    if(leftEl) leftEl.textContent = 3-(g.miniGamesUsed||0);
+    saveGame();
+  } else {
+    // HINT
+    const hint = guess < miniSecret ? '📈 Too low! Go higher' : '📉 Too high! Go lower';
+    const diff = Math.abs(guess - miniSecret);
+    const temp = diff <= 5 ? '🔥 Very hot!' : diff <= 15 ? '♨️ Warm' : diff <= 30 ? '❄️ Cold' : '🧊 Very cold!';
+    document.getElementById('miniHintText').textContent = `${hint} — ${temp}`;
+    document.getElementById('miniHintText').style.color = diff<=5?'#ff3366':diff<=15?'#ff9500':'#4a6080';
+    document.getElementById('miniGameEmoji').textContent = diff<=5?'🔥':diff<=15?'😏':'🤔';
+    input.value = '';
+  }
+}
+
+
+// ═══ MINE PAGE EFFECTS ═══
+function initMinePageEffects() {
+  // Star particles for top block
+  const wrap = document.getElementById('starParticlesWrap');
+  if(wrap && !wrap._initialized) {
+    wrap._initialized = true;
+    setInterval(() => {
+      const star = document.createElement('div');
+      star.textContent = ['⭐','✨','🌟','💫'][Math.floor(Math.random()*4)];
+      star.style.cssText = `position:absolute;font-size:${8+Math.random()*8}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:starFloat ${1+Math.random()*1.5}s ease-out forwards;pointer-events:none;`;
+      wrap.appendChild(star);
+      setTimeout(() => star.remove(), 2500);
+    }, 600);
+  }
+
+  // Update earn tasks preview
+  const earnPrev = document.getElementById('earnTasksPreview');
+  if(earnPrev) {
+    const done = g.partnerTasksDone || {};
+    const remaining = PARTNER_TASKS.filter(t => !done[t.id]).length;
+    if(remaining > 0) {
+      earnPrev.textContent = `${remaining} tasks available → earn XSPC & XKEY`;
+      earnPrev.style.color = '#00ff88';
+    } else {
+      earnPrev.textContent = '✅ All tasks completed!';
+      earnPrev.style.color = '#4a6080';
+    }
+  }
+
+  // Update TON button on mine page
+  const tonMain = document.getElementById('tonBtnMain');
+  const tonStatus = document.getElementById('tonStatusMain');
+  if(tonMain) { tonMain.textContent = g.tonWallet ? '✅' : '🌐'; tonMain.style.borderColor = g.tonWallet?'rgba(0,255,136,0.5)':'rgba(0,136,204,0.4)'; }
+  if(tonStatus) tonStatus.textContent = g.tonWallet ? 'LINKED' : 'TON';
+
+  // Update top preview with player count from leaderboard
+  const topPrev = document.getElementById('topPreviewText');
+  if(topPrev && g.friends !== undefined) {
+    topPrev.textContent = `${g.friends} friends competing • tap to see rankings`;
   }
 }
 
