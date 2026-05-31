@@ -1131,6 +1131,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     </div>
   </div>
 
+
+    <!-- PROMO CODE block in Keys page -->
+    <div class="section-title">🎁 Promo Code</div>
+    <div style="background:linear-gradient(135deg,rgba(123,47,255,0.08),rgba(0,245,255,0.05));border:1px solid rgba(123,47,255,0.25);border-radius:14px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:12px;color:#4a6080;margin-bottom:10px;">Enter promo code to get bonus XSPC or XKEY</div>
+      <div style="display:flex;gap:8px;">
+        <input id="promoInput" placeholder="Enter code..." style="flex:1;padding:10px 14px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;font-family:Orbitron,monospace;text-transform:uppercase;">
+        <button onclick="redeemPromo()" style="padding:10px 16px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:10px;color:#000;font-weight:700;font-size:13px;cursor:pointer;">GO</button>
+      </div>
+      <div id="promoResult" style="margin-top:8px;font-size:12px;text-align:center;"></div>
+    </div>
   <!-- How to earn keys -->
   <div class="section-title">💡 How to Earn XKEY</div>
   <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
@@ -1206,12 +1217,52 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 <!-- FRIENDS -->
 <div class="page" id="pageFriends">
-  <div class="earn-card">
+  <!-- Beautiful referral card -->
+  <div style="background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(123,47,255,0.08));border:1px solid rgba(0,245,255,0.25);border-radius:20px;padding:20px;margin-bottom:14px;text-align:center;">
+    <div style="font-size:40px;margin-bottom:8px;">👥</div>
+    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;">INVITE & EARN</div>
+    <div style="font-size:12px;color:#4a6080;margin-bottom:14px;">Share your link and earn together</div>
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:16px;">
+      <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:14px;padding:12px 20px;text-align:center;">
+        <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="friendCount">0</div>
+        <div style="font-size:10px;color:#4a6080;margin-top:2px;font-family:Orbitron,monospace;">FRIENDS</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:14px;padding:12px 20px;text-align:center;">
+        <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#00ff88;" id="friendEarnings">0</div>
+        <div style="font-size:10px;color:#4a6080;margin-top:2px;font-family:Orbitron,monospace;">XSPC EARNED</div>
+      </div>
+    </div>
+    <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%;" id="refLink">Loading...</div>
+      <button onclick="copyRefLink()" style="padding:6px 14px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:8px;color:#000;font-weight:700;font-size:12px;cursor:pointer;flex-shrink:0;">COPY</button>
+    </div>
+    <button onclick="shareRefLink()" style="width:100%;padding:14px;background:linear-gradient(135deg,#00cc66,#00ff88);border:none;border-radius:14px;color:#000;font-weight:700;font-size:15px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px;">🚀 SHARE WITH FRIENDS</button>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:14px;">
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:20px;margin-bottom:4px;">🪐</div>
+      <div style="font-size:13px;font-weight:700;color:#FFD700;">+500 XSPC</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">per referral</div>
+    </div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:20px;margin-bottom:4px;">🔑</div>
+      <div style="font-size:13px;font-weight:700;color:#FFD700;">+1 XKEY</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">per referral</div>
+    </div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:20px;margin-bottom:4px;">💰</div>
+      <div style="font-size:13px;font-weight:700;color:#FFD700;">10%</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">from earnings</div>
+    </div>
+  </div>
+
+  <div class="earn-card" style="display:none;">
     <h3>👥 Invite & Earn XSPC</h3>
     <p>+100 XSPC for each friend you invite</p>
     <p>+20% bonus from all their earnings forever</p>
     <div class="earn-nums">
-      <div class="earn-num"><div class="n" id="friendCount">0</div><div class="l">Friends</div></div>
+      <div class="earn-num"><div class="n" id="friendCount2">0</div><div class="l">Friends</div></div>
       <div class="earn-num"><div class="n" id="friendEarned">0</div><div class="l">Earned</div></div>
     </div>
   </div>
@@ -1225,10 +1276,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <!-- BOTTOM MENU -->
 <div class="bottom-menu">
   <div class="menu-item active" id="menuMine" onclick="showPage('mine')"><span class="m-icon" id="menuPlanetIcon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:22px;height:22px;vertical-align:middle;border-radius:50%;display:block;margin:0 auto;"></span><span>Mine</span></div>
-  <div class="menu-item" id="menuKeys" onclick="showPage('keys')"><span class="m-icon">🔑</span><span>Keys</span></div>
+  <div class="menu-item" id="menuKeys" onclick="showPage('keys')" style="position:relative;"><span class="m-icon">🔑</span><span>Keys</span><span id="chestBadge" style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:#00ff88;border-radius:50%;"></span></div>
   <div class="menu-item" id="menuBoosts" onclick="showPage('boosts')"><span class="m-icon">⚡</span><span>Boosts</span></div>
   <div class="menu-item" id="menuCards" onclick="showPage('cards')"><span class="m-icon">📈</span><span>Cards</span></div>
-  <div class="menu-item" id="menuCombo" onclick="showPage('combo')"><span class="m-icon">⚡</span><span>Combo</span></div>
+  <div class="menu-item" id="menuCombo" onclick="showPage('combo')" style="position:relative;"><span class="m-icon">⚡</span><span>Combo</span><span id="comboNewBadge" style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:#ff3366;border-radius:50%;"></span></div>
 
 
 
@@ -1913,7 +1964,19 @@ function showPage(page){
     const mgk = document.getElementById('miniGamesLeftKeys');
     if(mgk) { const left=3-(g.miniGamesDate===today?g.miniGamesUsed||0:0); mgk.textContent=`${left} games left`; mgk.style.color=left>0?'#00ff88':'#4a6080'; }
     // Show TON wallet status
-    const tonBtn = document.getElementById('tonBtn');
+    // Chest badge
+  const chestBadge = document.getElementById('chestBadge');
+  if(chestBadge) {
+    const today = new Date().toDateString();
+    chestBadge.style.display = g.lastChestDate !== today ? 'block' : 'none';
+  }
+  // Combo badge
+  const comboBadge = document.getElementById('comboNewBadge');
+  if(comboBadge) {
+    const today = new Date().toDateString();
+    comboBadge.style.display = g.lastComboDate !== today ? 'block' : 'none';
+  }
+  const tonBtn = document.getElementById('tonBtn');
     if(tonBtn) tonBtn.style.borderColor = g.tonWallet?'rgba(0,255,136,0.5)':'rgba(0,136,204,0.3)';
   }
   if(page==='stats'){renderStats();}
@@ -2735,6 +2798,74 @@ function checkKeyReward(oldLevel, newLevel) {
 
 
 
+
+// ═══ PROMO CODES ═══
+const PROMO_CODES = {
+  'XSPACE2026':  {reward:'coins', value:10000, msg:'+10,000 XSPC! 🪐'},
+  'LAUNCH':      {reward:'coins', value:25000, msg:'+25,000 XSPC! 🚀'},
+  'XKEY2026':    {reward:'key',   value:3,     msg:'+3 XKEY! 🔑'},
+  'SPACE100':    {reward:'coins', value:5000,  msg:'+5,000 XSPC! 🌌'},
+  'WELCOMEGIFT': {reward:'both',  value:5000, value2:1, msg:'+5,000 XSPC + 1 XKEY! 🎁'},
+};
+
+function redeemPromo() {
+  const input = document.getElementById('promoInput');
+  const result = document.getElementById('promoResult');
+  if(!input || !result) return;
+  const code = input.value.trim().toUpperCase();
+  if(!code) { result.textContent = '⚠️ Enter a promo code'; result.style.color='#ff9500'; return; }
+
+  if(!g.usedPromos) g.usedPromos = {};
+  if(g.usedPromos[code]) { result.textContent = '❌ Already used!'; result.style.color='#ff3366'; return; }
+
+  const promo = PROMO_CODES[code];
+  if(!promo) { result.textContent = '❌ Invalid code'; result.style.color='#ff3366'; return; }
+
+  g.usedPromos[code] = true;
+  if(promo.reward === 'coins') g.coins += promo.value;
+  else if(promo.reward === 'key') g.keys = (g.keys||0) + promo.value;
+  else if(promo.reward === 'both') { g.coins += promo.value; g.keys = (g.keys||0) + promo.value2; }
+
+  result.textContent = '✅ ' + promo.msg;
+  result.style.color = '#00ff88';
+  input.value = '';
+  showFloat(promo.msg, window.innerWidth/2, 200, '#FFD700');
+  updateUI(); updateKeysUI(); saveGame();
+}
+
+// ═══ REFERRAL FUNCTIONS ═══
+function copyRefLink() {
+  const link = getRefLink();
+  if(navigator.clipboard) navigator.clipboard.writeText(link);
+  showToast('✅ Link copied!');
+}
+
+function shareRefLink() {
+  const link = getRefLink();
+  const text = `🚀 Join me in XSPACECOIN — the space mining game on Telegram! Mine XSPC coins and get ready for the token launch! ${link}`;
+  if(window.Telegram?.WebApp) {
+    window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`);
+  } else {
+    if(navigator.clipboard) navigator.clipboard.writeText(text);
+    showToast('✅ Copied to clipboard!');
+  }
+}
+
+// ═══ WEEKLY TOURNAMENT ═══
+function getWeekNumber() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 4 - (d.getDay()||7));
+  const yearStart = new Date(d.getFullYear(),0,1);
+  return Math.ceil((((d-yearStart)/86400000)+1)/7);
+}
+
+function getDaysUntilMonday() {
+  const d = new Date();
+  const day = d.getDay();
+  return day === 1 ? 7 : (8 - day) % 7;
+}
+
 // ═══ WHITEPAPER & TOKEN LAUNCH ═══
 const LAUNCH_DATE = new Date('2026-12-01T00:00:00Z');
 
@@ -3119,6 +3250,8 @@ async function initUser(){
   g.telegramId=userId;
   await apiRegister(userId,username,fullName,referrerId);
   document.getElementById('refLink').textContent=getRefLink();
+  const fe = document.getElementById('friendEarnings');
+  if(fe) fe.textContent = ((g.friends||0)*500).toLocaleString();
   loadFriends(userId);
 }
 
@@ -3140,7 +3273,20 @@ loadGame();
         let rate = data.level || 1;
         BOOST_CARDS.forEach(c => { rate += c.baseBonus * (data.boostCards[c.id]||0); });
         const earned = Math.floor(rate * hrs);
-        if(earned > 0) passiveAccumulated = earned;
+        if(earned > 0) {
+          passiveAccumulated = earned;
+          if(hrs >= 0.5) {
+            setTimeout(() => {
+              const t = document.getElementById('luckyToast');
+              if(t) {
+                const hrsStr = hrs >= 1 ? Math.floor(hrs)+'h' : Math.floor(hrs*60)+'m';
+                t.textContent = `⛏️ Offline ${hrsStr}: +${earned.toLocaleString()} XSPC accumulated!`;
+                t.classList.remove('show'); void t.offsetWidth; t.classList.add('show');
+                setTimeout(()=>t.classList.remove('show'), 3500);
+              }
+            }, 2500);
+          }
+        }
       }
     }catch(e){}
   }
