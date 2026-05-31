@@ -193,3 +193,26 @@ def get_stats():
     total_coins = c.fetchone()["total_coins"] or 0
     conn.close()
     return {"total_players": total, "total_coins": int(total_coins)}
+
+# ═══ STARS PAYMENT INVOICES ═══
+@app.get("/invoice/{package_type}")
+def create_invoice(package_type: str):
+    """Returns invoice link for Telegram Stars payment"""
+    PACKAGES = {
+        'booster':     {'title': '⚡ Booster Pack',  'description': 'x1.5 all bonuses for 7 days + 5 XKEY', 'amount': 50},
+        'vip_month':   {'title': '👑 VIP Month',     'description': 'x2 all bonuses for 30 days + 20 XKEY', 'amount': 200},
+        'galaxy_pass': {'title': '🌌 Galaxy Pass',   'description': 'Permanent x2 bonus + 100 XKEY',        'amount': 1000},
+        'xspc_pack':   {'title': '🪐 XSPC Pack',     'description': '+50,000 XSPC instantly',               'amount': 30},
+        'key_pack':    {'title': '🔑 Key Pack',      'description': '+10 XKEY instantly',                   'amount': 25},
+        'energy_pack': {'title': '⚡ Energy Pack',   'description': 'Unlimited energy for 24 hours',        'amount': 15},
+    }
+    pkg = PACKAGES.get(package_type)
+    if not pkg:
+        return {"error": "unknown package"}
+    return {
+        "title": pkg['title'],
+        "description": pkg['description'],
+        "currency": "XTR",
+        "amount": pkg['amount'],
+        "payload": package_type
+    }
