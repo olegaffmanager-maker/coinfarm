@@ -412,6 +412,15 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 }
 @keyframes sunPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.3)}}
 @keyframes sunRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.planet-andromeda{background:radial-gradient(circle at 35% 35%,#c8e8ff,#4a90d9,#1a3a6a);box-shadow:0 0 60px rgba(100,180,255,0.8),0 0 120px rgba(100,180,255,0.4);}
+.planet-darkstar{background:radial-gradient(circle at 35% 35%,#6666aa,#222244,#050510);box-shadow:0 0 60px rgba(50,50,120,0.9),0 0 120px rgba(50,50,120,0.5);}
+.planet-blackhole{background:radial-gradient(circle at 40% 40%,#440066,#1a0033,#000000);box-shadow:0 0 80px rgba(80,0,120,0.95),0 0 160px rgba(80,0,120,0.5);}
+.planet-hypernova{background:radial-gradient(circle at 35% 30%,#ffff88,#ff8c00,#cc2200);box-shadow:0 0 80px rgba(255,140,0,0.9),0 0 160px rgba(255,140,0,0.5);}
+.planet-laniakea{background:radial-gradient(circle at 35% 35%,#88ff88,#00cc44,#004422);box-shadow:0 0 60px rgba(0,200,80,0.8),0 0 120px rgba(0,200,80,0.4);}
+.planet-corona{background:radial-gradient(circle at 35% 30%,#ffffff,#ffd700,#cc8800);box-shadow:0 0 80px rgba(255,215,0,0.9),0 0 160px rgba(255,215,0,0.5);}
+.planet-dimension{background:radial-gradient(circle at 35% 35%,#ff88ff,#cc00ff,#440066);box-shadow:0 0 80px rgba(180,0,255,0.9),0 0 160px rgba(180,0,255,0.5);}
+.planet-void{background:radial-gradient(circle at 40% 40%,#660088,#220033,#000000);box-shadow:0 0 80px rgba(100,0,150,0.95),0 0 160px rgba(100,0,150,0.5);}
+.planet-omni{background:radial-gradient(circle at 35% 30%,#ffffff,#ffffaa,#ffff00);box-shadow:0 0 100px rgba(255,255,255,0.99),0 0 200px rgba(255,255,200,0.7);}
 
 @keyframes planetSpin{
   from{background-position:0% 50%,0 0,0 0,0 0,0 0,0 0,0 0}
@@ -632,6 +641,18 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 </div>
 
 <!-- MINE PAGE -->
+
+<!-- EXPEDITION OVERLAY -->
+<div id="expeditionOverlay" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(135deg,#0a0020,#050a1a);border:1px solid rgba(0,245,255,0.4);border-radius:24px;padding:24px;max-width:380px;width:100%;text-align:center;">
+    <div style="font-size:56px;margin-bottom:10px;" id="expIcon">🛸</div>
+    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#00f5ff;margin-bottom:8px;" id="expTitle">Expedition!</div>
+    <div style="font-size:13px;color:#4a6080;margin-bottom:20px;" id="expDesc">A mysterious event...</div>
+    <div id="expButtons"></div>
+    <button onclick="document.getElementById('expeditionOverlay').style.display='none';g.lastExpedition=Date.now();expeditionAvailable=false;" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:12px;cursor:pointer;margin-top:4px;">Skip for now</button>
+  </div>
+</div>
+
 <div class="page active" id="pageMine">
   <div class="planet-name-badge" id="planetNameBadge">🌍 EARTH</div>
   <div class="main-content">
@@ -1349,6 +1370,32 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
   <!-- DIFFICULTY SELECTOR -->
   <div id="pvpSetup">
+    <!-- Planet Attack -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">🌍 ATTACK PLANETS</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;">
+          <div style="font-size:22px;">🤖</div><div style="flex:1;"><div style="font-size:12px;font-weight:700;">StarMiner_99</div><div style="font-size:10px;color:#4a6080;">Reward: +5,000 XSPC</div></div>
+          <button onclick="attackBot(0)" style="padding:6px 12px;background:linear-gradient(135deg,#ff3366,#ff9500);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer;">⚔️</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;">
+          <div style="font-size:22px;">👑</div><div style="flex:1;"><div style="font-size:12px;font-weight:700;">CosmicKing</div><div style="font-size:10px;color:#4a6080;">Reward: +20,000 XSPC</div></div>
+          <button onclick="attackBot(1)" style="padding:6px 12px;background:linear-gradient(135deg,#ff3366,#ff9500);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer;">⚔️</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;">
+          <div style="font-size:22px;">🌀</div><div style="flex:1;"><div style="font-size:12px;font-weight:700;">NebulaBoss</div><div style="font-size:10px;color:#4a6080;">Reward: +80,000 XSPC</div></div>
+          <button onclick="attackBot(2)" style="padding:6px 12px;background:linear-gradient(135deg,#ff3366,#ff9500);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer;">⚔️</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;">
+          <div style="font-size:22px;">🌌</div><div style="flex:1;"><div style="font-size:12px;font-weight:700;">GalaxyLord</div><div style="font-size:10px;color:#4a6080;">Reward: +300,000 XSPC</div></div>
+          <button onclick="attackBot(3)" style="padding:6px 12px;background:linear-gradient(135deg,#ff3366,#ff9500);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer;">⚔️</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid rgba(123,47,255,0.3);border-radius:10px;">
+          <div style="font-size:22px;">🧿</div><div style="flex:1;"><div style="font-size:12px;font-weight:700;">VoidMaster</div><div style="font-size:10px;color:#4a6080;">Reward: +1,000,000 XSPC</div></div>
+          <button onclick="attackBot(4)" style="padding:6px 12px;background:linear-gradient(135deg,#7b2fff,#ff3366);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer;">⚔️</button>
+        </div>
+      </div>
+    </div>
     <div class="section-title">🤖 Fight a Bot</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
       <div onclick="selectPvpMode('bot','easy')" id="pvpBotEasy" style="background:rgba(0,255,136,0.08);border:2px solid rgba(0,255,136,0.3);border-radius:14px;padding:12px;text-align:center;cursor:pointer;">
@@ -1521,6 +1568,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-desc">Daily free spin</div>
       <div id="wheelBadgeHub" class="hub-badge" style="display:none;">READY</div>
     </div>
+    <div class="hub-card" onclick="showPage('staking')">
+      <div class="hub-icon">💰</div><div class="hub-name">Staking</div>
+      <div class="hub-desc">Earn daily XSPC rewards</div>
+    </div>
     <div class="hub-card" onclick="showPage('tasks')">
       <div class="hub-icon">🤝</div><div class="hub-name">Earn Tasks</div>
       <div class="hub-desc">Complete & get XSPC</div>
@@ -1608,6 +1659,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div class="hub-card" onclick="showPage('clans')">
       <div class="hub-icon">🛸</div><div class="hub-name">Clans</div>
       <div class="hub-desc">Join a clan</div>
+    </div>
+    <div class="hub-card" onclick="forceExpedition()" style="border-color:rgba(0,245,255,0.3);">
+      <div class="hub-icon">🛸</div><div class="hub-name">Expedition</div>
+      <div class="hub-desc" id="expeditionStatus">Ready to explore!</div>
     </div>
     <div class="hub-card" onclick="showPage('whitepaper')">
       <div class="hub-icon">📄</div><div class="hub-name">Whitepaper</div>
@@ -1816,6 +1871,44 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="font-size:12px;color:var(--accent);margin-top:6px;font-family:Orbitron,monospace;" id="artifactsCount">0/12 collected</div>
   </div>
   <div id="artifactsList"></div>
+</div>
+
+
+<!-- STAKING PAGE -->
+<div class="page" id="pageStaking">
+  <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#FFD700;margin-bottom:14px;letter-spacing:2px;">💰 STAKING</div>
+
+  <div style="background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,149,0,0.06));border:1px solid rgba(255,215,0,0.3);border-radius:18px;padding:16px;margin-bottom:12px;text-align:center;">
+    <div style="font-size:12px;color:#4a6080;font-family:Orbitron,monospace;margin-bottom:6px;">YOUR STAKE</div>
+    <div style="font-family:Orbitron,monospace;font-size:28px;font-weight:700;color:#FFD700;" id="stakeAmount">0</div>
+    <div style="font-size:11px;color:#4a6080;margin-top:4px;">XSPC staked</div>
+    <div style="font-size:13px;color:#00ff88;margin-top:8px;" id="stakeRewards">Daily reward: 0 XSPC</div>
+  </div>
+
+  <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">📈 STAKING PLANS</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+    <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:13px;font-weight:700;">🟢 Basic Stake</div><div style="font-size:11px;color:#4a6080;">Stake 10,000 XSPC</div></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#00ff88;">+5%/day</div><button onclick="stake(10000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,255,136,0.15);border:1px solid rgba(0,255,136,0.3);border-radius:8px;color:#00ff88;font-size:11px;cursor:pointer;">STAKE</button></div>
+      </div>
+    </div>
+    <div style="padding:12px;background:var(--card);border:1px solid rgba(0,245,255,0.2);border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:13px;font-weight:700;">🔵 Pro Stake</div><div style="font-size:11px;color:#4a6080;">Stake 100,000 XSPC</div></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:var(--accent);">+10%/day</div><button onclick="stake(100000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:8px;color:var(--accent);font-size:11px;cursor:pointer;">STAKE</button></div>
+      </div>
+    </div>
+    <div style="padding:12px;background:var(--card);border:1px solid rgba(123,47,255,0.3);border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:13px;font-weight:700;">🟣 Elite Stake</div><div style="font-size:11px;color:#4a6080;">Stake 1,000,000 XSPC</div></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#7b2fff;">+20%/day</div><button onclick="stake(1000000)" style="margin-top:4px;padding:4px 12px;background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.3);border-radius:8px;color:#7b2fff;font-size:11px;cursor:pointer;">STAKE</button></div>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="collectStake()" id="collectStakeBtn" style="display:none;width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#ff9500);border:none;border-radius:16px;color:#000;font-weight:700;font-size:15px;cursor:pointer;font-family:Orbitron,monospace;margin-bottom:10px;">💰 COLLECT REWARDS</button>
+  <button onclick="unstake()" id="unstakeBtn" style="display:none;width:100%;padding:12px;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);border-radius:14px;color:#ff3366;font-weight:700;font-size:13px;cursor:pointer;">Unstake All</button>
 </div>
 
 <!-- WHEEL -->
@@ -2097,7 +2190,20 @@ const PLANETS = [
   {minLevel:45, name:"Neptune", emoji:"💙", cssClass:"planet-neptune", color:"#1565c0", desc:"Stormy blue giant of deep space",   glowColor:"rgba(0,80,255,0.6)",    bonus:"🌊 +40% Combo Power"},
   {minLevel:50, name:"Pluto",   emoji:"🩶", cssClass:"planet-pluto",   color:"#9e9e9e", desc:"Dwarf planet at the edge",          glowColor:"rgba(150,150,200,0.6)", bonus:"🔑 +1 Key every 50 taps"},
   {minLevel:55, name:"Nibiru",  emoji:"🌑", cssClass:"planet-nibiru",  color:"#ff3366", desc:"Mysterious rogue planet",           glowColor:"rgba(255,0,100,0.7)",   bonus:"💥 +50% Crit Chance"},
-  {minLevel:60, name:"Sun",     emoji:"☀️", cssClass:"planet-sun",     color:"#ffeb3b", desc:"You became the Sun itself!",        glowColor:"rgba(255,220,0,0.9)",   bonus:"☀️ +50% ALL Bonuses"},
+  {minLevel:60, name:"Sun",       emoji:"☀️", cssClass:"planet-sun",     color:"#ffeb3b", desc:"You became the Sun itself!",        glowColor:"rgba(255,220,0,0.9)",   bonus:"☀️ +50% ALL Bonuses"},
+  // Andromeda Galaxy
+  {minLevel:61, name:"Andromeda", emoji:"🌀", cssClass:"planet-andromeda",color:"#a0c8ff", desc:"Enter the Andromeda Galaxy!",       glowColor:"rgba(100,180,255,0.8)", bonus:"🌀 +60% Tap Power"},
+  {minLevel:80, name:"Dark Star", emoji:"🌑", cssClass:"planet-darkstar", color:"#333355", desc:"A star that devours light!",         glowColor:"rgba(50,50,120,0.9)",   bonus:"🌑 +70% Passive Income"},
+  // Milky Way Core
+  {minLevel:101,name:"Blackhole", emoji:"⚫",     cssClass:"planet-blackhole",color:"#111111", desc:"The heart of the galaxy!",          glowColor:"rgba(80,0,120,0.95)",   bonus:"⚫ +80% ALL Bonuses"},
+  {minLevel:120,name:"Hypernova", emoji:"✨",     cssClass:"planet-hypernova",color:"#ff8c00", desc:"A star going supernova!",           glowColor:"rgba(255,140,0,0.9)",   bonus:"✨ +90% Tap Power"},
+  // Supercluster
+  {minLevel:141,name:"Laniakea",  emoji:"🟢", cssClass:"planet-laniakea", color:"#00cc44", desc:"The great supercluster!",           glowColor:"rgba(0,200,80,0.8)",    bonus:"🟢 +100% ALL Bonuses"},
+  {minLevel:160,name:"Corona",    emoji:"👑", cssClass:"planet-corona",   color:"#ffd700", desc:"Crown of the universe!",            glowColor:"rgba(255,215,0,0.9)",   bonus:"👑 +120% Passive Income"},
+  // Multiverse
+  {minLevel:171,name:"Dimension", emoji:"🔫", cssClass:"planet-dimension",color:"#cc00ff", desc:"Beyond space and time!",            glowColor:"rgba(180,0,255,0.9)",   bonus:"🔫 +150% ALL Bonuses"},
+  {minLevel:190,name:"Void",      emoji:"🧿", cssClass:"planet-void",     color:"#220033", desc:"The space between universes!",      glowColor:"rgba(100,0,150,0.95)",  bonus:"🧿 +200% ALL Bonuses"},
+  {minLevel:200,name:"OMNIVERSAL",emoji:"🥇", cssClass:"planet-omni",     color:"#ffffff", desc:"You are the Omniverse itself!",     glowColor:"rgba(255,255,255,0.99)",bonus:"🥇 UNLIMITED POWER"},
 ];
 
 function getPlanetForLevel(lv){
@@ -2107,27 +2213,75 @@ function getPlanetForLevel(lv){
 }
 
 const LEVELS=[
+  // Solar System (1-60)
   0,200,500,1000,2000,3500,5500,8000,11500,15500,20500,
   27000,35000,45000,57000,71000,87000,106000,128000,154000,184000,
   220000,262000,311000,368000,434000,510000,597000,696000,808000,935000,
   1080000,1244000,1430000,1641000,1881000,2154000,2464000,2816000,3214000,3664000,
   4172000,4744000,5387000,6108000,6915000,7816000,8820000,9936000,11175000,12550000,
-  14100000,15800000,17700000,19800000,22100000,24700000,27600000,30800000,34400000,38400000
+  14100000,15800000,17700000,19800000,22100000,24700000,27600000,30800000,34400000,38400000,
+  // Andromeda Galaxy (61-100)
+  43000000,48000000,54000000,60000000,67000000,75000000,84000000,94000000,105000000,117000000,
+  130000000,145000000,162000000,181000000,202000000,225000000,251000000,280000000,312000000,348000000,
+  388000000,433000000,483000000,539000000,601000000,670000000,747000000,833000000,929000000,1036000000,
+  1155000000,1288000000,1437000000,1602000000,1787000000,1992000000,2221000000,2477000000,2762000000,3080000000,
+  // Milky Way Core (101-140)
+  3434000000,3829000000,4270000000,4761000000,5309000000,5920000000,6601000000,7360000000,8207000000,9151000000,
+  10203000000,11376000000,12684000000,14143000000,15770000000,17584000000,19606000000,21861000000,24375000000,27178000000,
+  30303000000,33788000000,37674000000,42007000000,46838000000,52224000000,58229000000,64925000000,72391000000,80716000000,
+  89998000000,100348000000,111888000000,124744000000,139070000000,155018000000,172770000000,192538000000,214560000000,239104000000,
+  // Supercluster (141-170)
+  266546000000,297069000000,331077000000,369011000000,411362000000,458689000000,511618000000,570854000000,636202000000,709565000000,
+  790964000000,881625000000,982922000000,1096381000000,1222865000000,1363495000000,1520007000000,1694808000000,1889611000000,2106716000000,
+  2348908000000,2618882000000,2919768000000,3255221000000,3628421000000,4045870000000,4511659000000,5030700000000,5609430000000,6253700000000,
+  // Multiverse (171-200)
+  6971000000000,7769000000000,8663000000000,9659000000000,10770000000000,12008000000000,13389000000000,14928000000000,16644000000000,18558000000000,
+  20692000000000,23071000000000,25724000000000,28682000000000,31980000000000,35653000000000,39743000000000,44294000000000,49358000000000,55004000000000,
+  61329000000000,68382000000000,76226000000000,84932000000000,94679000000000,105547000000000,117695000000000,131300000000000,146359000000000,163000000000000
 ];
 const LEVEL_NAMES=[
   "",
-  "☿ Mercury I","☿ Mercury II","☿ Mercury III","☿ Mercury IV","♀ Venus I",
+  "☯ Mercury I","☯ Mercury II","☯ Mercury III","☯ Mercury IV","♀ Venus I",
   "♀ Venus II","♀ Venus III","♀ Venus IV","♀ Venus V","🌍 Earth I",
   "🌍 Earth II","🌍 Earth III","🌍 Earth IV","🌍 Earth V","🔴 Mars I",
   "🔴 Mars II","🔴 Mars III","🔴 Mars IV","🔴 Mars V","🔴 Mars VI",
   "🔴 Mars VII","🔴 Mars VIII","🔴 Mars IX","🔴 Mars X","🟠 Jupiter I",
   "🟠 Jupiter II","🟠 Jupiter III","🟠 Jupiter IV","🟠 Jupiter V","🟠 Jupiter VI",
-  "🟠 Jupiter VII","🟠 Jupiter VIII","🟠 Jupiter IX","🟠 Jupiter X","💍 Saturn I",
-  "💍 Saturn II","💍 Saturn III","💍 Saturn IV","💍 Saturn V","💍 Saturn VI",
+  "🟠 Jupiter VII","🟠 Jupiter VIII","🟠 Jupiter IX","🟠 Jupiter X","🪐 Saturn I",
+  "🪐 Saturn II","🪐 Saturn III","🪐 Saturn IV","🪐 Saturn V","🪐 Saturn VI",
   "🔵 Uranus I","🔵 Uranus II","🔵 Uranus III","🔵 Uranus IV","💙 Neptune I",
-  "💙 Neptune II","💙 Neptune III","💙 Neptune IV","💙 Neptune V","🩶 Pluto I",
-  "🩶 Pluto II","🩶 Pluto III","🩶 Pluto IV","🩶 Pluto V","🌑 Nibiru I",
-  "🌑 Nibiru II","🌑 Nibiru III","🌑 Nibiru IV","🌑 Nibiru V","☀️ SUN GOD"
+  "💙 Neptune II","💙 Neptune III","💙 Neptune IV","💙 Neptune V","🖤 Pluto I",
+  "🖤 Pluto II","🖤 Pluto III","🖤 Pluto IV","🖤 Pluto V","🟣 Nibiru I",
+  "🟣 Nibiru II","🟣 Nibiru III","🟣 Nibiru IV","🟣 Nibiru V","☀ SUN GOD",
+  "🌀 Andromeda I","🌀 Andromeda II","🌀 Andromeda III","🌀 Andromeda IV","🌀 Andromeda V",
+  "🌌 Andromeda VI","🌌 Andromeda VII","🌌 Andromeda VIII","🌌 Andromeda IX","🌌 Andromeda X",
+  "💫 Vega I","💫 Vega II","💫 Vega III","💫 Vega IV","💫 Vega V",
+  "⭐ Sirius I","⭐ Sirius II","⭐ Sirius III","⭐ Sirius IV","⭐ Sirius V",
+  "🌟 Rigel I","🌟 Rigel II","🌟 Rigel III","🌟 Rigel IV","🌟 Rigel V",
+  "🔥 Betelgeuse I","🔥 Betelgeuse II","🔥 Betelgeuse III","🔥 Betelgeuse IV","🔥 Betelgeuse V",
+  "🌑 Dark Star I","🌑 Dark Star II","🌑 Dark Star III","🌑 Dark Star IV","🌑 Dark Star V",
+  "🤍 Quasar I","🤍 Quasar II","🤍 Quasar III","🤍 Quasar IV","🤍 Quasar V",
+  "🔮 Pulsar I","🔮 Pulsar II","🔮 Pulsar III","🔮 Pulsar IV","🔮 Pulsar V",
+  "🌀 Nebula I","🌀 Nebula II","🌀 Nebula III","🌀 Nebula IV","🌀 Nebula V",
+  "⚫ Blackhole I","⚫ Blackhole II","⚫ Blackhole III","⚫ Blackhole IV","⚫ Blackhole V",
+  "🔵 Neutron I","🔵 Neutron II","🔵 Neutron III","🔵 Neutron IV","🔵 Neutron V",
+  "🟣 Magnetar I","🟣 Magnetar II","🟣 Magnetar III","🟣 Magnetar IV","🟣 Magnetar V",
+  "✨ Hypernova I","✨ Hypernova II","✨ Hypernova III","✨ Hypernova IV","✨ Hypernova V",
+  "💥 Supernova I","💥 Supernova II","💥 Supernova III","💥 Supernova IV","💥 Supernova V",
+  "🟡 Wormhole I","🟡 Wormhole II","🟡 Wormhole III","🟡 Wormhole IV","🟡 Wormhole V",
+  "🌊 Virgo I","🌊 Virgo II","🌊 Virgo III","🌊 Virgo IV","🌊 Virgo V",
+  "🟢 Laniakea I","🟢 Laniakea II","🟢 Laniakea III","🟢 Laniakea IV","🟢 Laniakea V",
+  "💜 Hercules I","💜 Hercules II","💜 Hercules III","💜 Hercules IV","💜 Hercules V",
+  "🧊 Perseus I","🧊 Perseus II","🧊 Perseus III","🧊 Perseus IV","🧊 Perseus V",
+  "👑 Corona I","👑 Corona II","👑 Corona III","👑 Corona IV","👑 Corona V",
+  "🌋 Coma I","🌋 Coma II","🌋 Coma III","🌋 Coma IV","🌋 Coma V",
+  "🔫 Dimension I","🔫 Dimension II","🔫 Dimension III","🔫 Dimension IV","🔫 Dimension V",
+  "🌎 Parallel I","🌎 Parallel II","🌎 Parallel III","🌎 Parallel IV","🌎 Parallel V",
+  "♾ Infinity I","♾ Infinity II","♾ Infinity III","♾ Infinity IV","♾ Infinity V",
+  "🧿 Void I","🧿 Void II","🧿 Void III","🧿 Void IV","🧿 Void V",
+  "🌀 Omega I","🌀 Omega II","🌀 Omega III","🌀 Omega IV","🌀 Omega V",
+  "🥇 Alpha I","🥇 Alpha II","🥇 Alpha III","🥇 Alpha IV","🥇 Alpha V",
+  "👑 OMNIVERSAL GOD"
 ];
 const LEAGUES=[
   {name:"Iron",     icon:"⚪",min:0,         color:"#aaa"},
@@ -2139,6 +2293,279 @@ const LEAGUES=[
   {name:"Master",   icon:"👑",min:5000000,   color:"#ff9500"},
   {name:"Legend",   icon:"🚀",min:12000000,  color:"#ff3366"},
 ];
+
+// ═══ EXPEDITIONS ═══
+const EXPEDITION_EVENTS = [
+  {id:'signal',  title:'Alien Signal Detected!',    icon:'🛸', desc:'A mysterious signal from a nearby planet.',
+   options:[
+     {label:'🔍 Investigate', reward:'keys',  value:2,      msg:'+2 XKEY found!'},
+     {label:'⛏️ Mine Resources', reward:'coins', value:50000,  msg:'+50,000 XSPC mined!'},
+     {label:'🏃 Ignore',      reward:'coins', value:1000,   msg:'+1,000 XSPC found anyway'},
+   ]},
+  {id:'asteroid',title:'Rare Asteroid Incoming!',   icon:'☄️', desc:'A rare asteroid rich with minerals is passing by.',
+   options:[
+     {label:'🚀 Intercept',   reward:'coins', value:100000, msg:'+100,000 XSPC from asteroid!'},
+     {label:'🧲 Capture',     reward:'keys',  value:3,      msg:'+3 XKEY captured!'},
+     {label:'📸 Scan',        reward:'coins', value:25000,  msg:'+25,000 XSPC from scan data'},
+   ]},
+  {id:'ruins',   title:'Ancient Ruins Discovered!', icon:'🏛️', desc:'Ruins of an ancient alien civilization.',
+   options:[
+     {label:'🧐 Explore',     reward:'artifact_chance', value:0.3, msg:'Rare artifact discovered!'},
+     {label:'📦 Salvage',     reward:'coins', value:75000,  msg:'+75,000 XSPC salvaged!'},
+     {label:'📸 Document',    reward:'keys',  value:1,      msg:'+1 XKEY for documentation'},
+   ]},
+  {id:'storm',   title:'Cosmic Storm Warning!',     icon:'⚡', desc:'A massive energy storm is approaching.',
+   options:[
+     {label:'⚡ Harness Energy', reward:'energy', value:9999,  msg:'Full energy restored!'},
+     {label:'🛡️ Shield Up',     reward:'coins', value:30000,  msg:'+30,000 XSPC saved!'},
+     {label:'🏃 Outrun It',   reward:'coins', value:10000,  msg:'+10,000 XSPC from race'},
+   ]},
+  {id:'traders', title:'Space Traders Arrived!',    icon:'🛸', desc:'Alien merchants offering rare goods.',
+   options:[
+     {label:'💰 Trade XSPC',  reward:'keys',  value:5,      msg:'+5 XKEY from trade!'},
+     {label:'🤝 Befriend',    reward:'coins', value:200000, msg:'+200,000 XSPC bonus!'},
+     {label:'📦 Buy Goods',   reward:'coins', value:50000,  msg:'+50,000 XSPC goods'},
+   ]},
+];
+
+let expeditionAvailable = false;
+let currentExpedition = null;
+
+function forceExpedition() {
+  currentExpedition = EXPEDITION_EVENTS[Math.floor(Math.random() * EXPEDITION_EVENTS.length)];
+  showExpeditionAlert();
+}
+
+function updateExpeditionStatus() {
+  const el = document.getElementById('expeditionStatus');
+  if(!el) return;
+  const now = Date.now();
+  const lastExp = g.lastExpedition || 0;
+  const interval = 4 * 3600000;
+  const diff = interval - (now - lastExp);
+  if(diff <= 0) {
+    el.textContent = '🟢 Ready to explore!';
+    el.style.color = '#00ff88';
+  } else {
+    const h = Math.floor(diff/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    el.textContent = '⏰ Next in '+h+'h '+m+'m';
+    el.style.color = '#4a6080';
+  }
+}
+
+function checkExpedition() {
+  const now = Date.now();
+  const lastExp = g.lastExpedition || 0;
+  const interval = 4 * 3600000; // 4 hours
+  if(now - lastExp >= interval && !expeditionAvailable) {
+    expeditionAvailable = true;
+    currentExpedition = EXPEDITION_EVENTS[Math.floor(Math.random() * EXPEDITION_EVENTS.length)];
+    showExpeditionAlert();
+  }
+}
+
+function showExpeditionAlert() {
+  if(!currentExpedition) return;
+  const overlay = document.getElementById('expeditionOverlay');
+  if(!overlay) return;
+  document.getElementById('expTitle').textContent = currentExpedition.title;
+  document.getElementById('expIcon').textContent = currentExpedition.icon;
+  document.getElementById('expDesc').textContent = currentExpedition.desc;
+  const btns = document.getElementById('expButtons');
+  btns.innerHTML = currentExpedition.options.map((o,i) =>
+    '<button onclick="chooseExpedition('+i+')" style="width:100%;padding:12px;margin-bottom:8px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:12px;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;font-family:Rajdhani,sans-serif;">'+o.label+'</button>'
+  ).join('');
+  overlay.style.display = 'flex';
+}
+
+function chooseExpedition(idx) {
+  if(!currentExpedition) return;
+  const opt = currentExpedition.options[idx];
+  const overlay = document.getElementById('expeditionOverlay');
+  if(overlay) overlay.style.display = 'none';
+
+  if(opt.reward === 'coins') {
+    g.coins += opt.value;
+    g.totalEarned = (g.totalEarned||0) + opt.value;
+    showFloat('+'+opt.value.toLocaleString()+' XSPC', window.innerWidth/2, 300, '#00ff88');
+  } else if(opt.reward === 'keys') {
+    g.keys = (g.keys||0) + opt.value;
+    g.totalKeys = (g.totalKeys||0) + opt.value;
+    updateKeysUI();
+    showFloat('+'+opt.value+' XKEY 🔑', window.innerWidth/2, 300, '#FFD700');
+  } else if(opt.reward === 'energy') {
+    g.energy = g.maxEnergy;
+  } else if(opt.reward === 'artifact_chance') {
+    if(Math.random() < opt.value) {
+      const unowned = ARTIFACTS_LIST.filter(a => !(g.artifacts||{})[a.id] && g.level >= a.unlockLevel);
+      if(unowned.length > 0) {
+        const art = unowned[Math.floor(Math.random()*unowned.length)];
+        if(!g.artifacts) g.artifacts = {};
+        g.artifacts[art.id] = true;
+        showToast('🔮 Rare artifact found: '+art.name+'!');
+        showFloat('🔮 '+art.name, window.innerWidth/2, 300, '#7b2fff');
+      } else {
+        g.coins += 100000;
+        showFloat('+100,000 XSPC', window.innerWidth/2, 300, '#00ff88');
+      }
+    } else {
+      g.coins += 20000;
+      showFloat('+20,000 XSPC', window.innerWidth/2, 300, '#00ff88');
+    }
+  }
+
+  showToast(opt.msg);
+  g.lastExpedition = Date.now();
+  expeditionAvailable = false;
+  currentExpedition = null;
+  updateUI(); saveGame(); checkAchievements();
+}
+
+// Check every 10 minutes
+setInterval(checkExpedition, 600000);
+
+
+// ═══ RARE ARTIFACTS DROP ═══
+const RARE_ARTIFACTS = [
+  {id:'ancient_reactor',  name:'Ancient Reactor',   icon:'⚙️', rarity:'Legendary', desc:'+200% passive income', dropChance:0.001},
+  {id:'alien_crystal',    name:'Alien Crystal',     icon:'💎', rarity:'Legendary', desc:'+150% tap power',     dropChance:0.001},
+  {id:'nibiru_core',      name:'Nibiru Core',        icon:'🟣', rarity:'Mythic',    desc:'+300% ALL bonuses',   dropChance:0.0005},
+  {id:'void_shard',       name:'Void Shard',         icon:'🧿', rarity:'Mythic',    desc:'+500% passive income',dropChance:0.0002},
+  {id:'omni_key',         name:'Omni Key',           icon:'🔑', rarity:'Mythic',    desc:'+10 XKEY instantly',  dropChance:0.0003},
+];
+
+function checkRareDrop() {
+  if(Math.random() > 0.01) return; // Only check 1% of taps for performance
+  for(const ra of RARE_ARTIFACTS) {
+    if(Math.random() < ra.dropChance * 100) { // Adjusted since we already passed 1% check
+      if(!(g.artifacts||{})[ra.id]) {
+        if(!g.artifacts) g.artifacts = {};
+        g.artifacts[ra.id] = true;
+        if(ra.id === 'omni_key') {
+          g.keys = (g.keys||0) + 10;
+          g.totalKeys = (g.totalKeys||0) + 10;
+          updateKeysUI();
+        }
+        // Big flash
+        const flash = document.createElement('div');
+        flash.style.cssText = 'position:fixed;inset:0;background:#7b2fff;opacity:0.3;z-index:9994;pointer-events:none;transition:opacity 1s;';
+        document.body.appendChild(flash);
+        setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),1000); },200);
+        showToast('💥 RARE DROP! '+ra.icon+' '+ra.name+' ('+ra.rarity+')!');
+        showFloat('💥 '+ra.name+'!', window.innerWidth/2, 200, '#ff3366');
+        saveGame();
+        return;
+      }
+    }
+  }
+}
+
+
+// ═══ PvP PLANET CAPTURE ═══
+const PVP_BOTS = [
+  {name:'StarMiner_99',  power:500,   reward:5000,   icon:'🤖'},
+  {name:'CosmicKing',    power:2000,  reward:20000,  icon:'👑'},
+  {name:'NebulaBoss',    power:8000,  reward:80000,  icon:'🌀'},
+  {name:'GalaxyLord',    power:30000, reward:300000, icon:'🌌'},
+  {name:'VoidMaster',    power:100000,reward:1000000,icon:'🧿'},
+];
+
+function getPlayerPower() {
+  return (g.coins || 0) * 0.001 + (g.level || 1) * 1000 + (g.perClick || 1) * 500 + getPassiveRate() * 100;
+}
+
+function attackBot(idx) {
+  const bot = PVP_BOTS[idx];
+  const myPower = getPlayerPower();
+  const win = myPower > bot.power * (0.5 + Math.random() * 0.8);
+  if(win) {
+    g.coins += bot.reward;
+    g.totalEarned = (g.totalEarned||0) + bot.reward;
+    g.pvpWins = (g.pvpWins||0) + 1;
+    showToast('🏆 Victory! +'+bot.reward.toLocaleString()+' XSPC captured!');
+    showFloat('⚔️ WIN! +'+bot.reward.toLocaleString(), window.innerWidth/2, 300, '#00ff88');
+  } else {
+    const loss = Math.floor(bot.reward * 0.1);
+    g.coins = Math.max(0, (g.coins||0) - loss);
+    showToast('💥 Defeated! Lost '+loss.toLocaleString()+' XSPC');
+    showFloat('⚔️ DEFEAT -'+loss.toLocaleString(), window.innerWidth/2, 300, '#ff3366');
+  }
+  updateUI(); saveGame(); checkAchievements();
+}
+
+
+// ═══ CLAN COLLABORATION ═══
+function getClanBonus() {
+  if(!g.clan) return 1;
+  const clanLevel = g.clan.level || 1;
+  return 1 + (clanLevel * 0.05); // +5% per clan level
+}
+
+function contributeToСlan() {
+  if(!g.clan) { showToast('Join a clan first!'); return; }
+  const contribution = Math.floor(g.coins * 0.01); // 1% of coins
+  if(contribution < 100) { showToast('Need at least 10,000 XSPC to contribute!'); return; }
+  g.coins -= contribution;
+  if(!g.clan.treasury) g.clan.treasury = 0;
+  g.clan.treasury += contribution;
+  g.clan.level = Math.floor((g.clan.treasury || 0) / 1000000) + 1;
+  showToast('🤝 Contributed '+contribution.toLocaleString()+' XSPC to clan!');
+  showFloat('+'+contribution.toLocaleString()+' to clan 🛸', window.innerWidth/2, 300, '#7b2fff');
+  updateUI(); saveGame();
+}
+
+
+// ═══ STAKING ═══
+function stake(amount) {
+  if((g.coins||0) < amount) { showToast('Not enough XSPC! Need '+amount.toLocaleString()); return; }
+  g.coins -= amount;
+  g.stakedAmount = (g.stakedAmount||0) + amount;
+  g.stakeTime = Date.now();
+  showToast('💰 Staked '+amount.toLocaleString()+' XSPC!');
+  updateStakingUI();
+  updateUI(); saveGame();
+}
+
+function collectStake() {
+  const staked = g.stakedAmount || 0;
+  if(staked < 1) { showToast('Nothing staked!'); return; }
+  const hrs = (Date.now() - (g.stakeTime||Date.now())) / 3600000;
+  const rate = staked >= 1000000 ? 0.20 : staked >= 100000 ? 0.10 : 0.05;
+  const reward = Math.floor(staked * rate * hrs / 24);
+  if(reward < 1) { showToast('Wait longer to collect rewards!'); return; }
+  g.coins += reward;
+  g.totalEarned = (g.totalEarned||0) + reward;
+  g.stakeTime = Date.now();
+  showToast('+'+reward.toLocaleString()+' XSPC staking rewards!');
+  showFloat('+'+reward.toLocaleString()+' XSPC 💰', window.innerWidth/2, 300, '#FFD700');
+  updateUI(); updateStakingUI(); saveGame();
+}
+
+function unstake() {
+  const staked = g.stakedAmount || 0;
+  if(staked < 1) { showToast('Nothing to unstake!'); return; }
+  g.coins += staked;
+  g.stakedAmount = 0;
+  g.stakeTime = 0;
+  showToast('Unstaked '+staked.toLocaleString()+' XSPC');
+  updateUI(); updateStakingUI(); saveGame();
+}
+
+function updateStakingUI() {
+  const el = document.getElementById('stakeAmount');
+  if(el) el.textContent = (g.stakedAmount||0).toLocaleString();
+  const staked = g.stakedAmount || 0;
+  const rate = staked >= 1000000 ? 0.20 : staked >= 100000 ? 0.10 : 0.05;
+  const dailyReward = Math.floor(staked * rate);
+  const rw = document.getElementById('stakeRewards');
+  if(rw) rw.textContent = 'Daily reward: '+dailyReward.toLocaleString()+' XSPC';
+  const cb = document.getElementById('collectStakeBtn');
+  const ub = document.getElementById('unstakeBtn');
+  if(cb) cb.style.display = staked > 0 ? 'block' : 'none';
+  if(ub) ub.style.display = staked > 0 ? 'block' : 'none';
+}
+
 const ACHIEVEMENTS=[
   // Taps
   {id:"first",   name:"🎯 First Tap",       desc:"Tap for the first time",      req:()=>g.clicks>=1,           reward:10},
@@ -2279,6 +2706,7 @@ function handleClick(e){
   g.hitCount++;
 
   let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier());
+  checkRareDrop();
   const comboMult = 1 + (g.comboMultLevel||0) * 2;
   if(g.combo>=10)reward+=20*comboMult;
   else if(g.combo>=5)reward+=10*comboMult;
@@ -2414,13 +2842,13 @@ function updatePlanet(level, isInit){
   const planet=getPlanetForLevel(level);
   const btn=document.getElementById('coinBtn');
 
-  if(planet.name===g.currentPlanetName && !isInit) return;
+  if(planet.name===g.currentPlanetName && !isInit && btn.classList.contains(planet.cssClass)) return;
 
   const prevPlanet=g.currentPlanetName;
   g.currentPlanetName=planet.name;
 
   // Update CSS class
-  btn.classList.remove('planet-mercury','planet-venus','planet-earth','planet-mars','planet-jupiter','planet-saturn','planet-uranus','planet-neptune','planet-pluto','planet-nibiru','planet-sun');
+  btn.classList.remove('planet-mercury','planet-venus','planet-earth','planet-mars','planet-jupiter','planet-saturn','planet-uranus','planet-neptune','planet-pluto','planet-nibiru','planet-sun','planet-andromeda','planet-darkstar','planet-blackhole','planet-hypernova','planet-laniakea','planet-corona','planet-dimension','planet-void','planet-omni');
   btn.classList.add(planet.cssClass);
 
   // Saturn rings
@@ -2453,12 +2881,12 @@ function getLevel(c){
   const earned = Math.max(c, g ? (g.totalEarned||0) : 0);
   let l=1;
   for(let i=0;i<LEVELS.length;i++) if(earned>=LEVELS[i]) l=i+1;
-  return Math.min(l,60);
+  return Math.min(l, LEVELS.length);
 }
 function getLeague(c){let league=LEAGUES[0];for(const l of LEAGUES)if(c>=l.min)league=l;return league;}
 
 function checkLevelUp(){
-  const nl=getLevel(g.totalEarned || g.coins);
+  const nl=Math.min(getLevel(g.totalEarned || g.coins), 200);
   if(nl>g.level){
     const gained = nl - g.level;
     g.level = nl;
@@ -2814,7 +3242,7 @@ function goBack(){
     'keys':'earn','combo':'earn','tasks':'earn','streak':'earn','wheel':'earn','promo':'earn',
     'cards':'upgrade','artifacts':'upgrade',
     'top':'mine','whitepaper':'mine','stats':'mine',
-    'clans':'galaxy','pvp':'battle','season':'battle','tournament':'battle',
+    'clans':'galaxy','pvp':'battle','season':'battle','tournament':'battle','staking':'earn',
     'friends':'friends'
   };
   const current = document.querySelector('.page.active');
@@ -2842,8 +3270,9 @@ function showPage(page){
   // Hub-specific logic
   if(page==='mine'){initMinePageEffects();}
   if(page==='earn'){updateEarnHub();}
+  if(page==='staking'){updateStakingUI();}
   if(page==='upgrade'){updateUpgradeHub();}
-  if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();}
+  if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();updateExpeditionStatus();}
   if(page==='battle'){updateBattleHub();}
   if(page==='tournament'){
     const td=document.getElementById('tournamentRefs'); if(td) td.textContent=(g.friends||0);
@@ -2913,36 +3342,22 @@ function updateUpgradeHub() {
 function renderPlanetMap() {
   const list = document.getElementById('planetMapList');
   if(!list) return;
-  const planetGroups = [
-    {icon:'☯', name:'Mercury',  minLv:1,  maxLv:4},
-    {icon:'♀', name:'Venus',    minLv:5,  maxLv:9},
-    {icon:'🌍', name:'Earth',    minLv:10, maxLv:14},
-    {icon:'🔴', name:'Mars',     minLv:15, maxLv:24},
-    {icon:'🟠', name:'Jupiter',  minLv:25, maxLv:34},
-    {icon:'🪐', name:'Saturn',   minLv:35, maxLv:44},
-    {icon:'🔵', name:'Uranus',   minLv:45, maxLv:49},
-    {icon:'💙', name:'Neptune',  minLv:50, maxLv:54},
-    {icon:'🖤', name:'Pluto',    minLv:55, maxLv:59},
-    {icon:'🟣', name:'Nibiru',   minLv:60, maxLv:69},
-    {icon:'🌟', name:'Galaxy',   minLv:70, maxLv:79},
-    {icon:'💫', name:'Pulsar',   minLv:80, maxLv:89},
-    {icon:'⭐', name:'Quasar',   minLv:90, maxLv:94},
-    {icon:'🌑', name:'Blackhole',minLv:95, maxLv:99},
-    {icon:'☀', name:'SUN GOD',  minLv:100,maxLv:100},
-  ];
-  list.innerHTML = planetGroups.map(p => {
-    const unlocked = g.level >= p.minLv;
-    const current = g.level >= p.minLv && g.level <= p.maxLv;
-    const completed = g.level > p.maxLv;
+  list.innerHTML = PLANETS.map((p, i) => {
+    const nextPlanet = PLANETS[i+1];
+    const maxLv = nextPlanet ? nextPlanet.minLevel - 1 : 200;
+    const unlocked = g.level >= p.minLevel;
+    const current = g.level >= p.minLevel && g.level <= maxLv;
+    const completed = g.level > maxLv;
+    const lvRange = p.minLevel === maxLv ? 'Lv '+p.minLevel : 'Lv '+p.minLevel+' - '+maxLv;
     return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:'+(current?'rgba(0,245,255,0.08)':'var(--card)')+';border:1px solid '+(current?'rgba(0,245,255,0.4)':completed?'rgba(0,255,136,0.2)':'var(--border)')+';border-radius:10px;">'
-      +'<div style="font-size:22px;opacity:'+(unlocked?'1':'0.3')+'">' + p.icon + '</div>'
+      +'<div style="font-size:22px;opacity:'+(unlocked?'1':'0.3')+'">' + p.emoji + '</div>'
       +'<div style="flex:1;">'
-        +'<div style="font-size:12px;font-weight:700;color:'+(current?'var(--accent)':completed?'#00ff88':'#4a6080')+'">' + p.name + '</div>'
-        +'<div style="font-size:10px;color:#4a6080;">Lv ' + p.minLv + (p.minLv!==p.maxLv?' - '+p.maxLv:'') + '</div>'
+        +'<div style="font-size:12px;font-weight:700;color:'+(current?'var(--accent)':completed?'#00ff88':'#4a6080')+'">' + p.name.toUpperCase() + '</div>'
+        +'<div style="font-size:10px;color:#4a6080;">' + lvRange + '</div>'
       +'</div>'
       +(current?'<div style="font-size:10px;font-family:Orbitron,monospace;color:var(--accent);">CURRENT</div>'
         :completed?'<div style="font-size:14px;">✅</div>'
-        :'<div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">🔒 Lv'+p.minLv+'</div>')
+        :'<div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">🔒 Lv'+p.minLevel+'</div>')
       +'</div>';
   }).join('');
 }
@@ -5030,6 +5445,8 @@ updateUI();
 updateBoostsUI();
 drawWheel(0);
 updateWheelBtn();
+// Force planet recalculation on load
+g.currentPlanetName = '';
 updatePlanet(g.level, true);
 renderBoostCards();
 renderQuest();
@@ -5040,6 +5457,7 @@ initUser();
 
 // Show daily streak after short delay
 setTimeout(showStreakOverlay, 1500);
+setTimeout(checkExpedition, 3000);
 // ═══ ARTIFACTS ═══
 const ARTIFACTS_LIST = [
   {id:'space_crystal',  name:'Space Crystal',   icon:'💎', rarity:'Common',    desc:'+5% tap power',        unlockLevel:5,  keysCost:3},
