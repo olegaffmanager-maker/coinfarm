@@ -2839,17 +2839,19 @@ function showFloat(text,x,y,color){
 let currentPlanetClass='planet-earth';
 
 function updatePlanet(level, isInit){
-  const planet=getPlanetForLevel(level);
-  const btn=document.getElementById('coinBtn');
+  const planet = getPlanetForLevel(level);
+  const btn = document.getElementById('coinBtn');
+  if(!btn) return;
 
-  if(planet.name===g.currentPlanetName && !isInit && btn.classList.contains(planet.cssClass)) return;
+  const prevPlanet = g.currentPlanetName;
+  const changed = planet.name !== prevPlanet;
 
-  const prevPlanet=g.currentPlanetName;
-  g.currentPlanetName=planet.name;
-
-  // Update CSS class
-  btn.classList.remove('planet-mercury','planet-venus','planet-earth','planet-mars','planet-jupiter','planet-saturn','planet-uranus','planet-neptune','planet-pluto','planet-nibiru','planet-sun','planet-andromeda','planet-darkstar','planet-blackhole','planet-hypernova','planet-laniakea','planet-corona','planet-dimension','planet-void','planet-omni');
+  // Always update CSS class
+  btn.className = btn.className.split(' ')
+    .filter(c => !c.startsWith('planet-'))
+    .join(' ');
   btn.classList.add(planet.cssClass);
+  g.currentPlanetName = planet.name;
 
   // Saturn rings
   document.getElementById('saturnRings').style.display = planet.name==='Saturn'?'block':'none';
@@ -2860,11 +2862,11 @@ function updatePlanet(level, isInit){
   // Update badges
   document.getElementById('planetNameBadge').textContent=`${planet.emoji} ${planet.name.toUpperCase()}`;
   document.getElementById('planetNameBadge').style.color=planet.color;
-  document.getElementById('headerPlanetIcon').innerHTML='<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;">';
-  document.getElementById('menuPlanetIcon').innerHTML='<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:22px;height:22px;vertical-align:middle;border-radius:50%;display:block;margin:0 auto;">';
+  document.getElementById('headerPlanetIcon').innerHTML='<span style="font-size:20px;">'+planet.emoji+'</span>';
+  document.getElementById('menuPlanetIcon').innerHTML='<span style="font-size:22px;">'+planet.emoji+'</span>';
 
   // Show unlock popup if changed
-  if(!isInit && planet.name!==prevPlanet){
+  if(!isInit && changed){
     document.getElementById('planetUnlockEmoji').textContent=planet.emoji;
     document.getElementById('planetUnlockName').textContent=planet.name.toUpperCase();
     document.getElementById('planetUnlockName').style.color=planet.color;
@@ -5383,10 +5385,13 @@ setInterval(()=>{if(g.energy<g.maxEnergy){
     if(!wasFull && g.energy >= g.maxEnergy) showToast('⚡ Energy full! Tap now!');
     updateUI();
   }},5000);
-setInterval(()=>{checkLevelUp();saveGame();},5000);
+setInterval(()=>{checkLevelUp();updatePlanet(g.level,false);saveGame();},5000);
 
 // ═══ START ═══
 loadGame();
+
+// Force planet recalculation — reset saved name so it always updates visually
+g.currentPlanetName = '';
 
 // Init passive income from offline time
 (function(){
@@ -5445,8 +5450,6 @@ updateUI();
 updateBoostsUI();
 drawWheel(0);
 updateWheelBtn();
-// Force planet recalculation on load
-g.currentPlanetName = '';
 updatePlanet(g.level, true);
 renderBoostCards();
 renderQuest();
