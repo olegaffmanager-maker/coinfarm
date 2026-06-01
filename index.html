@@ -1592,22 +1592,26 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     </div>
   </div>
 
+  <!-- Planet map -->
+  <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">🪐 ALL PLANETS</div>
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;" id="planetMapList"></div>
+
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div class="hub-card" onclick="showPage('achieve')">
       <div class="hub-icon">🏅</div><div class="hub-name">Achievements</div>
-      <div class="hub-desc" id="galaxyAchieveDesc">0/22 completed</div>
+      <div class="hub-desc" id="galaxyAchieveDesc">0/45 completed</div>
     </div>
     <div class="hub-card" onclick="showPage('stats')">
       <div class="hub-icon">📊</div><div class="hub-name">My Stats</div>
       <div class="hub-desc">Profile & records</div>
     </div>
+    <div class="hub-card" onclick="showPage('clans')">
+      <div class="hub-icon">🛸</div><div class="hub-name">Clans</div>
+      <div class="hub-desc">Join a clan</div>
+    </div>
     <div class="hub-card" onclick="showPage('whitepaper')">
       <div class="hub-icon">📄</div><div class="hub-name">Whitepaper</div>
       <div class="hub-desc">Token & Roadmap</div>
-    </div>
-    <div class="hub-card" onclick="showPage('mine')">
-      <div class="hub-icon" id="galaxyPlanetBtn">🌍</div><div class="hub-name">Current Planet</div>
-      <div class="hub-desc" id="galaxyBonusDesc">+15% Max Energy</div>
     </div>
   </div>
 </div>
@@ -2768,7 +2772,17 @@ async function loadFriends(userId){
 function updateUI(){
   // Recalc level only upward, never down
   const realLv = getLevel(g.totalEarned || g.coins);
-  if(realLv > g.level) { g.level = realLv; g.perClick = realLv + ((g.multitapLevel||1)-1); }
+  if(realLv > g.level) {
+    g.level = realLv;
+    g.perClick = realLv + ((g.multitapLevel||1)-1);
+    // Award XKEY every 5 levels
+    if(realLv % 5 === 0) {
+      g.keys = (g.keys||0) + 1;
+      g.totalKeys = (g.totalKeys||0) + 1;
+      updateKeysUI();
+      showToast('🔑 Level '+realLv+'! +1 XKEY bonus!');
+    }
+  }
   const coins=Math.floor(g.coins),lv=g.level;
   const league=getLeague(coins);
   document.getElementById('headerCoins').textContent=coins.toLocaleString();
@@ -2829,7 +2843,7 @@ function showPage(page){
   if(page==='mine'){initMinePageEffects();}
   if(page==='earn'){updateEarnHub();}
   if(page==='upgrade'){updateUpgradeHub();}
-  if(page==='galaxy'){updateGalaxyHub();}
+  if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();}
   if(page==='battle'){updateBattleHub();}
   if(page==='tournament'){
     const td=document.getElementById('tournamentRefs'); if(td) td.textContent=(g.friends||0);
@@ -2894,6 +2908,43 @@ function updateUpgradeHub() {
   const count = Object.keys(g.artifacts||{}).length;
   const ab = document.getElementById('artifactsBadgeHub');
   if(ab) ab.style.display = count < ARTIFACTS_LIST.length ? 'block' : 'none';
+}
+
+function renderPlanetMap() {
+  const list = document.getElementById('planetMapList');
+  if(!list) return;
+  const planetGroups = [
+    {icon:'☯', name:'Mercury',  minLv:1,  maxLv:4},
+    {icon:'♀', name:'Venus',    minLv:5,  maxLv:9},
+    {icon:'🌍', name:'Earth',    minLv:10, maxLv:14},
+    {icon:'🔴', name:'Mars',     minLv:15, maxLv:24},
+    {icon:'🟠', name:'Jupiter',  minLv:25, maxLv:34},
+    {icon:'🪐', name:'Saturn',   minLv:35, maxLv:44},
+    {icon:'🔵', name:'Uranus',   minLv:45, maxLv:49},
+    {icon:'💙', name:'Neptune',  minLv:50, maxLv:54},
+    {icon:'🖤', name:'Pluto',    minLv:55, maxLv:59},
+    {icon:'🟣', name:'Nibiru',   minLv:60, maxLv:69},
+    {icon:'🌟', name:'Galaxy',   minLv:70, maxLv:79},
+    {icon:'💫', name:'Pulsar',   minLv:80, maxLv:89},
+    {icon:'⭐', name:'Quasar',   minLv:90, maxLv:94},
+    {icon:'🌑', name:'Blackhole',minLv:95, maxLv:99},
+    {icon:'☀', name:'SUN GOD',  minLv:100,maxLv:100},
+  ];
+  list.innerHTML = planetGroups.map(p => {
+    const unlocked = g.level >= p.minLv;
+    const current = g.level >= p.minLv && g.level <= p.maxLv;
+    const completed = g.level > p.maxLv;
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:'+(current?'rgba(0,245,255,0.08)':'var(--card)')+';border:1px solid '+(current?'rgba(0,245,255,0.4)':completed?'rgba(0,255,136,0.2)':'var(--border)')+';border-radius:10px;">'
+      +'<div style="font-size:22px;opacity:'+(unlocked?'1':'0.3')+'">' + p.icon + '</div>'
+      +'<div style="flex:1;">'
+        +'<div style="font-size:12px;font-weight:700;color:'+(current?'var(--accent)':completed?'#00ff88':'#4a6080')+'">' + p.name + '</div>'
+        +'<div style="font-size:10px;color:#4a6080;">Lv ' + p.minLv + (p.minLv!==p.maxLv?' - '+p.maxLv:'') + '</div>'
+      +'</div>'
+      +(current?'<div style="font-size:10px;font-family:Orbitron,monospace;color:var(--accent);">CURRENT</div>'
+        :completed?'<div style="font-size:14px;">✅</div>'
+        :'<div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">🔒 Lv'+p.minLv+'</div>')
+      +'</div>';
+  }).join('');
 }
 
 function updateGalaxyHub() {
@@ -3150,18 +3201,31 @@ let lastPassiveTime = Date.now();
 
 function updatePassive() {
   const rate = getPassiveRate();
-  const rateEl = document.getElementById('passiveRate');
-  if(rateEl) rateEl.textContent = `+${rate} XSPC/hr`;
+
+  // Update all rate displays
+  ['passiveRate','passiveRate2','passiveRate3'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = '+' + rate + ' XSPC/hr';
+  });
 
   const now = Date.now();
   const hrs = (now - lastPassiveTime) / 3600000;
-  passiveAccumulated += rate * hrs;
+  if(hrs > 0) passiveAccumulated += rate * hrs;
   lastPassiveTime = now;
 
-  const accumEl = document.getElementById('passiveAccum');
-  const collectBtn = document.getElementById('collectBtn');
-  if(accumEl) accumEl.textContent = Math.floor(passiveAccumulated).toLocaleString();
-  if(collectBtn) collectBtn.style.display = passiveAccumulated >= 1 ? 'block' : 'none';
+  const amount = Math.floor(passiveAccumulated);
+
+  // Update all accumulated displays
+  ['passiveAccum','passiveAccum2','passiveAccum3','boostPageAccum'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = amount.toLocaleString();
+  });
+
+  // Show/hide all collect buttons
+  ['collectBtn','collectBtn2','collectBtn3'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = amount >= 1 ? 'inline-block' : 'none';
+  });
 }
 
 function collectPassive() {
@@ -4898,7 +4962,12 @@ async function initUser(){
 }
 
 // ═══ TIMERS ═══
-setInterval(()=>{if(g.energy<g.maxEnergy){g.energy=Math.min(g.maxEnergy,g.energy+g.rechargeRate);updateUI();}},5000);
+setInterval(()=>{if(g.energy<g.maxEnergy){
+    const wasFull = g.energy >= g.maxEnergy;
+    g.energy=Math.min(g.maxEnergy,g.energy+g.rechargeRate);
+    if(!wasFull && g.energy >= g.maxEnergy) showToast('⚡ Energy full! Tap now!');
+    updateUI();
+  }},5000);
 setInterval(()=>{checkLevelUp();saveGame();},5000);
 
 // ═══ START ═══
@@ -5027,7 +5096,14 @@ function buyArtifact(id) {
   if((g.keys||0) < art.keysCost) { showToast('Need '+art.keysCost+' 🔑 XKEY!'); return; }
   g.keys -= art.keysCost;
   g.artifacts[id] = true;
+  // Animate artifact purchase
   showFloat('🔮 '+art.name+'!', window.innerWidth/2, 200, RARITY_COLORS[art.rarity]);
+  showToast('🔮 '+art.name+' unlocked! '+art.desc);
+  // Screen flash effect
+  const flash = document.createElement('div');
+  flash.style.cssText = 'position:fixed;inset:0;background:'+RARITY_COLORS[art.rarity]+';opacity:0.15;z-index:9998;pointer-events:none;transition:opacity 0.5s;';
+  document.body.appendChild(flash);
+  setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),500); },100);
   updateUI(); updateKeysUI(); saveGame(); renderArtifacts(); checkAchievements();
 }
 
