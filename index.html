@@ -1676,6 +1676,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 </div>
 
+<!-- ARTIFACTS PAGE -->
+<div class="page" id="pageArtifacts">
+  <div style="background:linear-gradient(135deg,rgba(123,47,255,0.1),rgba(0,245,255,0.06));border:1px solid rgba(123,47,255,0.3);border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;">
+    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;">🔮 ARTIFACTS</div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;">Rare items that boost your power</div>
+    <div style="font-size:12px;color:var(--accent);margin-top:6px;font-family:Orbitron,monospace;" id="artifactsCount">0/12 collected</div>
+  </div>
+  <div id="artifactsList"></div>
+</div>
+
 <!-- WHEEL -->
 <div class="page" id="pageWheel">
   <div class="section-title">🎰 Fortune Wheel</div>
@@ -3580,11 +3590,20 @@ function checkKeyReward(oldLevel, newLevel) {
 
 // ═══ PROMO CODES ═══
 const PROMO_CODES = {
-  'XSPACE2026':  {reward:'coins', value:10000, msg:'+10,000 XSPC! 🪐'},
-  'LAUNCH':      {reward:'coins', value:25000, msg:'+25,000 XSPC! 🚀'},
-  'XKEY2026':    {reward:'key',   value:3,     msg:'+3 XKEY! 🔑'},
-  'SPACE100':    {reward:'coins', value:5000,  msg:'+5,000 XSPC! 🌌'},
-  'WELCOMEGIFT': {reward:'both',  value:5000, value2:1, msg:'+5,000 XSPC + 1 XKEY! 🎁'},
+  'XSPACE2026':  {reward:'coins', value:10000,  msg:'+10,000 XSPC! 🪐'},
+  'LAUNCH':      {reward:'coins', value:25000,  msg:'+25,000 XSPC! 🚀'},
+  'XKEY2026':    {reward:'key',   value:3,      msg:'+3 XKEY! 🔑'},
+  'SPACE100':    {reward:'coins', value:5000,   msg:'+5,000 XSPC! 🌌'},
+  'WELCOMEGIFT': {reward:'both',  value:5000,  value2:1, msg:'+5,000 XSPC + 1 XKEY! 🎁'},
+  'XSPC_TG':     {reward:'both',  value:8000,  value2:1, msg:'+8,000 XSPC + 1 XKEY! 📢'},
+  'GALAXY2026':  {reward:'coins', value:15000,  msg:'+15,000 XSPC! 🌌'},
+  'MINEHARD':    {reward:'coins', value:7500,   msg:'+7,500 XSPC! ⛏️'},
+  'PLANET5':     {reward:'both',  value:10000, value2:2, msg:'+10,000 XSPC + 2 XKEY! 🪐'},
+  'XSPACE_VIP':  {reward:'both',  value:20000, value2:3, msg:'+20,000 XSPC + 3 XKEY! 👑'},
+  'CRYPTO100':   {reward:'coins', value:12000,  msg:'+12,000 XSPC! 🔥'},
+  'TONCHAIN':    {reward:'both',  value:6000,  value2:1, msg:'+6,000 XSPC + 1 XKEY! ⛓️'},
+  'SUMMER2026':  {reward:'coins', value:30000,  msg:'+30,000 XSPC! ☀️'},
+  'ASTEROID':    {reward:'both',  value:5000,  value2:2, msg:'+5,000 XSPC + 2 XKEY! ☄️'},
 };
 
 function redeemPromo() {
@@ -3708,20 +3727,23 @@ function updateWhitepaperProgress() {
 
 // Fake but convincing player counter based on time
 async function updatePlayerCounter() {
+  const el = document.getElementById('playerCounter');
+  // Show fallback immediately
+  const base = 12847;
+  const hrs = Math.floor((Date.now() - new Date('2026-05-31').getTime()) / 3600000);
+  const fallback = (base + hrs * 3) + Math.floor(Math.random() * 10);
+  if(el && el.textContent === '...') el.textContent = fallback.toLocaleString();
+  // Then try API
   try {
-    const r = await fetch(`${API_URL}/stats`);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    const r = await fetch(`${API_URL}/stats`, {signal: controller.signal});
+    clearTimeout(timer);
     const d = await r.json();
     const real = d.total_players || 0;
-    // Show real + small cosmetic buffer for confidence
-    const display = Math.max(real, 12847) + Math.floor(Math.random() * 10);
-    const el = document.getElementById('playerCounter');
-    if(el) el.textContent = display.toLocaleString();
+    if(el) el.textContent = (Math.max(real, base) + Math.floor(Math.random() * 10)).toLocaleString();
   } catch(e) {
-    // Fallback
-    const base = 12847;
-    const hrs = Math.floor((Date.now() - new Date('2026-05-31').getTime()) / 3600000);
-    const el = document.getElementById('playerCounter');
-    if(el) el.textContent = (base + hrs*3).toLocaleString();
+    if(el) el.textContent = fallback.toLocaleString();
   }
 }
 
@@ -3730,13 +3752,17 @@ setInterval(updatePlayerCounter, 30000);
 
 // ═══ PARTNER TASKS ═══
 const PARTNER_TASKS = [
-  {id:'tg_channel',  name:'Join XSPACECOIN Channel', icon:'📢', desc:'Subscribe to our Telegram channel', reward:5000,  rewardKey:0, url:'https://t.me/xspacecoin',     type:'telegram'},
-  {id:'tg_chat',     name:'Join Community Chat',     icon:'💬', desc:'Join our community discussion',    reward:3000,  rewardKey:0, url:'https://t.me/xspacecoin_chat', type:'telegram'},
-  {id:'share_game',  name:'Share the Game',          icon:'📤', desc:'Share XSPACECOIN with friends',    reward:2000,  rewardKey:1, url:'',                              type:'share'},
-  {id:'invite_3',    name:'Invite 3 Friends',        icon:'👥', desc:'Have 3 referrals',                reward:10000, rewardKey:1, url:'',                              type:'referral', need:3},
-  {id:'invite_10',   name:'Invite 10 Friends',       icon:'🚀', desc:'Have 10 referrals',               reward:50000, rewardKey:3, url:'',                              type:'referral', need:10},
-  {id:'reach_lv10',  name:'Reach Level 10',          icon:'🏆', desc:'Become a Diamond miner',          reward:8000,  rewardKey:1, url:'',                              type:'level', need:10},
-  {id:'reach_lv25',  name:'Reach Level 25',          icon:'🌌', desc:'Reach Cosmic rank',               reward:30000, rewardKey:2, url:'',                              type:'level', need:25},
+  {id:'tg_channel',  name:'Join XSPACECOIN Channel', icon:'📢', desc:'Subscribe to our main channel',      reward:5000,  rewardKey:0, url:'https://t.me/xspacecoin',       type:'telegram'},
+  {id:'tg_chat',     name:'Join Community Chat',     icon:'💬', desc:'Join our community discussion',      reward:3000,  rewardKey:0, url:'https://t.me/xspacecoin_chat',  type:'telegram'},
+  {id:'tg_news',     name:'Follow News Channel',     icon:'📰', desc:'Get the latest XSPACECOIN news',     reward:2500,  rewardKey:0, url:'https://t.me/xspacecoin',       type:'telegram'},
+  {id:'follow_x',    name:'Follow on X / Twitter',   icon:'🐦', desc:'Follow @xspacecoin on X',            reward:4000,  rewardKey:0, url:'https://x.com/xspacecoin',      type:'telegram'},
+  {id:'share_game',  name:'Share the Game',          icon:'📤', desc:'Share XSPACECOIN with friends',      reward:2000,  rewardKey:1, url:'',                               type:'share'},
+  {id:'invite_3',    name:'Invite 3 Friends',        icon:'👥', desc:'Have 3 referrals',                   reward:10000, rewardKey:1, url:'',                               type:'referral', need:3},
+  {id:'invite_10',   name:'Invite 10 Friends',       icon:'🚀', desc:'Have 10 referrals',                  reward:50000, rewardKey:3, url:'',                               type:'referral', need:10},
+  {id:'invite_25',   name:'Invite 25 Friends',       icon:'🌌', desc:'Become a space ambassador!',         reward:150000,rewardKey:5, url:'',                               type:'referral', need:25},
+  {id:'reach_lv10',  name:'Reach Level 10',          icon:'🏆', desc:'Become a Diamond miner',             reward:8000,  rewardKey:1, url:'',                               type:'level', need:10},
+  {id:'reach_lv25',  name:'Reach Level 25',          icon:'🌌', desc:'Reach Cosmic rank',                  reward:30000, rewardKey:2, url:'',                               type:'level', need:25},
+  {id:'reach_lv50',  name:'Reach Level 50',          icon:'☀️', desc:'Become a SUN GOD!',               reward:100000,rewardKey:5, url:'',                               type:'level', need:50},
 ];
 
 const NEWS_ITEMS = [
@@ -4642,22 +4668,2933 @@ function renderFullCards() {
 }
 
 async function initUser(){
-  let userId,username='',fullName='',referrerId=null;
-  const tg=window.Telegram?.WebApp;
-  if(tg&&tg.initDataUnsafe?.user){
-    const u=tg.initDataUnsafe.user;userId=u.id;username=u.username||'';fullName=u.first_name||'';
-    const sp=tg.initDataUnsafe?.start_param;
-    if(sp?.startsWith('ref_')){referrerId=parseInt(sp.replace('ref_',''));if(referrerId===userId)referrerId=null;}
-  }else{
-    const p=new URLSearchParams(window.location.search);
-    userId=parseInt(p.get('user_id'));username=p.get('username')||'';fullName=p.get('full_name')||'';
-    const ref=p.get('ref');if(ref)referrerId=parseInt(ref);
+  let userId, username='', fullName='', referrerId=null;
+  const tg = window.Telegram?.WebApp;
+  if(tg && tg.initDataUnsafe?.user){
+    const u = tg.initDataUnsafe.user;
+    userId = u.id; username = u.username||''; fullName = u.first_name||'';
+    const sp = tg.initDataUnsafe?.start_param || '';
+    if(sp.startsWith('ref_')){
+      const rid = parseInt(sp.replace('ref_',''));
+      if(!isNaN(rid) && rid !== userId) referrerId = rid;
+    } else if(/^\d+$/.test(sp)){
+      const rid = parseInt(sp);
+      if(!isNaN(rid) && rid !== userId) referrerId = rid;
+    }
+  } else {
+    const p = new URLSearchParams(window.location.search);
+    userId = parseInt(p.get('user_id') || p.get('id') || '0');
+    username = p.get('username')||'';
+    fullName = p.get('full_name')||'';
+    const ref = p.get('ref') || p.get('referrer') || p.get('start');
+    if(ref){ const rid=parseInt(ref.replace('ref_','')); if(!isNaN(rid)&&rid!==userId) referrerId=rid; }
   }
-  if(!userId||isNaN(userId)){document.getElementById('refLink').textContent='Open in Telegram to get your link';return;}
-  g.telegramId=userId;
+  if(!userId||isNaN(userId)){
+    const refEl=document.getElementById('refLink');
+    if(refEl) refEl.textContent='Open in Telegram to get your link';
+    return;
+  }
+  g.telegramId = userId;
   saveGame();
-  await apiRegister(userId,username,fullName,referrerId);
-  // Update ref link after we have the ID
+  await apiRegister(userId, username, fullName, referrerId);
+  const refEl = document.getElementById('refLink');
+  if(refEl) refEl.textContent = getRefLink();
+  const fe = document.getElementById('friendEarnings');
+  if(fe) fe.textContent = ((g.friends||0)*500).toLocaleString();
+  loadFriends(userId);
+}
+
+// ═══ TIMERS ═══
+setInterval(()=>{if(g.energy<g.maxEnergy){g.energy=Math.min(g.maxEnergy,g.energy+g.rechargeRate);updateUI();}},5000);
+setInterval(()=>{checkLevelUp();saveGame();},5000);
+
+// ═══ START ═══
+loadGame();
+
+// Init passive income from offline time
+(function(){
+  const saved = localStorage.getItem('xspacecoin_v2');
+  if(saved){
+    try{
+      const data = JSON.parse(saved);
+      if(data.lastSaveTime && data.boostCards){
+        const hrs = (Date.now() - data.lastSaveTime) / 3600000;
+        let rate = data.level || 1;
+        BOOST_CARDS.forEach(c => { rate += c.baseBonus * (data.boostCards[c.id]||0); });
+        const earned = Math.floor(rate * hrs);
+        if(earned > 0) {
+          passiveAccumulated = earned;
+          if(hrs >= 0.5) {
+            setTimeout(() => {
+              const t = document.getElementById('luckyToast');
+              if(t) {
+                const hrsStr = hrs >= 1 ? Math.floor(hrs)+'h' : Math.floor(hrs*60)+'m';
+                t.textContent = `⛏️ Offline ${hrsStr}: +${earned.toLocaleString()} XSPC accumulated!`;
+                t.classList.remove('show'); void t.offsetWidth; t.classList.add('show');
+                setTimeout(()=>t.classList.remove('show'), 3500);
+              }
+            }, 2500);
+          }
+        }
+      }
+    }catch(e){}
+  }
+})();
+
+// Show offline recovery toast if energy was restored
+(function(){
+  const saved = localStorage.getItem('xspacecoin_v2');
+  if(saved){
+    try{
+      const data = JSON.parse(saved);
+      if(data.lastSaveTime){
+        const secs = Math.floor((Date.now() - data.lastSaveTime) / 1000);
+        const restored = Math.floor((secs / 5) * (data.rechargeRate||1));
+        if(restored >= 10){
+          setTimeout(()=>{
+            const t = document.getElementById('luckyToast');
+            const mins = Math.floor(secs/60);
+            t.textContent = mins>0 ? `⚡ +${Math.min(restored, data.maxEnergy||500)} energy (${mins}m offline)` : `⚡ +${restored} energy restored!`;
+            t.classList.remove('show'); void t.offsetWidth; t.classList.add('show');
+            setTimeout(()=>t.classList.remove('show'), 3000);
+          }, 1000);
+        }
+      }
+    }catch(e){}
+  }
+})();
+
+updateUI();
+updateBoostsUI();
+drawWheel(0);
+updateWheelBtn();
+updatePlanet(g.level, true);
+renderBoostCards();
+renderQuest();
+updatePassive();
+
+if(window.Telegram?.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();}
+initUser();
+
+// Show daily streak after short delay
+setTimeout(showStreakOverlay, 1500);
+// ═══ ARTIFACTS ═══
+const ARTIFACTS_LIST = [
+  {id:'space_crystal',  name:'Space Crystal',   icon:'💎', rarity:'Common',    desc:'+5% tap power',        unlockLevel:5,  unlockCost:5000,   keysCost:0},
+  {id:'moon_dust',      name:'Moon Dust',        icon:'🌙', rarity:'Common',    desc:'+5% energy regen',     unlockLevel:8,  unlockCost:8000,   keysCost:0},
+  {id:'solar_fragment', name:'Solar Fragment',   icon:'☀️', rarity:'Uncommon',  desc:'+10% passive income',  unlockLevel:12, unlockCost:20000,  keysCost:0},
+  {id:'alien_core',     name:'Alien Core',       icon:'👽', rarity:'Uncommon',  desc:'+10% tap power',       unlockLevel:18, unlockCost:40000,  keysCost:0},
+  {id:'dark_matter',    name:'Dark Matter',      icon:'🕳️', rarity:'Rare',      desc:'+20% passive income',  unlockLevel:25, unlockCost:100000, keysCost:0},
+  {id:'nebula_core',    name:'Nebula Core',      icon:'🌌', rarity:'Rare',      desc:'+15% all income',      unlockLevel:30, unlockCost:200000, keysCost:0},
+  {id:'ancient_relic',  name:'Ancient Relic',    icon:'🏺', rarity:'Epic',      desc:'+25% tap power',       unlockLevel:35, unlockCost:500000, keysCost:0},
+  {id:'void_crystal',   name:'Void Crystal',     icon:'🔮', rarity:'Epic',      desc:'+25% passive income',  unlockLevel:40, unlockCost:800000, keysCost:0},
+  {id:'star_heart',     name:'Star Heart',       icon:'💫', rarity:'Legendary', desc:'+50% passive income',  unlockLevel:50, unlockCost:2000000,keysCost:0},
+  {id:'quantum_shard',  name:'Quantum Shard',    icon:'⚛️', rarity:'Legendary', desc:'+30% all bonuses',     unlockLevel:55, unlockCost:5000000,keysCost:0},
+  {id:'cosmos_gem',     name:'Cosmos Gem',       icon:'🌟', rarity:'Mythic',    desc:'+100% passive income', unlockLevel:58, unlockCost:10000000,keysCost:0},
+  {id:'solar_crown',    name:'Solar Crown',      icon:'👑', rarity:'Mythic',    desc:'+100% all bonuses',    unlockLevel:60, unlockCost:0,      keysCost:20},
+];
+
+const RARITY_COLORS = {Common:'#9e9e9e',Uncommon:'#00ff88',Rare:'#00f5ff',Epic:'#7b2fff',Legendary:'#ff9500',Mythic:'#ff3366'};
+
+function renderArtifacts() {
+  const owned = g.artifacts || {};
+  const count = Object.keys(owned).length;
+  const el = document.getElementById('artifactsCount'); if(el) el.textContent = count+'/12 collected';
+  const ck = document.getElementById('artifactsCountKeys'); if(ck) ck.textContent = count+'/12';
+  const grid = document.getElementById('artifactsList'); if(!grid) return;
+
+  grid.innerHTML = ARTIFACTS_LIST.map(a => {
+    const isOwned = !!owned[a.id];
+    const color = RARITY_COLORS[a.rarity] || '#fff';
+    const canAfford = g.level >= a.unlockLevel && (a.keysCost ? (g.keys||0)>=a.keysCost : g.coins>=a.unlockCost);
+    const cost = a.keysCost ? a.keysCost+' 🔑' : a.unlockCost>=1000000 ? (a.unlockCost/1000000).toFixed(1)+'M 🪐' : a.unlockCost>=1000 ? (a.unlockCost/1000).toFixed(0)+'K 🪐' : a.unlockCost+' 🪐';
+    const clickFn = isOwned ? '' : 'buyArtifact('+JSON.stringify(a.id)+')';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px;background:'+(isOwned?'rgba(100,100,200,0.08)':'var(--card)')+';border:1px solid '+(isOwned?color+'66':'var(--border)')+';border-radius:14px;margin-bottom:8px;cursor:'+(isOwned?'default':'pointer')+';" onclick="'+clickFn+'">'
+      +'<div style="width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,'+color+'22,'+color+'11);border:1px solid '+color+'44;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">'+(isOwned?a.icon:'🔒')+'</div>'
+      +'<div style="flex:1;">'
+        +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;"><span style="font-size:13px;font-weight:700;">'+a.name+'</span><span style="font-size:9px;font-family:Orbitron,monospace;color:'+color+';background:'+color+'22;padding:1px 6px;border-radius:4px;">'+a.rarity+'</span></div>'
+        +'<div style="font-size:11px;color:#00ff88;">'+a.desc+'</div>'
+        +'<div style="font-size:10px;color:#4a6080;margin-top:2px;">Unlocks at Level '+a.unlockLevel+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0;">'
+        +(isOwned?'<div style="color:#00ff88;font-size:20px;">✅</div>'
+          :g.level<a.unlockLevel?'<div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">Lv'+a.unlockLevel+'</div>'
+          :'<div style="font-size:11px;font-weight:700;font-family:Orbitron,monospace;color:'+(canAfford?'#FFD700':'#4a6080')+';">'+cost+'</div>'+(canAfford?'<div style="font-size:9px;color:#00ff88;">TAP TO BUY</div>':''))
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function buyArtifact(id) {
+  const art = ARTIFACTS_LIST.find(a=>a.id===id);
+  if(!art) return;
+  if(g.level < art.unlockLevel) { showToast('Need Level '+art.unlockLevel+'!'); return; }
+  if(!g.artifacts) g.artifacts = {};
+  if(g.artifacts[id]) { showToast('Already owned!'); return; }
+  if(art.keysCost) {
+    if((g.keys||0) < art.keysCost) { showToast('Need '+art.keysCost+' 🔑!'); return; }
+    g.keys -= art.keysCost;
+  } else {
+    if(g.coins < art.unlockCost) { showToast('Not enough XSPC!'); return; }
+    g.coins -= art.unlockCost;
+  }
+  g.artifacts[id] = true;
+  showFloat('🔮 '+art.name+'!', window.innerWidth/2, 200, RARITY_COLORS[art.rarity]);
+  updateUI(); updateKeysUI(); saveGame(); renderArtifacts(); checkAchievements();
+}
+
+
+</script>
+</body>
+</html>function renderClansList() {
+  const list = document.getElementById('clansList');
+  if(!list) return;
+  list.innerHTML = SAMPLE_CLANS.map(c => {
+    const isMyClam = g.clan && g.clan.tag === c.tag;
+    const safeName = c.name.replace(/'/g, "\\'");
+    const safeTag  = c.tag.replace(/'/g, "\\'");
+    const joinBtn = '<button onclick="joinClan(\'' + safeName + '\',\'' + safeTag + '\')" style="padding:6px 12px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:8px;color:var(--accent);font-size:11px;cursor:pointer;font-family:Orbitron,monospace;">JOIN</button>';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid '+(isMyClam?'rgba(0,255,136,0.3)':'var(--border)')+';border-radius:14px;margin-bottom:8px;">'
+      +'<div style="font-size:13px;font-weight:700;color:#4a6080;width:24px;text-align:center;">#'+c.rank+'</div>'
+      +'<div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,rgba(0,245,255,0.2),rgba(123,47,255,0.1));border:1px solid rgba(0,245,255,0.2);display:flex;align-items:center;justify-content:center;font-family:Orbitron,monospace;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;">'+c.tag+'</div>'
+      +'<div style="flex:1;">'
+        +'<div style="font-size:13px;font-weight:700;">'+c.name+'</div>'
+        +'<div style="font-size:11px;color:#4a6080;">👥 '+c.members+' · '+Math.floor(c.totalCoins/1000)+'K XSPC</div>'
+      +'</div>'
+      +(isMyClam ? '<span style="color:#00ff88;font-size:12px;">✅ Joined</span>' : joinBtn)
+      +'</div>';
+  }).join('');
+}
+
+function getPlanetForLevel(lv){
+  let planet=PLANETS[0];
+  for(const p of PLANETS) if(lv>=p.minLevel) planet=p;
+  return planet;
+}
+
+const LEVELS=[
+  0,200,500,1000,2000,3500,5500,8000,11500,15500,20500,
+  27000,35000,45000,57000,71000,87000,106000,128000,154000,184000,
+  220000,262000,311000,368000,434000,510000,597000,696000,808000,935000,
+  1080000,1244000,1430000,1641000,1881000,2154000,2464000,2816000,3214000,3664000,
+  4172000,4744000,5387000,6108000,6915000,7816000,8820000,9936000,11175000,12550000,
+  14100000,15800000,17700000,19800000,22100000,24700000,27600000,30800000,34400000,38400000
+];
+const LEVEL_NAMES=[
+  "",
+  "☿ Mercury I","☿ Mercury II","☿ Mercury III","☿ Mercury IV","♀ Venus I",
+  "♀ Venus II","♀ Venus III","♀ Venus IV","♀ Venus V","🌍 Earth I",
+  "🌍 Earth II","🌍 Earth III","🌍 Earth IV","🌍 Earth V","🔴 Mars I",
+  "🔴 Mars II","🔴 Mars III","🔴 Mars IV","🔴 Mars V","🔴 Mars VI",
+  "🔴 Mars VII","🔴 Mars VIII","🔴 Mars IX","🔴 Mars X","🟠 Jupiter I",
+  "🟠 Jupiter II","🟠 Jupiter III","🟠 Jupiter IV","🟠 Jupiter V","🟠 Jupiter VI",
+  "🟠 Jupiter VII","🟠 Jupiter VIII","🟠 Jupiter IX","🟠 Jupiter X","💍 Saturn I",
+  "💍 Saturn II","💍 Saturn III","💍 Saturn IV","💍 Saturn V","💍 Saturn VI",
+  "🔵 Uranus I","🔵 Uranus II","🔵 Uranus III","🔵 Uranus IV","💙 Neptune I",
+  "💙 Neptune II","💙 Neptune III","💙 Neptune IV","💙 Neptune V","🩶 Pluto I",
+  "🩶 Pluto II","🩶 Pluto III","🩶 Pluto IV","🩶 Pluto V","🌑 Nibiru I",
+  "🌑 Nibiru II","🌑 Nibiru III","🌑 Nibiru IV","🌑 Nibiru V","☀️ SUN GOD"
+];
+const LEAGUES=[
+  {name:"Iron",     icon:"⚪",min:0,         color:"#aaa"},
+  {name:"Bronze",   icon:"🥉",min:5000,      color:"#cd7f32"},
+  {name:"Silver",   icon:"🥈",min:20000,     color:"#c0c0c0"},
+  {name:"Gold",     icon:"🥇",min:80000,     color:"#ffd700"},
+  {name:"Platinum", icon:"💠",min:300000,    color:"#00bcd4"},
+  {name:"Diamond",  icon:"💎",min:1000000,   color:"#b9f2ff"},
+  {name:"Master",   icon:"👑",min:5000000,   color:"#ff9500"},
+  {name:"Legend",   icon:"🚀",min:12000000,  color:"#ff3366"},
+];
+const ACHIEVEMENTS=[
+  {id:"first", name:"🎯 First Tap",   desc:"Tap for the first time",   req:()=>g.clicks>=1,       reward:10},
+  {id:"c100",  name:"⛏️ 100 Taps",   desc:"Tap 100 times",             req:()=>g.clicks>=100,     reward:25},
+  {id:"c1000", name:"💪 1K Taps",    desc:"Tap 1,000 times",           req:()=>g.clicks>=1000,    reward:100},
+  {id:"c10k",  name:"🔥 10K Taps",   desc:"Tap 10,000 times",          req:()=>g.clicks>=10000,   reward:500},
+  {id:"m1000", name:"💎 1K XSPC",    desc:"Earn 1,000 XSPC",           req:()=>g.coins>=1000,     reward:50},
+  {id:"m10k",  name:"👑 10K XSPC",   desc:"Earn 10,000 XSPC",          req:()=>g.coins>=10000,    reward:200},
+  {id:"m100k", name:"🚀 100K XSPC",  desc:"Earn 100,000 XSPC",         req:()=>g.coins>=100000,   reward:1000},
+  {id:"m1m",   name:"🌌 1M XSPC",    desc:"Earn 1,000,000 XSPC",       req:()=>g.coins>=1000000,  reward:5000},
+  {id:"lv5",   name:"🥇 Level 5",    desc:"Reach level 5",             req:()=>g.level>=5,        reward:200},
+  {id:"lv10",  name:"💎 Level 10",   desc:"Reach level 10",            req:()=>g.level>=10,       reward:500},
+  {id:"lv25",  name:"🌌 Level 25",   desc:"Reach level 25",            req:()=>g.level>=25,       reward:2000},
+  {id:"lv50",  name:"⭐ Max Level",  desc:"Reach max level 50",        req:()=>g.level>=50,       reward:50000},
+  {id:"combo10",name:"🔥 Combo x10", desc:"Get x10 combo",             req:()=>g.maxCombo>=10,    reward:50},
+  {id:"combo20",name:"💥 Combo x20", desc:"Get x20 combo",             req:()=>g.maxCombo>=20,    reward:200},
+  {id:"spin3",  name:"🎰 Gambler",   desc:"Spin the wheel 3 times",    req:()=>g.totalSpins>=3,   reward:100},
+  {id:"mars",   name:"🔴 Mars",      desc:"Unlock Mars planet",        req:()=>g.level>=5,        reward:300},
+  {id:"jupiter",name:"🟠 Jupiter",   desc:"Unlock Jupiter planet",     req:()=>g.level>=15,       reward:1000},
+  {id:"neptune",name:"🔵 Neptune",   desc:"Unlock Neptune planet",     req:()=>g.level>=25,       reward:2500},
+  {id:"saturn", name:"💍 Saturn",    desc:"Unlock Saturn planet",      req:()=>g.level>=30,       reward:5000},
+  {id:"star",   name:"⭐ Star",      desc:"Become a star!",            req:()=>g.level>=50,       reward:100000},
+];
+const DAILY_TASKS=[
+  {id:"tap50",   name:"⛏️ Mine 50 times", goal:50,  field:"clicks",     reward:200,label:"taps"},
+  {id:"earn500", name:"🪐 Earn 500 XSPC", goal:500, field:"coins",      reward:300,label:"XSPC"},
+  {id:"spin1",   name:"🎰 Spin the wheel",goal:1,   field:"todaySpins", reward:150,label:"spins"},
+  {id:"login",   name:"📅 Daily login",   goal:1,   field:"loggedIn",   reward:100,label:""},
+];
+const WHEEL_PRIZES=[
+  {label:"+100 XSPC", type:"coins", value:100,  color:"#7b2fff",emoji:"🪐"},
+  {label:"+300 NRG",  type:"energy",value:300,  color:"#00ff88",emoji:"⚡"},
+  {label:"+500 XSPC", type:"coins", value:500,  color:"#00f5ff",emoji:"🪐"},
+  {label:"+1000 XSPC",type:"coins", value:1000, color:"#ffd700",emoji:"🪐"},
+  {label:"FULL NRG",  type:"energy",value:9999, color:"#00cc66",emoji:"⚡"},
+  {label:"+200 XSPC", type:"coins", value:200,  color:"#ff9500",emoji:"🪐"},
+  {label:"+2000 XSPC",type:"coins", value:2000, color:"#ff3366",emoji:"🪐"},
+  {label:"+500 NRG",  type:"energy",value:500,  color:"#00f5ff",emoji:"⚡"},
+  {label:"+1 KEY",    type:"key",   value:1,    color:"#ffd700",emoji:"🔑"},
+];
+
+let g={
+  coins:0,clicks:0,level:1,perClick:1,
+  energy:500,maxEnergy:500,rechargeRate:1,
+  combo:0,maxCombo:0,lastClick:0,
+  turboActive:false,turboLeft:3,energyBoostLeft:3,
+  multitapLevel:1,multitapCost:500,
+  maxenergyLevel:1,maxenergyCost:1000,
+  rechargeLevel:1,rechargeCost:2000,
+  achievements:{},friends:0,
+  lastSpinDate:'',totalSpins:0,todaySpins:0,
+  dailyTasksDone:{},lastTaskReset:'',loggedIn:1,
+  telegramId:null,currentPlanetName:'Earth',
+  hitCount:0,
+};
+
+function loadGame(){
+  try{const s=localStorage.getItem('xspacecoin_v2');if(s)Object.assign(g,JSON.parse(s));}catch(e){}
+  const today=new Date().toDateString();
+  if(g.lastTaskReset!==today){g.lastTaskReset=today;g.dailyTasksDone={};g.todaySpins=0;g.loggedIn=1;}
+  // Level is based on total coins earned, never decreases
+  // Init totalEarned if not set - use max of coins and level threshold
+  if(!g.totalEarned || g.totalEarned < (LEVELS[(g.level||1)-1]||0)) {
+    g.totalEarned = Math.max(g.coins||0, LEVELS[(g.level||1)-1]||0);
+  }
+  const correctLevel = getLevel(g.totalEarned);
+  // Only increase level, never decrease
+  if(correctLevel > (g.level||1)) {
+    g.level = correctLevel;
+  }
+  // Ensure level is at least 1
+  if(!g.level || g.level < 1) g.level = 1;
+  // Recalculate perClick from level + multitap
+  g.perClick = g.level + ((g.multitapLevel||1) - 1);
+  // Fix maxEnergy based on level
+  const baseEnergyCalc = 500 + Math.floor(g.level/5) * 100 + ((g.maxenergyLevel||1)-1)*500;
+  if(g.maxEnergy < baseEnergyCalc) g.maxEnergy = baseEnergyCalc;
+  // Fix maxEnergy — should be 500 + level*100 + maxenergy upgrades
+  const baseEnergy = 500 + (g.level - 1) * 100 + ((g.maxenergyLevel||1) - 1) * 500;
+  if(g.maxEnergy < baseEnergy) g.maxEnergy = baseEnergy;
+
+  // Offline energy recovery — restore energy based on time away
+  if(g.lastSaveTime){
+    const now = Date.now();
+    const secondsAway = Math.floor((now - g.lastSaveTime) / 1000);
+    const energyRestored = Math.floor((secondsAway / 5) * g.rechargeRate);
+    if(energyRestored > 0){
+      g.energy = Math.min(g.maxEnergy, g.energy + energyRestored);
+    }
+  }
+  g.lastSaveTime = Date.now();
+}
+function saveGame(){
+  g.lastSaveTime = Date.now();
+  localStorage.setItem('xspacecoin_v2',JSON.stringify(g));
+  apiSave();
+}
+
+// ═══ CLICK HANDLER ═══
+function handleClick(e){
+  if(g.energy<=0){showFloat("❌ No energy!",e.clientX,e.clientY,"#ff3366");return;}
+  const now=Date.now();
+  g.combo=(now-g.lastClick<1500)?g.combo+1:1;
+  g.lastClick=now;
+  g.maxCombo=Math.max(g.maxCombo,g.combo);
+  g.hitCount++;
+
+  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier());
+  const comboMult = 1 + (g.comboMultLevel||0) * 2;
+  if(g.combo>=10)reward+=20*comboMult;
+  else if(g.combo>=5)reward+=10*comboMult;
+  else if(g.combo>=3)reward+=5*comboMult;
+
+  const lucky=Math.random()<0.05;
+  if(lucky){
+    reward+=50;
+    const t=document.getElementById('luckyToast');
+    t.classList.remove('show');void t.offsetWidth;t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2200);
+  }
+
+  // Critical hit chance
+  const critChance = (g.critLevel||0) * 0.05;
+  if(Math.random() < critChance) {
+    reward *= 3;
+    spawnCoinBurst(e.clientX, e.clientY, reward);
+  showFloat('💥 CRIT!', e.clientX, e.clientY-40, '#ff3366');
+  }
+  // Energy saver
+  // Unlimited energy from VIP
+  const unlimitedEnergy = g.vip && g.vip.energyUntil && g.vip.energyUntil > Date.now();
+  const saveChance = (g.energySaveLevel||0) * 0.10;
+  const energyCost = unlimitedEnergy ? 0 : (Math.random() < saveChance ? 0 : 1);
+  g.coins+=reward; g.clicks++;
+  g.totalEarned = (g.totalEarned||0) + reward;
+  if(g.clicks===1||g.lastFirstTapDate!==new Date().toDateString()) checkFirstTapBonus(); g.energy=Math.max(0,g.energy-energyCost);
+
+  // Visual effects
+  spawnHitEffects(e);
+  spawnParticles(e.clientX, e.clientY);
+  if(g.combo>=5) spawnShockwave();
+
+  let txt=`+${reward}`;
+  if(g.combo>=3)txt=`+${reward} 🔥×${g.combo}`;
+  showFloat(txt,e.clientX,e.clientY,g.combo>=10?"#ff3366":g.combo>=5?"#ff9500":"#FFD700");
+
+  const cd=document.getElementById('comboDisplay');
+  if(g.combo>=3){cd.textContent=`🔥 COMBO ×${g.combo}`;cd.style.color=g.combo>=10?"#ff3366":g.combo>=5?"#ff9500":"#FFD700";cd.classList.add('active');setTimeout(()=>cd.classList.remove('active'),300);}
+  else cd.textContent='';
+
+  // Speed up orbit on combo
+  const rings=document.querySelectorAll('.orbit-ring');
+  const speed=g.combo>=10?1:g.combo>=5?3:g.combo>=3?6:12;
+  rings[0].style.animationDuration=speed+'s';
+  rings[1].style.animationDuration=(speed*0.7)+'s';
+  setTimeout(()=>{rings[0].style.animationDuration='12s';rings[1].style.animationDuration='8s';},2000);
+
+  checkLevelUp(); checkAchievements(); updateUI(); // Init quest with retry
+(function initQuest() {
+  renderQuest();
+  // Retry if still loading after 1s
+  setTimeout(() => {
+    const nameEl = document.getElementById('questName');
+    if(nameEl && nameEl.textContent === 'Loading...') renderQuest();
+  }, 1000);
+})(); saveGame();
+}
+
+function spawnHitEffects(e){
+  const orbit=document.getElementById('coinOrbit');
+  const btn=document.getElementById('coinBtn');
+  const rect=btn.getBoundingClientRect();
+
+  // Hit ring
+  const ring=document.createElement('div');
+  ring.className='hit-ring';
+  const planet=getPlanetForLevel(g.level);
+  ring.style.color=planet.glowColor.replace('rgba','rgb').replace(/,[^,]+\)$/,')');
+  ring.style.left='50%'; ring.style.top='50%';
+  ring.style.transform='translate(-50%,-50%)';
+  ring.style.position='absolute';
+  orbit.appendChild(ring);
+  setTimeout(()=>ring.remove(),500);
+
+  // Crater at click point
+  const cx=e.clientX-rect.left, cy=e.clientY-rect.top;
+  const crater=document.createElement('div');
+  crater.className='hit-crater';
+  const size=20+Math.random()*20;
+  crater.style.width=size+'px'; crater.style.height=size+'px';
+  crater.style.left=cx+'px'; crater.style.top=cy+'px';
+  btn.appendChild(crater);
+  setTimeout(()=>crater.remove(),1500);
+}
+
+function spawnParticles(x,y){
+  const planet=getPlanetForLevel(g.level);
+  const colors=[planet.glowColor,'#FFD700','#ffffff',planet.color];
+  const count=g.combo>=5?12:6;
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const size=3+Math.random()*5;
+    const angle=Math.random()*Math.PI*2;
+    const dist=50+Math.random()*80;
+    p.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${x}px;top:${y}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${Math.cos(angle)*dist}px;
+      --ty:${Math.sin(angle)*dist}px;
+      animation-duration:${0.5+Math.random()*0.5}s;
+      box-shadow:0 0 4px currentColor;
+    `;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1000);
+  }
+}
+
+function spawnShockwave(){
+  const orbit=document.getElementById('coinOrbit');
+  const sw=document.createElement('div');
+  sw.className='shockwave';
+  const planet=getPlanetForLevel(g.level);
+  sw.style.borderColor=planet.glowColor;
+  orbit.appendChild(sw);
+  setTimeout(()=>sw.remove(),400);
+}
+
+function showFloat(text,x,y,color){
+  const el=document.createElement('div');
+  el.className='float-coin';el.textContent=text;
+  el.style.left=(x-20)+'px';el.style.top=(y-20)+'px';el.style.color=color;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
+}
+
+// ═══ PLANET SYSTEM ═══
+let currentPlanetClass='planet-earth';
+
+function updatePlanet(level, isInit){
+  const planet=getPlanetForLevel(level);
+  const btn=document.getElementById('coinBtn');
+
+  if(planet.name===g.currentPlanetName && !isInit) return;
+
+  const prevPlanet=g.currentPlanetName;
+  g.currentPlanetName=planet.name;
+
+  // Update CSS class
+  btn.classList.remove('planet-mercury','planet-venus','planet-earth','planet-mars','planet-jupiter','planet-saturn','planet-uranus','planet-neptune','planet-pluto','planet-nibiru','planet-sun');
+  btn.classList.add(planet.cssClass);
+
+  // Saturn rings
+  document.getElementById('saturnRings').style.display = planet.name==='Saturn'?'block':'none';
+
+  // Update glow
+  btn.style.setProperty('--planet-glow', planet.glowColor);
+
+  // Update badges
+  document.getElementById('planetNameBadge').textContent=`${planet.emoji} ${planet.name.toUpperCase()}`;
+  document.getElementById('planetNameBadge').style.color=planet.color;
+  document.getElementById('headerPlanetIcon').innerHTML='<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;">';
+  document.getElementById('menuPlanetIcon').innerHTML='<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:22px;height:22px;vertical-align:middle;border-radius:50%;display:block;margin:0 auto;">';
+
+  // Show unlock popup if changed
+  if(!isInit && planet.name!==prevPlanet){
+    document.getElementById('planetUnlockEmoji').textContent=planet.emoji;
+    document.getElementById('planetUnlockName').textContent=planet.name.toUpperCase();
+    document.getElementById('planetUnlockName').style.color=planet.color;
+    document.getElementById('planetUnlockDesc').textContent=planet.desc;
+    setTimeout(()=>document.getElementById('planetUnlockOverlay').classList.add('show'),500);
+  }
+}
+
+function closePlanetUnlock(){document.getElementById('planetUnlockOverlay').classList.remove('show');}
+
+// ═══ LEVEL ═══
+function getLevel(c){
+  // Use totalEarned for level if available (so spending doesn't reduce level)
+  const earned = Math.max(c, g ? (g.totalEarned||0) : 0);
+  let l=1;
+  for(let i=0;i<LEVELS.length;i++) if(earned>=LEVELS[i]) l=i+1;
+  return Math.min(l,60);
+}
+function getLeague(c){let league=LEAGUES[0];for(const l of LEAGUES)if(c>=l.min)league=l;return league;}
+
+function checkLevelUp(){
+  const nl=getLevel(g.totalEarned || g.coins);
+  if(nl>g.level){
+    const gained = nl - g.level;
+    g.level = nl;
+    g.perClick = nl + ((g.multitapLevel||1) - 1);
+    // +100 max energy every 5 levels
+    const energyGain = Math.floor(nl/5) - Math.floor((nl-gained)/5);
+    if(energyGain > 0) { g.maxEnergy += energyGain * 100; g.energy = g.maxEnergy; }
+    const lvEmoji = document.getElementById('levelupEmoji');
+    const lvSub = document.getElementById('levelupSub');
+    const lvLevel = document.getElementById('levelupLevel');
+    const lvOverlay = document.getElementById('levelupOverlay');
+    const lvRewards = document.getElementById('levelupRewards');
+    if(lvEmoji) lvEmoji.textContent = LEVEL_NAMES[nl].split(' ')[0];
+    if(lvSub) lvSub.textContent = 'You reached ' + LEVEL_NAMES[nl] + '!';
+    if(lvLevel) lvLevel.textContent = 'LEVEL ' + nl;
+    if(lvRewards) {
+      const planet = getPlanetForLevel(nl);
+      lvRewards.innerHTML = '<div style="text-align:center;"><div style="font-size:16px;font-weight:700;color:#FFD700;">+1 ⚡ per tap</div><div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">TAP POWER UP</div></div>'
+        + (planet.bonus ? '<div style="text-align:center;"><div style="font-size:13px;color:#00ff88;">'+planet.bonus+'</div><div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">PLANET BONUS</div></div>' : '');
+    }
+    if(lvOverlay) {
+      lvOverlay.classList.add('show');
+      // Spawn particles
+      spawnLevelUpParticles();
+    }
+    updatePlanet(nl, false);
+    renderBoostCards();
+updateKeysUI();
+renderPartnerTasks(); // tasks page
+updatePlayerCounter();
+updateCountdown();
+    updatePassive();
+    checkKeyReward(g.level - gained, g.level);
+  }
+}
+function closeLevelUp(){document.getElementById('levelupOverlay').classList.remove('show');}
+
+function checkAchievements(){
+  ACHIEVEMENTS.forEach(a=>{
+    if(!g.achievements[a.id]&&a.req()){g.achievements[a.id]=true;g.coins+=a.reward;showFloat(`🏅 +${a.reward}!`,window.innerWidth/2,200,'#FFD700');}
+  });
+}
+
+// ═══ BOOSTS ═══
+function useBoost(type){
+  if(type==='turbo'){
+    if(g.turboLeft<=0){showToast("No turbo left!");return;}
+    g.turboLeft--;g.turboActive=true;
+    const planet=getPlanetForLevel(g.level);
+    document.getElementById('coinBtn').style.boxShadow=`0 0 80px ${planet.glowColor},0 0 160px ${planet.glowColor}`;
+    setTimeout(()=>{g.turboActive=false;document.getElementById('coinBtn').style.boxShadow='';},20000);
+  }else{
+    if(g.energyBoostLeft<=0){showToast("No energy boost left!");return;}
+    g.energyBoostLeft--;g.energy=g.maxEnergy;
+  }
+  updateBoostsUI();saveGame();
+}
+function buyUpgrade(type){
+  if(type==='multitap'){if(g.coins<g.multitapCost){showToast("Not enough XSPC!");return;}g.coins-=g.multitapCost;g.multitapLevel++;g.perClick=g.level+(g.multitapLevel-1);g.multitapCost=Math.floor(g.multitapCost*2.5);}
+  else if(type==='critchance'){
+    if(!g.critLevel) g.critLevel=0; if(!g.critCost) g.critCost=1500;
+    if(g.coins<g.critCost){showToast("Not enough XSPC!");return;}
+    g.coins-=g.critCost; g.critLevel++; g.critCost=Math.floor(g.critCost*2.5);
+  }
+  else if(type==='combomult'){
+    if(!g.comboMultLevel) g.comboMultLevel=0; if(!g.comboMultCost) g.comboMultCost=3000;
+    if(g.coins<g.comboMultCost){showToast("Not enough XSPC!");return;}
+    g.coins-=g.comboMultCost; g.comboMultLevel++; g.comboMultCost=Math.floor(g.comboMultCost*2.5);
+  }
+  else if(type==='energysave'){
+    if(!g.energySaveLevel) g.energySaveLevel=0; if(!g.energySaveCost) g.energySaveCost=2500;
+    if(g.coins<g.energySaveCost){showToast("Not enough XSPC!");return;}
+    g.coins-=g.energySaveCost; g.energySaveLevel++; g.energySaveCost=Math.floor(g.energySaveCost*2.5);
+  }
+  else if(type==='maxenergy'){if(g.coins<g.maxenergyCost){showToast("Not enough XSPC!");return;}g.coins-=g.maxenergyCost;g.maxenergyLevel++;g.maxEnergy+=500;g.energy=Math.min(g.energy+500,g.maxEnergy);g.maxenergyCost=Math.floor(g.maxenergyCost*2.5);}
+  else if(type==='recharge'){if(g.coins<g.rechargeCost){showToast("Not enough XSPC!");return;}g.coins-=g.rechargeCost;g.rechargeLevel++;g.rechargeRate*=2;g.rechargeCost=Math.floor(g.rechargeCost*2.5);}
+  updateBoostsUI();updateUI();saveGame();
+}
+function updateBoostsUI(){
+  document.getElementById('turboCount').textContent=`${g.turboLeft}/3`;
+  document.getElementById('energyBoostCount').textContent=`${g.energyBoostLeft}/3`;
+  document.getElementById('multitapCost').textContent=`${g.multitapCost} 🪐`;
+  document.getElementById('maxenergyCost').textContent=`${g.maxenergyCost} 🪐`;
+  document.getElementById('rechargeCost').textContent=`${g.rechargeCost} 🪐`;
+  document.getElementById('multitapLv').textContent=g.multitapLevel;
+  document.getElementById('maxenergyLv').textContent=g.maxenergyLevel;
+  document.getElementById('rechargeLv').textContent=g.rechargeLevel;
+  const critLv=document.getElementById('critLv'); if(critLv) critLv.textContent=g.critLevel||0;
+  const critCostEl=document.getElementById('critCost'); if(critCostEl) critCostEl.textContent=`${g.critCost||1500} 🪐`;
+  const cmLv=document.getElementById('comboMultLv'); if(cmLv) cmLv.textContent=g.comboMultLevel||0;
+  const cmCost=document.getElementById('comboMultCost'); if(cmCost) cmCost.textContent=`${g.comboMultCost||3000} 🪐`;
+  const esLv=document.getElementById('energySaveLv'); if(esLv) esLv.textContent=g.energySaveLevel||0;
+  const esCost=document.getElementById('energySaveCost'); if(esCost) esCost.textContent=`${g.energySaveCost||2500} 🪐`;
+
+  // Update passive summary on boosts page
+  const rate = getPassiveRate();
+  const tpr = document.getElementById('totalPassiveRate'); if(tpr) tpr.textContent=`+${rate} XSPC/hr`;
+  const bpa = document.getElementById('boostPageAccum'); if(bpa) bpa.textContent=Math.floor(passiveAccumulated).toLocaleString();
+  const cb2 = document.getElementById('collectBtn2');
+  if(cb2) cb2.style.display = passiveAccumulated>=1?'block':'none';
+  renderBoostCards();
+}
+
+// ═══ WHEEL ═══
+let wheelAngle=0,wheelSpinning=false;
+function drawWheel(angle){
+  const canvas=document.getElementById('wheelCanvas');
+  const ctx=canvas.getContext('2d');
+  const cx=130,cy=130,r=120,sa=(2*Math.PI)/WHEEL_PRIZES.length;
+  ctx.clearRect(0,0,260,260);
+  WHEEL_PRIZES.forEach((p,i)=>{
+    const start=angle+i*sa,end=start+sa;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath();
+    ctx.fillStyle=p.color;ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.4)';ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(start+sa/2);
+    ctx.font='15px serif';ctx.textAlign='right';ctx.fillText(p.emoji,r-8,-8);
+    ctx.fillStyle='#fff';ctx.font='bold 10px Orbitron,monospace';
+    ctx.shadowColor='rgba(0,0,0,0.9)';ctx.shadowBlur=4;
+    ctx.fillText(p.label.split(' ')[0],r-8,8);
+    ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.strokeStyle='rgba(0,245,255,0.5)';ctx.lineWidth=4;ctx.stroke();
+}
+function renderWheelLegend(){
+  document.getElementById('wheelLegend').innerHTML=WHEEL_PRIZES.map(p=>`<div class="legend-item"><div class="legend-dot" style="background:${p.color}"></div><span style="color:${p.color}">${p.label}</span></div>`).join('');
+}
+function spinWheel(){
+  const today=new Date().toDateString();
+  if(g.lastSpinDate===today){showToast("Come back tomorrow!");return;}
+  if(wheelSpinning)return;
+  wheelSpinning=true;document.getElementById('spinBtn').disabled=true;
+  const winIdx=Math.floor(Math.random()*WHEEL_PRIZES.length);
+  const sa=(2*Math.PI)/WHEEL_PRIZES.length;
+  const targetAngle=(2*Math.PI*5)+(Math.PI*2-winIdx*sa-sa/2)-Math.PI/2;
+  let start=null;const duration=4000;const startAngle=wheelAngle;
+  function animate(ts){
+    if(!start)start=ts;
+    const elapsed=ts-start,progress=Math.min(elapsed/duration,1);
+    const ease=1-Math.pow(1-progress,3);
+    wheelAngle=startAngle+targetAngle*ease;drawWheel(wheelAngle);
+    if(progress<1){requestAnimationFrame(animate);}
+    else{
+      wheelSpinning=false;g.lastSpinDate=today;g.totalSpins++;g.todaySpins++;
+      const prize=WHEEL_PRIZES[winIdx];
+      if(prize.type==='coins'){
+        g.coins+=prize.value;
+        document.getElementById('wheelWinEmoji').textContent='🪐';
+        document.getElementById('wheelWinText').textContent=`+${prize.value} XSPC Coins!`;
+      }else{
+        g.energy=Math.min(g.maxEnergy,g.energy+(prize.value===9999?g.maxEnergy:prize.value));
+        document.getElementById('wheelWinEmoji').textContent='⚡';
+        document.getElementById('wheelWinText').textContent=prize.value===9999?'Full Energy Restored!':`+${prize.value} Energy!`;
+      }
+      if(prize.type==='key'){
+        if(!g.keys) g.keys=0;
+        g.keys+=prize.value;
+        document.getElementById('wheelWinEmoji').textContent='🔑';
+        document.getElementById('wheelWinText').textContent=`+${prize.value} XKEY!`;
+        updateKeysUI();
+      }
+      document.getElementById('wheelOverlay').classList.add('show');
+      document.getElementById('spinStatus').textContent='USED TODAY';
+      document.getElementById('spinBtn').textContent='🔒 Come back tomorrow';
+      checkAchievements();updateUI();saveGame();renderTasks();
+    }
+  }
+  requestAnimationFrame(animate);
+}
+function closeWheelOverlay(){document.getElementById('wheelOverlay').classList.remove('show');}
+
+// ═══ TASKS ═══
+function renderTasks(){
+  document.getElementById('taskList').innerHTML=DAILY_TASKS.map(t=>{
+    const done=g.dailyTasksDone[t.id];
+    const val=t.field==='loggedIn'?g.loggedIn:(g[t.field]||0);
+    const pct=Math.min(100,Math.floor(val/t.goal*100));
+    const canClaim=pct>=100&&!done;
+    return `<div class="task-item ${done?'done':''}">
+      <div class="task-icon">${t.name.split(' ')[0]}</div>
+      <div class="task-info" style="flex:1">
+        <div class="task-name">${t.name}</div>
+        <div class="task-progress">${done?'Completed!':t.field==='loggedIn'?'Log in daily':`${Math.min(val,t.goal)}/${t.goal} ${t.label}`}</div>
+        ${!done?`<div class="task-bar"><div class="task-bar-fill" style="width:${pct}%"></div></div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div class="task-reward">+${t.reward} <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:14px;height:14px;vertical-align:middle;border-radius:50%;"></div>
+        ${canClaim?`<button class="claim-btn" onclick="claimTask('${t.id}',${t.reward})">CLAIM</button>`:''}
+        ${done?'<span style="color:var(--accent);font-size:18px">✅</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function claimTask(id,reward){g.dailyTasksDone[id]=true;g.coins+=reward;showFloat(`+${reward} XSPC`,window.innerWidth/2,200,'#FFD700');updateUI();saveGame();renderTasks();}
+
+// ═══ LEAGUES & PLANET GUIDE ═══
+function renderLeagues(){
+  const current=getLeague(g.coins);
+  document.getElementById('leagueList').innerHTML=LEAGUES.map(l=>{
+    const isCurrent=l.name===current.name,achieved=g.coins>=l.min;
+    return `<div class="league-item ${isCurrent?'current':''}">
+      <div class="league-icon">${l.icon}</div>
+      <div class="league-info"><div class="league-name" style="color:${l.color}">${l.name} League</div><div class="league-req">${l.min===0?'Starting league':`From ${l.min.toLocaleString()} XSPC`}</div></div>
+      <div>${achieved?'<span style="color:var(--accent);font-size:20px">✅</span>':`<span style="color:${l.color};font-family:Orbitron,monospace;font-size:12px">${l.min.toLocaleString()}</span>`}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('planetGuide').innerHTML=PLANETS.map(p=>{
+    const unlocked=g.level>=p.minLevel;
+    return `<div class="planet-guide-item" style="${unlocked?`border-color:${p.color}44`:'opacity:0.4'}">
+      <div class="planet-guide-emoji">${unlocked?p.emoji:'🔒'}</div>
+      <div class="planet-guide-info">
+        <div class="planet-guide-name" style="color:${unlocked?p.color:'var(--muted)'}">${p.name}</div>
+        <div class="planet-guide-lvl">Level ${p.minLevel}+</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ TOP & FRIENDS ═══
+async function renderTop(){
+  document.getElementById('topList').innerHTML='<div style="text-align:center;color:var(--muted);padding:30px;font-family:Orbitron,monospace;font-size:11px;letter-spacing:2px">LOADING...</div>';
+  const top=await apiGetTop();
+  const display=top.length?top:[{full_name:'You',coins:g.coins,level:g.level}];
+  const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+  document.getElementById('topList').innerHTML=display.map((p,i)=>`
+    <div class="top-item">
+      <div class="top-rank">${medals[i]||(i+1)}</div>
+      <div class="top-name">${p.full_name||'Player'}</div>
+      <div class="top-coins">${Math.floor(p.coins).toLocaleString()} <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:14px;height:14px;vertical-align:middle;border-radius:50%;"></div>
+    </div>`).join('');
+}
+
+function getRefLink(){
+  // Try multiple sources for telegram ID
+  const tg = window.Telegram?.WebApp;
+  const tgId = g.telegramId
+    || tg?.initDataUnsafe?.user?.id
+    || new URLSearchParams(window.location.search).get('user_id')
+    || null;
+  if(!tgId) return 'https://t.me/play1xfarmbot';
+  // Save it if found
+  if(tgId && !g.telegramId) { g.telegramId = tgId; saveGame(); }
+  return `https://t.me/play1xfarmbot?start=ref_${tgId}`;
+}
+function copyRef(){const l=getRefLink();navigator.clipboard?.writeText(l).catch(()=>{});document.getElementById('refLink').textContent='✅ Copied!';setTimeout(()=>document.getElementById('refLink').textContent=l,2000);}
+function shareRef(){const l=getRefLink();if(window.Telegram?.WebApp)window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(l)}&text=${encodeURIComponent('🪐 Join XSPACECOIN! Earn XSPC tokens!')}`);else copyRef();}
+
+async function loadFriends(userId){
+  if(!userId) return;
+  
+  // Show loading state
+  const listEl = document.getElementById('friendsList');
+  if(listEl) listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;font-family:Orbitron,monospace;font-size:11px;">LOADING...</div>';
+
+  try{
+    const r = await fetch(`${API_URL}/user/${userId}/friends`);
+    const d = await r.json();
+    const refs = d.referrals || 0;
+    g.friends = refs;
+    g.friendsData = d.friends || [];
+
+    // Update all counters
+    ['friendCount','friendCount2','friendCountLabel'].forEach(id => {
+      const e = document.getElementById(id); if(e) e.textContent = refs;
+    });
+    const fe = document.getElementById('friendEarnings'); if(fe) fe.textContent = (refs*500).toLocaleString();
+    const fed = document.getElementById('friendEarned'); if(fed) fed.textContent = (refs*500).toLocaleString();
+
+    // Render friends list beautifully
+    if(listEl) {
+      if(d.friends && d.friends.length > 0) {
+        listEl.innerHTML = d.friends.map((f,i) => {
+          const initials = (f.full_name||'?')[0].toUpperCase();
+          const coins = f.coins>=1000000?(f.coins/1000000).toFixed(1)+'M':f.coins>=1000?(f.coins/1000).toFixed(1)+'K':Math.floor(f.coins||0);
+          const planet = getPlanetForLevel(f.level||1);
+          const colors = ['#7b2fff','#00f5ff','#ff3366','#ff9500','#00ff88'];
+          const color = colors[i % colors.length];
+          return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;">'
+            +'<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,'+color+'44,'+color+'22);border:2px solid '+color+'66;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:'+color+';flex-shrink:0;">'+initials+'</div>'
+            +'<div style="flex:1;min-width:0;">'
+              +'<div style="font-size:14px;font-weight:700;margin-bottom:2px;">'+(f.full_name||'Player')+'</div>'
+              +'<div style="display:flex;align-items:center;gap:6px;">'
+                +'<span style="font-size:11px;color:#4a6080;">'+planet.emoji+' Lv'+(f.level||1)+'</span>'
+                +'<span style="font-size:11px;color:#FFD700;font-family:Orbitron,monospace;">'+coins+' XSPC</span>'
+              +'</div>'
+            +'</div>'
+            +'<div style="text-align:right;flex-shrink:0;">'
+              +'<div style="font-size:14px;font-weight:700;color:'+color+';font-family:Orbitron,monospace;">#'+(i+1)+'</div>'
+              +'<div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;">+500 XSPC</div>'
+            +'</div>'
+            +'</div>';
+        }).join('');
+      } else {
+        listEl.innerHTML = '<div style="text-align:center;padding:30px;">'
+          +'<div style="font-size:40px;margin-bottom:12px;">🚀</div>'
+          +'<div style="font-size:14px;font-weight:700;margin-bottom:6px;">No friends yet!</div>'
+          +'<div style="font-size:12px;color:#4a6080;margin-bottom:16px;">Share your link and earn rewards together</div>'
+          +'<button onclick="shareRefLink()" style="padding:10px 24px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#000;font-weight:700;font-size:13px;cursor:pointer;">🚀 Invite Friends</button>'
+          +'</div>';
+      }
+    }
+    saveGame();
+  } catch(e) {
+    console.log('Friends load failed:', e);
+    if(listEl) listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;">Could not load friends. Check connection.</div>';
+  }
+}
+
+// ═══ UI UPDATE ═══
+function updateUI(){
+  // Recalc level only upward, never down
+  const realLv = getLevel(g.totalEarned || g.coins);
+  if(realLv > g.level) { g.level = realLv; g.perClick = realLv + ((g.multitapLevel||1)-1); }
+  const coins=Math.floor(g.coins),lv=g.level;
+  const league=getLeague(coins);
+  document.getElementById('headerCoins').textContent=coins.toLocaleString();
+  document.getElementById('headerLevel').textContent=lv;
+  document.getElementById('levelName').textContent=LEVEL_NAMES[lv]||'';
+  document.getElementById('leagueBadge').textContent=`${league.icon} ${league.name.toUpperCase()}`;
+  document.getElementById('leagueBadge').style.background=`linear-gradient(135deg,${league.color}33,${league.color}11)`;
+  document.getElementById('leagueBadge').style.borderColor=league.color+'66';
+  document.getElementById('statCoins').textContent=coins>=1000?`${(coins/1000).toFixed(1)}K`:coins;
+  document.getElementById('statPerClick').textContent=g.perClick*(g.turboActive?5:1);
+  document.getElementById('statClicks').textContent=g.clicks>=1000?`${(g.clicks/1000).toFixed(1)}K`:g.clicks;
+  const curReq=LEVELS[lv-1]||0, nextReq=LEVELS[lv]||LEVELS[LEVELS.length-1];
+  const earned = g.totalEarned || g.coins;
+  const pct=Math.max(0,Math.min(100,Math.floor((earned-curReq)/(nextReq-curReq)*100)));
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+  const nextPlanet = PLANETS.find(p => p.minLevel > lv);
+  const progLabel = nextPlanet ? `→ ${nextPlanet.emoji} ${nextPlanet.name} (Lv${nextPlanet.minLevel})` : '☀️ SUN GOD!';
+  document.getElementById('progressLabel').textContent = `Lv${lv} ` + progLabel;
+  const ePct=g.energy/g.maxEnergy*100;
+  document.getElementById('energyFill').style.width=ePct+'%';
+  document.getElementById('energyText').textContent=`${Math.floor(g.energy)}/${g.maxEnergy}`;
+
+}
+
+// ═══ NAVIGATION ═══
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
+  const pageEl = document.getElementById('page'+page[0].toUpperCase()+page.slice(1));
+  const menuEl = document.getElementById('menu'+page[0].toUpperCase()+page.slice(1));
+  if(pageEl) pageEl.classList.add('active');
+  if(menuEl) menuEl.classList.add('active');
+
+  // Hub-specific logic
+  if(page==='mine'){initMinePageEffects();}
+  if(page==='earn'){updateEarnHub();}
+  if(page==='upgrade'){updateUpgradeHub();}
+  if(page==='galaxy'){updateGalaxyHub();}
+  if(page==='battle'){updateBattleHub();}
+  if(page==='keys'){updateKeysUI();}
+  if(page==='cards'){renderFullCards();}
+  if(page==='artifacts'){renderArtifacts();}
+  if(page==='combo'){comboSelected=[];renderCombo();}
+  if(page==='friends'){loadFriends(g.telegramId);const td=document.getElementById('tournamentDays');if(td)td.textContent=getDaysUntilMonday()+' days';const fe=document.getElementById('friendEarnings');if(fe)fe.textContent=((g.friends||0)*500).toLocaleString();}
+  if(page==='stats'){renderStats();}
+  if(page==='whitepaper'){updateCountdown();updateWhitepaperProgress();}
+  if(page==='pvp'){
+    const s=getCurrentSeason();
+    const sn=document.getElementById('seasonName'); if(sn) sn.textContent='Season '+s.num;
+    const sd=document.getElementById('seasonDays'); if(sd) sd.textContent=s.daysLeft+' days remaining';
+    const sr=document.getElementById('seasonRank'); if(sr) sr.textContent='#'+Math.max(1,Math.floor(Math.random()*50+1));
+    const pvpResult=document.getElementById('pvpResult'); if(pvpResult) pvpResult.style.display='none';
+    const pvpArea=document.getElementById('pvpArea'); if(pvpArea) pvpArea.style.display='none';
+    const pvpSetup=document.getElementById('pvpSetup'); if(pvpSetup) pvpSetup.style.display='block';
+    const pvpStartBtn=document.getElementById('pvpStartBtn'); if(pvpStartBtn) pvpStartBtn.textContent='⚔️ START BATTLE';
+    const pvpMyScore=document.getElementById('pvpMyScore'); if(pvpMyScore) pvpMyScore.textContent='0';
+    const pvpOppScore=document.getElementById('pvpOppScore'); if(pvpOppScore) pvpOppScore.textContent='0';
+    const pvpTimer=document.getElementById('pvpTimer'); if(pvpTimer) pvpTimer.textContent='60s';
+    pvpSelected=null; pvpActive=false;
+    if(pvpInterval) clearInterval(pvpInterval);
+    selectPvpMode('bot','easy');
+    loadPvpFriends();
+  }
+  if(page==='mini'){startMiniGame();}
+  if(page==='achieve'){renderAchievements();}
+  if(page==='streak'){renderStreakPage();}
+  if(page==='promo'){}
+}
+
+function updateEarnHub() {
+  const today = new Date().toDateString();
+  // Chest badge
+  const eb = document.getElementById('earnBadge');
+  if(eb) eb.style.display = g.lastChestDate !== today ? 'block' : 'none';
+  const eb2 = document.getElementById('earnBadge2');
+  if(eb2) eb2.style.display = g.lastChestDate !== today ? 'block' : 'none';
+  // Combo badge
+  const cb = document.getElementById('comboBadgeHub');
+  if(cb) cb.style.display = g.lastComboDate !== today ? 'block' : 'none';
+  // Wheel badge
+  const wb = document.getElementById('wheelBadgeHub');
+  if(wb) wb.style.display = g.lastSpinDate !== today ? 'block' : 'none';
+}
+
+function updateUpgradeHub() {
+  const count = Object.keys(g.artifacts||{}).length;
+  const ab = document.getElementById('artifactsBadgeHub');
+  if(ab) ab.style.display = count < ARTIFACTS_LIST.length ? 'block' : 'none';
+}
+
+function updateGalaxyHub() {
+  const planet = getPlanetForLevel(g.level);
+  const nextP = PLANETS.find(p=>p.minLevel > g.level);
+  const cp = document.getElementById('galaxyCurrentPlanet'); if(cp) cp.textContent = planet.emoji;
+  const cn = document.getElementById('galaxyCurrentName'); if(cn) cn.textContent = planet.name;
+  const np = document.getElementById('galaxyNextPlanet');
+  if(np) np.textContent = nextP ? `→ ${nextP.emoji} ${nextP.name} in ${nextP.minLevel-g.level} levels` : '☀️ SUN GOD REACHED!';
+  const pb = document.getElementById('galaxyProgressBar');
+  if(pb) { const pct=nextP?Math.floor((g.level-(planet.minLevel||1))/(nextP.minLevel-(planet.minLevel||1))*100):100; pb.style.width=Math.max(5,pct)+'%'; }
+  const planetBtn = document.getElementById('galaxyPlanetBtn'); if(planetBtn) planetBtn.textContent = planet.emoji;
+  const bonusDesc = document.getElementById('galaxyBonusDesc'); if(bonusDesc) bonusDesc.textContent = planet.bonus || '';
+  const achDesc = document.getElementById('galaxyAchieveDesc'); if(achDesc) achDesc.textContent = Object.keys(g.achievements||{}).length+'/'+ACHIEVEMENTS.length+' completed';
+}
+
+function updateBattleHub() {
+  const s = getCurrentSeason();
+  const bd = document.getElementById('battleSeasonDesc');
+  if(bd) bd.textContent = 'Season '+s.num+' · '+s.daysLeft+' days left';
+}
+
+function redeemPromoPage() {
+  const input = document.getElementById('promoInputPage');
+  const result = document.getElementById('promoResultPage');
+  if(!input||!result) return;
+  const code = input.value.trim().toUpperCase();
+  if(!code){result.textContent='⚠️ Enter a code';result.style.color='#ff9500';return;}
+  if(!g.usedPromos) g.usedPromos={};
+  if(g.usedPromos[code]){result.textContent='❌ Already used!';result.style.color='#ff3366';return;}
+  const promo = PROMO_CODES[code];
+  if(!promo){result.textContent='❌ Invalid code';result.style.color='#ff3366';return;}
+  g.usedPromos[code]=true;
+  if(promo.reward==='coins') g.coins+=promo.value;
+  else if(promo.reward==='key') g.keys=(g.keys||0)+promo.value;
+  else if(promo.reward==='both'){g.coins+=promo.value;g.keys=(g.keys||0)+promo.value2;}
+  result.textContent='✅ '+promo.msg; result.style.color='#00ff88';
+  input.value='';
+  showFloat(promo.msg, window.innerWidth/2, 200, '#FFD700');
+  updateUI(); updateKeysUI(); saveGame();
+}
+
+function renderStreakPage() {
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  const lastClaim = g.lastStreakDate || '';
+  let streakDay = g.streakDay || 1;
+  if(lastClaim!==today&&lastClaim!==yesterday&&lastClaim!=='') streakDay=1;
+  if(streakDay>7) streakDay=1;
+  const done = lastClaim===today;
+  const reward = STREAK_REWARDS[streakDay-1];
+  const grid = document.getElementById('streakGridPage');
+  if(grid) grid.innerHTML = STREAK_REWARDS.map(r=>{
+    const isDone=streakDay>r.day;const isToday=streakDay===r.day;
+    return `<div style="border-radius:10px;padding:6px 2px;text-align:center;background:${isDone?'rgba(0,255,136,0.1)':isToday?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.04)'};border:1px solid ${isDone?'rgba(0,255,136,0.4)':isToday?'rgba(255,215,0,0.5)':'rgba(255,255,255,0.08)'};">
+      <div style="font-size:18px;">${isDone?'✅':r.icon}</div>
+      <div style="font-size:8px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">Day ${r.day}</div>
+      ${isToday?'<div style="font-size:7px;color:#FFD700;">TODAY</div>':''}
+    </div>`;
+  }).join('');
+  const ri = document.getElementById('streakRewardIconPage'); if(ri) ri.textContent=reward.icon;
+  const rt = document.getElementById('streakRewardTextPage');
+  if(rt){if(reward.type==='both')rt.textContent=`+${reward.value}🔑+${reward.value2.toLocaleString()}🪐`;else rt.textContent=reward.label;}
+  const btn = document.getElementById('streakClaimBtnPage');
+  if(btn){btn.textContent=done?'✅ Claimed today':'Claim Reward! 🎁';btn.disabled=done;btn.style.opacity=done?'0.5':'1';}
+}
+
+function claimStreakPage() {
+  const today = new Date().toDateString();
+  if(g.lastStreakDate===today){showToast('Already claimed today!');return;}
+  claimStreak();
+  renderStreakPage();
+}
+
+function updateWheelBtn(){
+  const today=new Date().toDateString(),used=g.lastSpinDate===today;
+  document.getElementById('spinStatus').textContent=used?'USED TODAY':'READY';
+  document.getElementById('spinBtn').textContent=used?'🔒 Come back tomorrow':'🎰 SPIN — FREE';
+  document.getElementById('spinBtn').disabled=used;
+}
+function showToast(msg){
+  const t=document.getElementById('luckyToast');t.textContent=msg;
+  t.classList.remove('show');void t.offsetWidth;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ═══ BOOST CARDS ═══
+const BOOST_CARD_CATEGORIES = [
+  {
+    name: '⛏️ Mining',
+    color: '#cd7f32',
+    cards: [
+      {id:'pickaxe',   name:'Pickaxe',        icon:'⛏️', baseCost:200,     baseBonus:1},
+      {id:'mine',      name:'Space Mine',     icon:'🪨', baseCost:800,     baseBonus:3},
+      {id:'drill',     name:'Laser Drill',    icon:'🔫', baseCost:2500,    baseBonus:8},
+      {id:'excavator', name:'Ion Excavator',  icon:'🚜', baseCost:7000,    baseBonus:18},
+      {id:'factory',   name:'Ion Factory',    icon:'🏭', baseCost:20000,   baseBonus:40},
+      {id:'megamine',  name:'Mega Mine',      icon:'💎', baseCost:60000,   baseBonus:90},
+      {id:'darkmine',  name:'Dark Matter Mine',icon:'🕳️',baseCost:200000,  baseBonus:220},
+    ]
+  },
+  {
+    name: '🚀 Space Fleet',
+    color: '#00f5ff',
+    cards: [
+      {id:'probe',     name:'Space Probe',    icon:'🛸', baseCost:500,     baseBonus:2},
+      {id:'rocket',    name:'Rocket',         icon:'🚀', baseCost:1500,    baseBonus:5},
+      {id:'satellite', name:'Satellite',      icon:'🛰️', baseCost:4000,    baseBonus:12},
+      {id:'station',   name:'Space Station',  icon:'🌌', baseCost:12000,   baseBonus:28},
+      {id:'cruiser',   name:'Star Cruiser',   icon:'🛳️', baseCost:35000,   baseBonus:65},
+      {id:'carrier',   name:'Carrier Ship',   icon:'✈️', baseCost:100000,  baseBonus:150},
+      {id:'destroyer', name:'Star Destroyer', icon:'⚔️', baseCost:350000,  baseBonus:380},
+    ]
+  },
+  {
+    name: '⚡ Energy Systems',
+    color: '#00ff88',
+    cards: [
+      {id:'solar',     name:'Solar Panel',    icon:'☀️', baseCost:600,     baseBonus:2},
+      {id:'wind',      name:'Ion Wind',       icon:'🌀', baseCost:2000,    baseBonus:6},
+      {id:'nuclear',   name:'Nuclear Plant',  icon:'☢️', baseCost:6000,    baseBonus:16},
+      {id:'fusion',    name:'Fusion Reactor', icon:'🔆', baseCost:18000,   baseBonus:38},
+      {id:'antimatter',name:'Antimatter Core',icon:'💫', baseCost:55000,   baseBonus:88},
+      {id:'blackhole', name:'Black Hole Tap', icon:'🕳️', baseCost:180000,  baseBonus:210},
+      {id:'dyson',     name:'Dyson Sphere',   icon:'⭐', baseCost:600000,  baseBonus:550},
+    ]
+  },
+  {
+    name: '🔬 Research Lab',
+    color: '#7b2fff',
+    cards: [
+      {id:'lab',       name:'Research Lab',   icon:'🔬', baseCost:1000,    baseBonus:3},
+      {id:'bio',       name:'Bio Lab',        icon:'🧬', baseCost:3000,    baseBonus:9},
+      {id:'ai',        name:'AI Core',        icon:'🤖', baseCost:9000,    baseBonus:22},
+      {id:'quantum',   name:'Quantum CPU',    icon:'⚛️', baseCost:28000,   baseBonus:55},
+      {id:'nano',      name:'Nano Tech',      icon:'🔩', baseCost:85000,   baseBonus:130},
+      {id:'singularity',name:'Singularity',   icon:'🌐', baseCost:280000,  baseBonus:320},
+      {id:'omniscience',name:'Omniscience',   icon:'👁️', baseCost:900000,  baseBonus:800},
+    ]
+  },
+  {
+    name: '🌍 Colonies',
+    color: '#ffd700',
+    cards: [
+      {id:'outpost',   name:'Outpost',        icon:'🏕️', baseCost:700,     baseBonus:2},
+      {id:'colony',    name:'Moon Colony',    icon:'🌙', baseCost:2200,    baseBonus:7},
+      {id:'mars_base', name:'Mars Base',      icon:'🔴', baseCost:7000,    baseBonus:17},
+      {id:'asteroid',  name:'Asteroid Belt',  icon:'🪨', baseCost:22000,   baseBonus:42},
+      {id:'jupiter_c', name:'Jupiter Station',icon:'🟠', baseCost:70000,   baseBonus:100},
+      {id:'nebula',    name:'Nebula Farm',    icon:'🌠', baseCost:220000,  baseBonus:250},
+      {id:'galaxy',    name:'Galaxy Hub',     icon:'🌌', baseCost:750000,  baseBonus:620},
+    ]
+  },
+  {
+    name: '👥 Crew',
+    color: '#ff9500',
+    cards: [
+      {id:'engineer',  name:'Engineer',       icon:'👨‍🔧', baseCost:400,     baseBonus:1},
+      {id:'scientist', name:'Scientist',      icon:'👩‍🔬', baseCost:1200,    baseBonus:4},
+      {id:'pilot',     name:'Star Pilot',     icon:'👨‍✈️', baseCost:3500,    baseBonus:10},
+      {id:'commander', name:'Commander',      icon:'👮', baseCost:10000,   baseBonus:24},
+      {id:'admiral',   name:'Admiral',        icon:'🎖️', baseCost:32000,   baseBonus:58},
+      {id:'general',   name:'General',        icon:'⭐', baseCost:100000,  baseBonus:140},
+      {id:'overlord',  name:'Overlord',       icon:'👑', baseCost:400000,  baseBonus:350},
+    ]
+  },
+];
+
+// Flat list for passive income calculation
+// Flat list for passive income calculation
+const BOOST_CARDS = BOOST_CARD_CATEGORIES.flatMap(c => c.cards);
+
+function getCardCost(card) {
+  return Math.floor(card.baseCost * Math.pow(1.8, card.level));
+}
+
+function getPassiveRate() {
+  let rate = 0;
+  const saved = g.boostCards || {};
+  BOOST_CARDS.forEach(c => {
+    const lv = saved[c.id] || 0;
+    if(lv > 0) rate += c.baseBonus * lv;
+  });
+  // +1 per player level as base passive
+  rate += g.level;
+  return rate;
+}
+
+function renderBoostCards() {
+  const saved = g.boostCards || {};
+
+  // Mini cards on mine page (horizontal scroll)
+  const miniContainer = document.getElementById('boostCards');
+  if(miniContainer) {
+    const topCards = BOOST_CARDS.slice(0, 8);
+    miniContainer.innerHTML = topCards.map(c => {
+      const lv = saved[c.id] || 0;
+      const cost = getCardCost({...c, level: lv});
+      const canAfford = g.coins >= cost;
+      return `<div style="flex-shrink:0;width:90px;background:rgba(0,245,255,0.04);border:1px solid ${canAfford?'rgba(0,255,136,0.4)':'rgba(255,255,255,0.08)'};border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;" onclick="buyCard('${c.id}')">
+        <div style="font-size:24px;margin-bottom:3px;">${c.icon}</div>
+        <div style="font-size:10px;font-weight:700;margin-bottom:2px;line-height:1.2;">${c.name}</div>
+        <div style="font-size:9px;color:#00ff88;margin-bottom:3px;">+${c.baseBonus*(Math.max(lv,1))}/hr</div>
+        <div style="font-size:8px;color:#4a6080;">Lv ${lv}</div>
+        <div style="font-size:9px;font-weight:700;color:${canAfford?'#FFD700':'#4a6080'};font-family:Orbitron,monospace;margin-top:3px;">${cost>=1000000?(cost/1000000).toFixed(1)+'M':cost>=1000?(cost/1000).toFixed(1)+'K':cost}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Full grid on boosts page
+  const gridContainer = document.getElementById('boostCardsGrid');
+  if(!gridContainer) return;
+  gridContainer.innerHTML = BOOST_CARD_CATEGORIES.map(cat => `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--accent);font-family:Orbitron,monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">${cat.name}</div>
+      <div class="boost-card-grid">
+        ${cat.cards.map(c => {
+          const lv = saved[c.id] || 0;
+          const cost = getCardCost({...c, level: lv});
+          const canAfford = g.coins >= cost;
+          const income = c.baseBonus * Math.max(lv, 1);
+          return `<div class="boost-card ${canAfford?'can-afford':''}" onclick="buyCard('${c.id}')">
+            <div class="boost-card-icon">${c.icon}</div>
+            <div class="boost-card-name">${c.name}</div>
+            <div class="boost-card-income">+${income}/hr</div>
+            <div class="boost-card-level">Level ${lv}</div>
+            <div class="boost-card-cost" style="color:${canAfford?'#FFD700':'#4a6080'}">${cost>=1000000?(cost/1000000).toFixed(1)+'M':cost>=1000?(cost/1000).toFixed(1)+'K':cost} 🪐</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function buyCard(id) {
+  if(!g.boostCards) g.boostCards = {};
+  const card = BOOST_CARDS.find(c => c.id === id);
+  if(!card) return;
+  const lv = g.boostCards[id] || 0;
+  const cost = getCardCost({...card, level: lv});
+  if(g.coins < cost) { showToast("Not enough XSPC!"); return; }
+  g.coins -= cost;
+  g.boostCards[id] = lv + 1;
+  updateUI();
+  renderBoostCards();
+  updatePassive();
+  saveGame();
+  showFloat(`📈 ${card.name} Lv${lv+1}!`, window.innerWidth/2, 200, '#00f5ff');
+}
+
+// ═══ PASSIVE INCOME ═══
+let passiveAccumulated = 0;
+let lastPassiveTime = Date.now();
+
+function updatePassive() {
+  const rate = getPassiveRate();
+  const rateEl = document.getElementById('passiveRate');
+  if(rateEl) rateEl.textContent = `+${rate} XSPC/hr`;
+
+  const now = Date.now();
+  const hrs = (now - lastPassiveTime) / 3600000;
+  passiveAccumulated += rate * hrs;
+  lastPassiveTime = now;
+
+  const accumEl = document.getElementById('passiveAccum');
+  const collectBtn = document.getElementById('collectBtn');
+  if(accumEl) accumEl.textContent = Math.floor(passiveAccumulated).toLocaleString();
+  if(collectBtn) collectBtn.style.display = passiveAccumulated >= 1 ? 'block' : 'none';
+}
+
+function collectPassive() {
+  const amount = Math.floor(passiveAccumulated);
+  if(amount < 1) return;
+  g.coins += amount;
+  passiveAccumulated = 0;
+  showFloat(`+${amount} XSPC`, window.innerWidth/2, 300, '#00ff88');
+  updateUI();
+  updatePassive();
+  updateBoostsUI();
+  const fc = document.getElementById('fullCardsGrid');
+  if(fc && fc.innerHTML) renderFullCards();
+  saveGame();
+}
+
+// Run passive every 10 seconds
+setInterval(updatePassive, 10000);
+
+// ═══ MINI QUESTS ═══
+const QUESTS = [
+  {id:'q_tap100',  name:'Tap 100 times',        field:'clicks', goal:100,   reward:500,   rewardType:'coins'},
+  {id:'q_tap500',  name:'Tap 500 times',         field:'clicks', goal:500,   reward:2000,  rewardType:'coins'},
+  {id:'q_tap2k',   name:'Tap 2,000 times',       field:'clicks', goal:2000,  reward:8000,  rewardType:'coins'},
+  {id:'q_tap10k',  name:'Tap 10,000 times',      field:'clicks', goal:10000, reward:30000, rewardType:'coins'},
+  {id:'q_earn1k',  name:'Earn 1,000 XSPC',       field:'coins',  goal:1000,  reward:300,   rewardType:'energy'},
+  {id:'q_earn10k', name:'Earn 10,000 XSPC',      field:'coins',  goal:10000, reward:1000,  rewardType:'energy'},
+  {id:'q_earn100k',name:'Earn 100,000 XSPC',     field:'coins',  goal:100000,reward:3000,  rewardType:'energy'},
+  {id:'q_lv5',     name:'Reach Level 5',          field:'level',  goal:5,     reward:1000,  rewardType:'coins'},
+  {id:'q_lv10',    name:'Reach Level 10',         field:'level',  goal:10,    reward:5000,  rewardType:'coins'},
+  {id:'q_lv25',    name:'Reach Level 25',         field:'level',  goal:25,    reward:20000, rewardType:'coins'},
+  {id:'q_card1',   name:'Buy any Boost Card',     field:'cards',  goal:1,     reward:500,   rewardType:'coins'},
+  {id:'q_combo15', name:'Get Combo x15',          field:'maxCombo',goal:15,   reward:2000,  rewardType:'coins'},
+];
+
+function getCurrentQuest() {
+  const done = g.questsDone || {};
+  return QUESTS.find(q => !done[q.id]) || null;
+}
+
+function getQuestValue(quest) {
+  if(quest.field === 'cards') {
+    return Object.values(g.boostCards||{}).reduce((a,b)=>a+b, 0);
+  }
+  if(quest.field === 'totalEarned') return g.totalEarned || g.coins || 0;
+  if(quest.field === 'friends') return g.friends || 0;
+  return g[quest.field] || 0;
+}
+
+function renderQuest() {
+  try {
+  const quest = getCurrentQuest();
+  const nameEl = document.getElementById('questName');
+  const progressEl = document.getElementById('questProgress');
+  const barEl = document.getElementById('questBar');
+  const rewardEl = document.getElementById('questReward');
+  const claimEl = document.getElementById('questClaimBtn');
+  if(!nameEl) return;
+
+  if(!quest) {
+    nameEl.textContent = '🎉 All quests complete!';
+    progressEl.textContent = '';
+    if(barEl) barEl.style.width = '100%';
+    if(rewardEl) rewardEl.textContent = '';
+    if(claimEl) claimEl.style.display = 'none';
+    return;
+  }
+
+  const val = getQuestValue(quest);
+  const pct = Math.min(100, Math.floor(val / quest.goal * 100));
+  const icon = quest.rewardType === 'energy' ? '⚡' : '🪐';
+
+  nameEl.textContent = quest.name;
+  if(progressEl) progressEl.textContent = `${Math.min(val, quest.goal).toLocaleString()} / ${quest.goal.toLocaleString()}`;
+  if(barEl) barEl.style.width = pct + '%';
+  if(rewardEl) rewardEl.textContent = `+${quest.reward} ${icon}`;
+  if(claimEl) claimEl.style.display = pct >= 100 ? 'inline-block' : 'none';
+  } catch(e) { console.log('Quest render error:', e); }
+}
+
+function claimQuest() {
+  const quest = getCurrentQuest();
+  if(!quest) return;
+  const val = getQuestValue(quest);
+  if(val < quest.goal) return;
+  if(!g.questsDone) g.questsDone = {};
+  g.questsDone[quest.id] = true;
+  if(quest.rewardType === 'energy') {
+    g.energy = Math.min(g.maxEnergy, g.energy + quest.reward);
+    showFloat('⚡ +'+quest.reward+' Energy!', window.innerWidth/2, 200, '#00ff88');
+  } else if(quest.rewardType === 'key') {
+    g.keys = (g.keys||0) + quest.reward;
+    showFloat('🔑 +'+quest.reward+' XKEY!', window.innerWidth/2, 200, '#FFD700');
+    updateKeysUI();
+  } else {
+    g.coins += quest.reward;
+    showFloat('🪐 +'+quest.reward.toLocaleString()+' XSPC!', window.innerWidth/2, 200, '#FFD700');
+  }
+  updateUI();
+  renderQuest();
+  saveGame();
+}
+
+// ═══ INIT PASSIVE FROM SAVE ═══
+
+
+
+
+// ═══ DAILY COMBO ═══
+// Generate deterministic daily combo based on date seed
+function getDailyComboSeed() {
+  const d = new Date();
+  return d.getFullYear() * 10000 + (d.getMonth()+1) * 100 + d.getDate();
+}
+
+function seededRandom(seed) {
+  let x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+function getDailyComboCards() {
+  const seed = getDailyComboSeed();
+  const allCards = BOOST_CARDS.slice();
+  // Pick 3 answer cards deterministically
+  const answers = [];
+  let s = seed;
+  while(answers.length < 3) {
+    s = Math.floor(seededRandom(s) * allCards.length);
+    if(!answers.includes(s)) answers.push(s);
+  }
+  return answers; // indices of correct cards
+}
+
+function getDailyComboReward() {
+  // Reward scales with player level
+  return Math.max(50000, g.level * 50000);
+}
+
+let comboSelected = [];
+
+function renderCombo() {
+  const today = new Date().toDateString();
+  const done = g.lastComboDate === today;
+  const answers = getDailyComboCards();
+  const reward = getDailyComboReward();
+
+  const rewardEl = document.getElementById('comboRewardText');
+  if(rewardEl) rewardEl.textContent = `${(reward/1000).toFixed(0)}K 🪐`;
+
+  const now = new Date();
+  const midnight = new Date(now); midnight.setHours(24,0,0,0);
+  const diff = midnight - now;
+  const hrs = String(Math.floor(diff/3600000)).padStart(2,'0');
+  const mins = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  const secs = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+  const timerEl = document.getElementById('comboTimer');
+  if(timerEl) timerEl.textContent = `${hrs}:${mins}:${secs}`;
+
+  const statusEl = document.getElementById('comboStatus');
+
+  if(done) {
+    const hint = document.getElementById('comboHint');
+    if(hint) hint.innerHTML = '✅ <span style="color:#00ff88">Combo completed today! Come back tomorrow.</span>';
+    if(statusEl) { statusEl.textContent = '✅ Done'; statusEl.style.color = '#00ff88'; }
+    const claimBtn = document.getElementById('comboClaimBtn');
+    if(claimBtn) claimBtn.style.display = 'none';
+    renderComboGrid(answers, true);
+    return;
+  }
+
+  if(statusEl) { statusEl.textContent = `${comboSelected.length}/3`; statusEl.style.color = comboSelected.length===3?'#FFD700':'#aaa'; }
+  renderComboGrid(answers, false);
+  renderComboClaimBtn();
+
+  // Show attempts
+  const attEl = document.getElementById('comboAttemptsDisplay');
+  if(attEl) {
+    const today = new Date().toDateString();
+    if(g.comboAttemptsDate === today) {
+      const left = 3 - (g.comboAttempts || 0);
+      attEl.textContent = `🎯 Attempts left: ${left}/3`;
+      attEl.style.color = left<=1?'#ff3366':left===2?'#ff9500':'#00ff88';
+    } else {
+      attEl.textContent = '🎯 Attempts left: 3/3';
+      attEl.style.color = '#00ff88';
+    }
+  }
+}
+
+function renderComboGrid(answers, done) {
+  const grid = document.getElementById('comboCardsGrid');
+  if(!grid) return;
+
+  // Show all BOOST_CARDS as selectable
+  grid.innerHTML = BOOST_CARDS.map((c, idx) => {
+    const isSelected = comboSelected.includes(idx);
+    const isCorrect = done && answers.includes(idx);
+    const isWrong = done && isSelected && !answers.includes(idx);
+    const today = new Date().toDateString();
+    const isDone = g.lastComboDate === today;
+
+    let bg = 'var(--card)';
+    let border = 'var(--border)';
+    let overlay = '';
+
+    if(isCorrect) { bg='rgba(0,255,136,0.1)'; border='rgba(0,255,136,0.5)'; overlay='<div style="position:absolute;top:4px;right:4px;font-size:12px;">✅</div>'; }
+    else if(isSelected && !isDone) { bg='rgba(0,245,255,0.1)'; border='rgba(0,245,255,0.5)'; overlay='<div style="position:absolute;top:4px;right:4px;font-size:12px;">🔵</div>'; }
+    else if(isWrong) { bg='rgba(255,50,50,0.1)'; border='rgba(255,50,50,0.4)'; overlay='<div style="position:absolute;top:4px;right:4px;font-size:12px;">❌</div>'; }
+
+    return `<div style="position:relative;padding:12px 8px;background:${bg};border:1px solid ${border};border-radius:14px;text-align:center;cursor:${isDone?'default':'pointer'};transition:all 0.2s;" onclick="selectComboCard(${idx})">
+      ${overlay}
+      <div style="font-size:26px;margin-bottom:4px;">${c.icon}</div>
+      <div style="font-size:10px;font-weight:700;line-height:1.2;">${c.name}</div>
+      <div style="font-size:9px;color:#4a6080;margin-top:2px;">+${c.baseBonus}/hr</div>
+    </div>`;
+  }).join('');
+}
+
+function selectComboCard(idx) {
+  const today = new Date().toDateString();
+  if(g.lastComboDate === today) return;
+  if(comboSelected.includes(idx)) {
+    comboSelected = comboSelected.filter(i => i !== idx);
+  } else {
+    if(comboSelected.length >= 3) { showToast("Deselect a card first!"); return; }
+    comboSelected.push(idx);
+  }
+  const statusEl = document.getElementById('comboStatus');
+  if(statusEl) { statusEl.textContent = `${comboSelected.length}/3`; statusEl.style.color = comboSelected.length===3?'#FFD700':'#aaa'; }
+  renderComboClaimBtn();
+  renderComboGrid(getDailyComboCards(), false);
+}
+
+function checkComboWin() {
+  if(comboSelected.length !== 3) return false;
+  const answers = getDailyComboCards();
+  return comboSelected.every(i => answers.includes(i)) && answers.every(i => comboSelected.includes(i));
+}
+
+function renderComboClaimBtn() {
+  const claimBtn = document.getElementById('comboClaimBtn');
+  if(!claimBtn) return;
+  const today = new Date().toDateString();
+  if(g.lastComboDate === today) { claimBtn.style.display='none'; return; }
+  if(comboSelected.length === 3) {
+    claimBtn.style.display = 'block';
+    if(checkComboWin()) {
+      claimBtn.textContent = '🎉 CLAIM JACKPOT!';
+      claimBtn.style.background = 'linear-gradient(135deg,#00cc66,#00ff88)';
+      claimBtn.style.color = '#000';
+    } else {
+      claimBtn.textContent = '❌ Wrong combo — try again';
+      claimBtn.style.background = 'rgba(255,50,50,0.2)';
+      claimBtn.style.color = '#ff3366';
+    }
+  } else {
+    claimBtn.style.display = 'none';
+  }
+}
+
+function claimCombo() {
+  if(!checkComboWin()) {
+    // Show wrong — reset selection
+    // Track attempts
+    const today = new Date().toDateString();
+    if(g.comboAttemptsDate !== today) { g.comboAttemptsDate = today; g.comboAttempts = 0; }
+    g.comboAttempts = (g.comboAttempts || 0) + 1;
+    const left = 3 - g.comboAttempts;
+    comboSelected = [];
+    renderComboGrid(getDailyComboCards(), false);
+    if(left <= 0) {
+      g.lastComboDate = today; // block further attempts
+      saveGame();
+      renderCombo();
+      showToast("No attempts left! Come back tomorrow 😢");
+    } else {
+      saveGame();
+      renderComboClaimBtn();
+      const statusEl = document.getElementById('comboStatus');
+      if(statusEl) { statusEl.textContent = '0/3'; statusEl.style.color = '#aaa'; }
+      showToast(`❌ Wrong! ${left} attempt${left===1?'':'s'} left`);
+    }
+    return;
+  }
+  const today = new Date().toDateString();
+  g.lastComboDate = today;
+  const reward = getDailyComboReward();
+  g.coins += reward;
+  showFloat(`🎉 +${(reward/1000).toFixed(0)}K XSPC!`, window.innerWidth/2, 200, '#FFD700');
+  updateUI();
+  saveGame();
+  renderCombo();
+  setTimeout(() => {
+    const emoji = document.getElementById('levelupEmoji');
+    const sub = document.getElementById('levelupSub');
+    const overlay = document.getElementById('levelupOverlay');
+    if(emoji) emoji.textContent = '🎉';
+    if(sub) sub.textContent = `Daily Combo! +${(reward/1000).toFixed(0)}K XSPC`;
+    if(overlay) overlay.classList.add('show');
+  }, 300);
+}
+
+// Update combo timer every second
+setInterval(() => {
+  const page = document.getElementById('pageCombo');
+  if(page && page.classList.contains('active')) renderCombo();
+}, 1000);
+
+// ═══ STATS PAGE ═══
+function renderStats() {
+  const planet = getPlanetForLevel(g.level);
+  const league = getLeague(g.coins);
+
+  // Avatar — first letter of name or planet emoji
+  const tg = window.Telegram?.WebApp;
+  const name = tg?.initDataUnsafe?.user?.first_name || 'Player';
+  const avatar = document.getElementById('statsAvatar');
+  const nameEl = document.getElementById('statsName');
+  if(avatar) avatar.textContent = planet.emoji;
+  if(nameEl) nameEl.textContent = name;
+
+  const titleEl = document.getElementById('statsTitle');
+  if(titleEl) titleEl.textContent = LEVEL_NAMES[g.level] || '';
+
+  const planetEl = document.getElementById('statsPlanet');
+  if(planetEl) planetEl.textContent = `${planet.emoji} ${planet.name}`;
+
+  const leagueEl = document.getElementById('statsLeague');
+  if(leagueEl) { leagueEl.textContent = `${league.icon} ${league.name}`; leagueEl.style.color = league.color; }
+
+  // Main stats
+  const coins = Math.floor(g.coins);
+  document.getElementById('statTotalCoins').textContent = coins>=1000000?(coins/1000000).toFixed(2)+'M':coins>=1000?(coins/1000).toFixed(1)+'K':coins;
+  document.getElementById('statTotalKeys').textContent = g.keys || 0;
+  const taps = g.clicks;
+  document.getElementById('statTotalTaps').textContent = taps>=1000?(taps/1000).toFixed(1)+'K':taps;
+  document.getElementById('statPassiveRate').textContent = getPassiveRate();
+  document.getElementById('statFriends').textContent = g.friends || 0;
+
+  // Streak
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  const lastClaim = g.lastStreakDate || '';
+  let streakDay = g.streakDay || 1;
+  if(lastClaim !== today && lastClaim !== yesterday && lastClaim !== '') streakDay = 1;
+  const currentDay = Math.min(streakDay - 1, 7);
+  document.getElementById('statStreak').textContent = `${currentDay}/7`;
+
+  // Records
+  document.getElementById('statMaxCombo').textContent = g.maxCombo || 0;
+  document.getElementById('statSpins').textContent = g.totalSpins || 0;
+
+  // Cards count
+  const cards = g.boostCards || {};
+  const cardCount = Object.values(cards).reduce((a,b)=>a+b, 0);
+  document.getElementById('statCards').textContent = cardCount;
+
+  // Achievements
+  const achieveCount = Object.keys(g.achievements || {}).length;
+  document.getElementById('statAchieves').textContent = `${achieveCount}/${ACHIEVEMENTS.length}`;
+
+  // Upgrades
+  document.getElementById('statMultitap').textContent = `Lv${g.multitapLevel||1}`;
+  document.getElementById('statEnergy').textContent = `Lv${g.maxenergyLevel||1}`;
+  document.getElementById('statRecharge').textContent = `Lv${g.rechargeLevel||1}`;
+}
+
+// ═══ DAILY STREAK ═══
+const STREAK_REWARDS = [
+  {day:1, icon:'🪐', label:'1,000 XSPC',    type:'coins',  value:1000},
+  {day:2, icon:'🪐', label:'2,500 XSPC',    type:'coins',  value:2500},
+  {day:3, icon:'⚡', label:'Full Energy',    type:'energy', value:9999},
+  {day:4, icon:'🪐', label:'5,000 XSPC',    type:'coins',  value:5000},
+  {day:5, icon:'🔑', label:'1 XKEY',         type:'key',    value:1},
+  {day:6, icon:'🪐', label:'10,000 XSPC',   type:'coins',  value:10000},
+  {day:7, icon:'🔑', label:'3 XKEY + 25K',  type:'both',   value:3, value2:25000},
+];
+
+function renderStreakGrid(currentDay) {
+  const grid = document.getElementById('streakGrid');
+  if(!grid) return;
+  grid.innerHTML = STREAK_REWARDS.map(r => {
+    const done = currentDay > r.day;
+    const isToday = currentDay === r.day;
+    return `<div style="
+      border-radius:10px;padding:6px 4px;text-align:center;
+      background:${done?'rgba(0,255,136,0.1)':isToday?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.04)'};
+      border:1px solid ${done?'rgba(0,255,136,0.4)':isToday?'rgba(255,215,0,0.5)':'rgba(255,255,255,0.08)'};
+    ">
+      <div style="font-size:18px;">${done?'✅':r.icon}</div>
+      <div style="font-size:8px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">Day ${r.day}</div>
+      ${isToday?'<div style="font-size:7px;color:#FFD700;font-family:Orbitron,monospace;">TODAY</div>':''}
+    </div>`;
+  }).join('');
+}
+
+function showStreakOverlay() {
+  const today = new Date().toDateString();
+  const lastClaim = g.lastStreakDate || '';
+  const streak = g.streakDay || 1;
+
+  // Already claimed today
+  if(lastClaim === today) return;
+
+  // Reset streak if missed a day
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  let currentDay = streak;
+  if(lastClaim !== yesterday && lastClaim !== '') {
+    currentDay = 1;
+    g.streakDay = 1;
+  }
+  if(currentDay > 7) currentDay = 1;
+
+  const reward = STREAK_REWARDS[currentDay - 1];
+  const rewardIcon = document.getElementById('streakRewardIcon');
+  const rewardText = document.getElementById('streakRewardText');
+  if(rewardIcon) rewardIcon.textContent = reward.icon;
+  if(rewardText) {
+    if(reward.type === 'both') rewardText.textContent = `+${reward.value} 🔑 + ${reward.value2.toLocaleString()} 🪐`;
+    else rewardText.textContent = reward.label;
+  }
+
+  renderStreakGrid(currentDay);
+
+  const overlay = document.getElementById('streakOverlay');
+  if(overlay) overlay.classList.add('show');
+}
+
+function claimStreak() {
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  const lastClaim = g.lastStreakDate || '';
+
+  let currentDay = g.streakDay || 1;
+  if(lastClaim !== yesterday && lastClaim !== '') currentDay = 1;
+  if(currentDay > 7) currentDay = 1;
+
+  const reward = STREAK_REWARDS[currentDay - 1];
+
+  // Apply reward
+  if(reward.type === 'coins') { g.coins += reward.value; }
+  else if(reward.type === 'energy') { g.energy = g.maxEnergy; }
+  else if(reward.type === 'key') { g.keys = (g.keys||0) + reward.value; }
+  else if(reward.type === 'both') { g.keys = (g.keys||0) + reward.value; g.coins += reward.value2; }
+
+  g.lastStreakDate = today;
+  g.streakDay = currentDay >= 7 ? 1 : currentDay + 1;
+
+  const overlay = document.getElementById('streakOverlay');
+  if(overlay) overlay.classList.remove('show');
+
+  showFloat(`🎁 Day ${currentDay} reward!`, window.innerWidth/2, 200, '#FFD700');
+  updateUI();
+  updateKeysUI();
+  saveGame();
+}
+
+// ═══ KEYS SYSTEM ═══
+const KEY_SHOP = [
+  {id:'exclusive_mine',  name:'Dark Planet Mine', icon:'🌑', desc:'Exclusive card: +500 XSPC/hr', cost:5,  type:'card',   bonus:500},
+  {id:'exclusive_ship',  name:'Phantom Ship',     icon:'👻', desc:'Exclusive card: +1200 XSPC/hr',cost:12, type:'card',   bonus:1200},
+  {id:'exclusive_star',  name:'Neutron Star',     icon:'💫', desc:'Exclusive card: +3000 XSPC/hr',cost:30, type:'card',   bonus:3000},
+  {id:'planet_ice',      name:'Ice Planet',       icon:'🧊', desc:'Unlock Ice Planet skin',        cost:8,  type:'planet', bonus:0},
+  {id:'planet_lava',     name:'Lava Planet',      icon:'🌋', desc:'Unlock Lava Planet skin',       cost:15, type:'planet', bonus:0},
+  {id:'energy_pack',     name:'Energy Pack',      icon:'⚡', desc:'+5000 energy instantly',         cost:3,  type:'energy', bonus:5000},
+  {id:'xspc_pack',       name:'XSPC Pack',        icon:'🪐', desc:'+50,000 XSPC instantly',        cost:10, type:'coins',  bonus:50000},
+  {id:'turbo_forever',   name:'Turbo Pack',        icon:'🚀', desc:'+10 Turbo charges',              cost:4,  type:'turbo',  bonus:10},
+];
+
+function updateKeysUI() {
+  const keys = g.keys || 0;
+  const el1 = document.getElementById('headerKeys');
+  const el2 = document.getElementById('keysBalance');
+  if(el1) el1.textContent = keys;
+  if(el2) el2.textContent = keys;
+  updateChestUI();
+  renderKeyShop();
+}
+
+function updateChestUI() {
+  const today = new Date().toDateString();
+  const lastChest = g.lastChestDate || '';
+  const opened = lastChest === today;
+  const emoji = document.getElementById('chestEmoji');
+  const title = document.getElementById('chestTitle');
+  const desc = document.getElementById('chestDesc');
+  const timer = document.getElementById('chestTimer');
+  const block = document.getElementById('chestBlock');
+  if(!emoji) return;
+
+  if(opened) {
+    emoji.textContent = '🔒';
+    title.textContent = 'Chest Opened Today';
+    desc.textContent = 'Come back tomorrow!';
+    if(block) block.style.opacity = '0.5';
+    if(block) block.style.cursor = 'default';
+    // Show countdown to midnight
+    const now = new Date();
+    const midnight = new Date(now); midnight.setHours(24,0,0,0);
+    const diff = midnight - now;
+    const hrs = Math.floor(diff/3600000);
+    const mins = Math.floor((diff%3600000)/60000);
+    if(timer) timer.innerHTML = `<span style="font-family:Orbitron,monospace;font-size:13px;color:#4a6080;">Next in ${hrs}h ${mins}m</span>`;
+  } else {
+    emoji.textContent = '📦';
+    title.textContent = '✨ Open Daily Chest!';
+    desc.textContent = 'Contains 1-3 XKEY + bonus XSPC';
+    if(block) block.style.opacity = '1';
+    if(block) block.style.cursor = 'pointer';
+    if(timer) timer.innerHTML = `<span style="font-family:Orbitron,monospace;font-size:12px;color:#00ff88;letter-spacing:1px;">READY!</span>`;
+  }
+}
+
+function openChest() {
+  const today = new Date().toDateString();
+  if(g.lastChestDate === today) { showToast("Come back tomorrow!"); return; }
+  g.lastChestDate = today;
+
+  // Random keys: 1-3
+  const keys = 1 + Math.floor(Math.random() * 3);
+  // Random XSPC bonus: level * 100 to level * 500
+  const xspcBonus = g.level * (100 + Math.floor(Math.random() * 400));
+
+  if(!g.keys) g.keys = 0;
+  g.keys += keys;
+  g.coins += xspcBonus;
+
+  // Show reward overlay
+  setTimeout(() => {
+    const overlay = document.getElementById('chestRewardOverlay');
+    const keysEl = document.getElementById('chestRewardKeys');
+    const xspcEl = document.getElementById('chestRewardXspc');
+    if(keysEl) keysEl.textContent = `+${keys} 🔑 XKEY`;
+    if(xspcEl) xspcEl.textContent = `+${xspcBonus.toLocaleString()} 🪐 XSPC`;
+    if(overlay) overlay.classList.add('show');
+  }, 100);
+
+  updateUI();
+  updateKeysUI();
+  saveGame();
+}
+
+function closeChestOverlay() {
+  document.getElementById('chestRewardOverlay').classList.remove('show');
+}
+
+function buyKeyItem(id) {
+  const item = KEY_SHOP.find(i => i.id === id);
+  if(!item) return;
+  const keys = g.keys || 0;
+  if(keys < item.cost) { showToast(`Need ${item.cost} 🔑 keys!`); return; }
+
+  // Check already owned
+  if(!g.keyPurchases) g.keyPurchases = {};
+  if(item.type === 'card' || item.type === 'planet') {
+    if(g.keyPurchases[id]) { showToast("Already owned!"); return; }
+    g.keyPurchases[id] = true;
+  }
+
+  g.keys = (g.keys || 0) - item.cost;
+
+  if(item.type === 'card') {
+    if(!g.boostCards) g.boostCards = {};
+    g.boostCards[id] = (g.boostCards[id] || 0) + 1;
+    showFloat(`+${item.bonus} XSPC/hr!`, window.innerWidth/2, 200, '#FFD700');
+  } else if(item.type === 'energy') {
+    g.energy = Math.min(g.maxEnergy, g.energy + item.bonus);
+    showFloat(`⚡ +${item.bonus} Energy!`, window.innerWidth/2, 200, '#00ff88');
+  } else if(item.type === 'coins') {
+    g.coins += item.bonus;
+    showFloat(`🪐 +${item.bonus.toLocaleString()} XSPC!`, window.innerWidth/2, 200, '#FFD700');
+  } else if(item.type === 'turbo') {
+    g.turboLeft = (g.turboLeft || 0) + item.bonus;
+    showFloat(`🚀 +${item.bonus} Turbo!`, window.innerWidth/2, 200, '#ff9500');
+  }
+
+  updateUI();
+  updateKeysUI();
+  updateBoostsUI();
+  saveGame();
+  renderKeyShop();
+}
+
+function renderKeyShop() {
+  const grid = document.getElementById('keyShopGrid');
+  if(!grid) return;
+  const purchases = g.keyPurchases || {};
+  const keys = g.keys || 0;
+
+  grid.innerHTML = KEY_SHOP.map(item => {
+    const owned = purchases[item.id] && (item.type==='card'||item.type==='planet');
+    const canAfford = keys >= item.cost;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:${owned?'rgba(0,255,136,0.04)':canAfford?'rgba(255,215,0,0.04)':'var(--card)'};border:1px solid ${owned?'rgba(0,255,136,0.3)':canAfford?'rgba(255,215,0,0.3)':'var(--border)'};border-radius:14px;margin-bottom:8px;cursor:pointer;" onclick="buyKeyItem('${item.id}')">
+      <div style="width:46px;height:46px;border-radius:12px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">${item.icon}</div>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;">${item.name}</div>
+        <div style="font-size:11px;color:#4a6080;margin-top:2px;">${item.desc}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        ${owned
+          ? '<div style="color:#00ff88;font-size:13px;font-weight:700;">✅ OWNED</div>'
+          : `<div style="font-family:Orbitron,monospace;font-size:14px;font-weight:700;color:${canAfford?'#FFD700':'#4a6080'};">${item.cost} 🔑</div>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Give key every 5 levels
+function checkKeyReward(oldLevel, newLevel) {
+  const oldMilestone = Math.floor(oldLevel / 5);
+  const newMilestone = Math.floor(newLevel / 5);
+  if(newMilestone > oldMilestone) {
+    if(!g.keys) g.keys = 0;
+    g.keys += (newMilestone - oldMilestone);
+    showFloat(`🔑 +${newMilestone - oldMilestone} KEY!`, window.innerWidth/2, 150, '#FFD700');
+    updateKeysUI();
+  }
+}
+
+
+
+
+// ═══ PROMO CODES ═══
+const PROMO_CODES = {
+  'XSPACE2026':  {reward:'coins', value:10000,  msg:'+10,000 XSPC! 🪐'},
+  'LAUNCH':      {reward:'coins', value:25000,  msg:'+25,000 XSPC! 🚀'},
+  'XKEY2026':    {reward:'key',   value:3,      msg:'+3 XKEY! 🔑'},
+  'SPACE100':    {reward:'coins', value:5000,   msg:'+5,000 XSPC! 🌌'},
+  'WELCOMEGIFT': {reward:'both',  value:5000,  value2:1, msg:'+5,000 XSPC + 1 XKEY! 🎁'},
+  'XSPC_TG':     {reward:'both',  value:8000,  value2:1, msg:'+8,000 XSPC + 1 XKEY! 📢'},
+  'GALAXY2026':  {reward:'coins', value:15000,  msg:'+15,000 XSPC! 🌌'},
+  'MINEHARD':    {reward:'coins', value:7500,   msg:'+7,500 XSPC! ⛏️'},
+  'PLANET5':     {reward:'both',  value:10000, value2:2, msg:'+10,000 XSPC + 2 XKEY! 🪐'},
+  'XSPACE_VIP':  {reward:'both',  value:20000, value2:3, msg:'+20,000 XSPC + 3 XKEY! 👑'},
+  'CRYPTO100':   {reward:'coins', value:12000,  msg:'+12,000 XSPC! 🔥'},
+  'TONCHAIN':    {reward:'both',  value:6000,  value2:1, msg:'+6,000 XSPC + 1 XKEY! ⛓️'},
+  'SUMMER2026':  {reward:'coins', value:30000,  msg:'+30,000 XSPC! ☀️'},
+  'ASTEROID':    {reward:'both',  value:5000,  value2:2, msg:'+5,000 XSPC + 2 XKEY! ☄️'},
+};
+
+function redeemPromo() {
+  const input = document.getElementById('promoInput');
+  const result = document.getElementById('promoResult');
+  if(!input || !result) return;
+  const code = input.value.trim().toUpperCase();
+  if(!code) { result.textContent = '⚠️ Enter a promo code'; result.style.color='#ff9500'; return; }
+
+  if(!g.usedPromos) g.usedPromos = {};
+  if(g.usedPromos[code]) { result.textContent = '❌ Already used!'; result.style.color='#ff3366'; return; }
+
+  const promo = PROMO_CODES[code];
+  if(!promo) { result.textContent = '❌ Invalid code'; result.style.color='#ff3366'; return; }
+
+  g.usedPromos[code] = true;
+  if(promo.reward === 'coins') g.coins += promo.value;
+  else if(promo.reward === 'key') g.keys = (g.keys||0) + promo.value;
+  else if(promo.reward === 'both') { g.coins += promo.value; g.keys = (g.keys||0) + promo.value2; }
+
+  result.textContent = '✅ ' + promo.msg;
+  result.style.color = '#00ff88';
+  input.value = '';
+  showFloat(promo.msg, window.innerWidth/2, 200, '#FFD700');
+  updateUI(); updateKeysUI(); saveGame();
+}
+
+// ═══ REFERRAL FUNCTIONS ═══
+function copyRefLink() {
+  const link = getRefLink();
+  const el = document.getElementById('refLink');
+
+  // Telegram WebApp - use share instead of clipboard
+  if(window.Telegram?.WebApp) {
+    window.Telegram.WebApp.openTelegramLink(
+      `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('🚀 Join me in XSPACECOIN — mine planets and earn XSPC tokens on TON blockchain!')}`
+    );
+    if(el) { el.textContent = '✅ Shared!'; setTimeout(() => { el.textContent = link; }, 2000); }
+    return;
+  }
+
+  // Fallback for browser
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = link;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(el) { el.textContent = '✅ Copied!'; setTimeout(() => { el.textContent = link; }, 2000); }
+    showToast('✅ Link copied!');
+  } catch(e) {
+    showToast('Long press the link to copy');
+  }
+}
+
+function shareRefLink() {
+  const link = getRefLink();
+  const text = `🚀 Join me in XSPACECOIN — the space mining game on Telegram! Mine XSPC coins and get ready for the token launch! ${link}`;
+  if(window.Telegram?.WebApp) {
+    window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`);
+  } else {
+    if(navigator.clipboard) navigator.clipboard.writeText(text);
+    showToast('✅ Copied to clipboard!');
+  }
+}
+
+// ═══ WEEKLY TOURNAMENT ═══
+function getWeekNumber() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 4 - (d.getDay()||7));
+  const yearStart = new Date(d.getFullYear(),0,1);
+  return Math.ceil((((d-yearStart)/86400000)+1)/7);
+}
+
+function getDaysUntilMonday() {
+  const d = new Date();
+  const day = d.getDay();
+  return day === 1 ? 7 : (8 - day) % 7;
+}
+
+// ═══ WHITEPAPER & TOKEN LAUNCH ═══
+const LAUNCH_DATE = new Date('2026-12-01T00:00:00Z');
+
+function updateCountdown() {
+  const now = new Date();
+  const diff = LAUNCH_DATE - now;
+  if(diff <= 0) {
+    ['cdDays','cdHours','cdMins','cdSecs'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent='00'; });
+    const lt = document.getElementById('launchDateText');
+    if(lt) lt.textContent = '🚀 LAUNCHED!';
+    return;
+  }
+  const days = Math.floor(diff/86400000);
+  const hours = Math.floor((diff%86400000)/3600000);
+  const mins = Math.floor((diff%3600000)/60000);
+  const secs = Math.floor((diff%60000)/1000);
+  const el = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=String(v).padStart(2,'0'); };
+  el('cdDays', String(days).padStart(3,'0'));
+  el('cdHours', hours);
+  el('cdMins', mins);
+  el('cdSecs', secs);
+  const dMain = document.getElementById('launchDaysMain');
+  if(dMain) dMain.textContent = days;
+}
+
+function updateWhitepaperProgress() {
+  const coins = Math.floor(g.coins);
+  const required = 100000;
+  const pct = Math.min(100, (coins/required*100)).toFixed(1);
+  const el = id => document.getElementById(id);
+  if(el('wpBalance')) el('wpBalance').textContent = coins.toLocaleString() + ' XSPC';
+  if(el('wpProgressBar')) el('wpProgressBar').style.width = pct + '%';
+  if(el('wpProgressText')) el('wpProgressText').textContent = pct + '% to withdrawal';
+  const remaining = Math.max(0, required - coins);
+  if(el('wpRemaining')) el('wpRemaining').textContent = remaining > 0 ? remaining.toLocaleString() + ' more needed' : '✅ Ready to withdraw!';
+}
+
+// Fake but convincing player counter based on time
+async function updatePlayerCounter() {
+  const el = document.getElementById('playerCounter');
+  // Show fallback immediately
+  const base = 12847;
+  const hrs = Math.floor((Date.now() - new Date('2026-05-31').getTime()) / 3600000);
+  const fallback = (base + hrs * 3) + Math.floor(Math.random() * 10);
+  if(el && el.textContent === '...') el.textContent = fallback.toLocaleString();
+  // Then try API
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    const r = await fetch(`${API_URL}/stats`, {signal: controller.signal});
+    clearTimeout(timer);
+    const d = await r.json();
+    const real = d.total_players || 0;
+    if(el) el.textContent = (Math.max(real, base) + Math.floor(Math.random() * 10)).toLocaleString();
+  } catch(e) {
+    if(el) el.textContent = fallback.toLocaleString();
+  }
+}
+
+setInterval(updateCountdown, 1000);
+setInterval(updatePlayerCounter, 30000);
+
+// ═══ PARTNER TASKS ═══
+const PARTNER_TASKS = [
+  {id:'tg_channel',  name:'Join XSPACECOIN Channel', icon:'📢', desc:'Subscribe to our main channel',      reward:5000,  rewardKey:0, url:'https://t.me/xspacecoin',       type:'telegram'},
+  {id:'tg_chat',     name:'Join Community Chat',     icon:'💬', desc:'Join our community discussion',      reward:3000,  rewardKey:0, url:'https://t.me/xspacecoin_chat',  type:'telegram'},
+  {id:'tg_news',     name:'Follow News Channel',     icon:'📰', desc:'Get the latest XSPACECOIN news',     reward:2500,  rewardKey:0, url:'https://t.me/xspacecoin',       type:'telegram'},
+  {id:'follow_x',    name:'Follow on X / Twitter',   icon:'🐦', desc:'Follow @xspacecoin on X',            reward:4000,  rewardKey:0, url:'https://x.com/xspacecoin',      type:'telegram'},
+  {id:'share_game',  name:'Share the Game',          icon:'📤', desc:'Share XSPACECOIN with friends',      reward:2000,  rewardKey:1, url:'',                               type:'share'},
+  {id:'invite_3',    name:'Invite 3 Friends',        icon:'👥', desc:'Have 3 referrals',                   reward:10000, rewardKey:1, url:'',                               type:'referral', need:3},
+  {id:'invite_10',   name:'Invite 10 Friends',       icon:'🚀', desc:'Have 10 referrals',                  reward:50000, rewardKey:3, url:'',                               type:'referral', need:10},
+  {id:'invite_25',   name:'Invite 25 Friends',       icon:'🌌', desc:'Become a space ambassador!',         reward:150000,rewardKey:5, url:'',                               type:'referral', need:25},
+  {id:'reach_lv10',  name:'Reach Level 10',          icon:'🏆', desc:'Become a Diamond miner',             reward:8000,  rewardKey:1, url:'',                               type:'level', need:10},
+  {id:'reach_lv25',  name:'Reach Level 25',          icon:'🌌', desc:'Reach Cosmic rank',                  reward:30000, rewardKey:2, url:'',                               type:'level', need:25},
+  {id:'reach_lv50',  name:'Reach Level 50',          icon:'☀️', desc:'Become a SUN GOD!',               reward:100000,rewardKey:5, url:'',                               type:'level', need:50},
+];
+
+const NEWS_ITEMS = [
+  {date:'Today', icon:'🚀', title:'XSPACECOIN Launch!', text:'Welcome to XSPACECOIN — the space mining game on Telegram. Invite friends and earn XSPC!'},
+  {date:'Coming Soon', icon:'🌐', title:'TON Token Launch', text:'XSPC token will be launched on TON blockchain. Connect your wallet now to prepare!'},
+  {date:'Coming Soon', icon:'🏆', title:'Season 2', text:'Season 2 will bring new planets, clans, and PvP battles. Stay tuned!'},
+  {date:'Coming Soon', icon:'💎', title:'NFT Planets', text:'Exclusive NFT planet skins will be available for top players!'},
+];
+
+function renderPartnerTasks() {
+  const done = g.partnerTasksDone || {};
+  const list = document.getElementById('partnerTasksList');
+  if(!list) return;
+
+  list.innerHTML = PARTNER_TASKS.map(t => {
+    const isDone = done[t.id];
+    // Check auto-completable tasks
+    let autoComplete = false;
+    if(t.type === 'referral' && (g.friends||0) >= t.need) autoComplete = true;
+    if(t.type === 'level' && g.level >= t.need) autoComplete = true;
+    const canClaim = autoComplete && !isDone;
+
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:${isDone?'rgba(0,255,136,0.04)':'var(--card)'};border:1px solid ${isDone?'rgba(0,255,136,0.2)':'var(--border)'};border-radius:14px;margin-bottom:8px;">
+      <div style="font-size:28px;flex-shrink:0;">${t.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:700;">${t.name}</div>
+        <div style="font-size:11px;color:#4a6080;margin-top:2px;">${t.desc}</div>
+        <div style="font-size:11px;color:#FFD700;margin-top:2px;">+${t.reward.toLocaleString()} 🪐 ${t.rewardKey>0?`+${t.rewardKey} 🔑`:''}</div>
+      </div>
+      <div style="flex-shrink:0;">
+        ${isDone
+          ? '<span style="color:#00ff88;font-size:20px;">✅</span>'
+          : canClaim
+            ? `<button onclick="claimPartnerTask('${t.id}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;font-weight:700;font-size:12px;">CLAIM</button>`
+            : t.type==='telegram'||t.type==='share'
+              ? `<button onclick="doPartnerTask('${t.id}','${t.url}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:rgba(0,245,255,0.1);border:1px solid var(--border);color:var(--text);font-weight:700;font-size:12px;">GO →</button>`
+              : `<span style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;">${t.type==='referral'?`${g.friends||0}/${t.need}`:`Lv${g.level}/${t.need}`}</span>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+
+  // Render news
+  const news = document.getElementById('newsFeed');
+  if(news) {
+    news.innerHTML = NEWS_ITEMS.map(n => `
+      <div style="display:flex;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;">
+        <div style="font-size:28px;flex-shrink:0;">${n.icon}</div>
+        <div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+            <div style="font-size:13px;font-weight:700;">${n.title}</div>
+            <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">${n.date}</div>
+          </div>
+          <div style="font-size:12px;color:#4a6080;line-height:1.4;">${n.text}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function doPartnerTask(id, url) {
+  if(!g.partnerTasksDone) g.partnerTasksDone = {};
+  if(!g.partnerTasksPending) g.partnerTasksPending = {};
+  g.partnerTasksPending[id] = Date.now();
+  saveGame();
+  if(url) {
+    if(window.Telegram?.WebApp) window.Telegram.WebApp.openTelegramLink(url);
+    else window.open(url, '_blank');
+  }
+  // After 3 seconds enable claim
+  setTimeout(() => {
+    const task = PARTNER_TASKS.find(t=>t.id===id);
+    if(task && !g.partnerTasksDone[id]) {
+      g.partnerTasksDone[id] = true;
+      g.coins += task.reward;
+      if(task.rewardKey > 0) g.keys = (g.keys||0) + task.rewardKey;
+      showFloat(`+${task.reward.toLocaleString()} XSPC!`, window.innerWidth/2, 200, '#FFD700');
+      updateUI(); updateKeysUI(); saveGame();
+      renderPartnerTasks(); // tasks page
+    }
+  }, 3000);
+}
+
+function claimPartnerTask(id) {
+  const task = PARTNER_TASKS.find(t=>t.id===id);
+  if(!task) return;
+  if(!g.partnerTasksDone) g.partnerTasksDone = {};
+  g.partnerTasksDone[id] = true;
+  g.coins += task.reward;
+  if(task.rewardKey > 0) g.keys = (g.keys||0) + task.rewardKey;
+  showFloat(`+${task.reward.toLocaleString()} XSPC!`, window.innerWidth/2, 200, '#FFD700');
+  updateUI(); updateKeysUI(); saveGame();
+  renderPartnerTasks(); // tasks page
+}
+
+// ═══ ACHIEVEMENTS PAGE ═══
+let achieveFilter = 'all';
+function filterAchieves(cat) {
+  achieveFilter = cat;
+  ['all','done','pending'].forEach(c => {
+    const el = document.getElementById('cat'+c[0].toUpperCase()+c.slice(1));
+    if(el) {
+      el.style.background = c===cat ? 'rgba(255,215,0,0.1)' : 'transparent';
+      el.style.borderColor = c===cat ? 'rgba(255,215,0,0.4)' : 'var(--border)';
+      el.style.color = c===cat ? '#FFD700' : '#4a6080';
+    }
+  });
+  renderAchievements();
+}
+
+function renderAchievements() {
+  const list = document.getElementById('achieveList');
+  if(!list) return;
+  const done = g.achievements || {};
+  const count = Object.keys(done).length;
+  const total = ACHIEVEMENTS.length;
+
+  // Update header
+  const countEl = document.getElementById('achieveCount');
+  if(countEl) countEl.textContent = count+'/'+total;
+  const bar = document.getElementById('achieveBar');
+  if(bar) bar.style.width = Math.floor(count/total*100)+'%';
+  const ring = document.getElementById('achieveRing');
+  if(ring) ring.style.strokeDashoffset = 176 - (176 * count/total);
+
+  // Filter
+  let filtered = ACHIEVEMENTS;
+  if(achieveFilter === 'done') filtered = ACHIEVEMENTS.filter(a => done[a.id]);
+  if(achieveFilter === 'pending') filtered = ACHIEVEMENTS.filter(a => !done[a.id]);
+
+  list.innerHTML = filtered.map(a => {
+    const isDone = !!done[a.id];
+    const emoji = a.name.split(' ')[0];
+    // Calculate progress for pending
+    let progress = '';
+    if(!isDone && a.req) {
+      // Show progress hint
+    }
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:'+(isDone?'rgba(255,215,0,0.05)':'var(--card)')+';border:1px solid '+(isDone?'rgba(255,215,0,0.2)':'var(--border)')+';border-radius:14px;margin-bottom:8px;transition:all 0.2s;">'
+      +'<div style="width:46px;height:46px;border-radius:14px;background:'+(isDone?'rgba(255,215,0,0.15)':'rgba(255,255,255,0.04)')+';border:1px solid '+(isDone?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">'+(isDone?emoji:'🔒')+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:13px;font-weight:700;margin-bottom:2px;">'+a.name+'</div>'
+        +'<div style="font-size:11px;color:#4a6080;">'+a.desc+'</div>'
+        +'<div style="font-size:11px;color:#FFD700;margin-top:3px;">+'+a.reward.toLocaleString()+' 🪐</div>'
+      +'</div>'
+      +'<div style="flex-shrink:0;font-size:'+(isDone?'24':'18')+'px;opacity:'+(isDone?'1':'0.3')+';">'+(isDone?'✅':'🔒')+'</div>'
+      +'</div>';
+  }).join('') || '<div style="text-align:center;color:#4a6080;padding:30px;">'+
+    (achieveFilter==='done'?'No achievements yet! Keep playing 🚀':
+     achieveFilter==='pending'?'All done! 🎉':'')+'</div>';
+}
+
+// ═══ TON WALLET ═══
+function openTon() {
+  const overlay = document.getElementById('tonOverlay');
+  if(overlay) overlay.classList.add('show');
+  const input = document.getElementById('tonAddressInput');
+  if(input && g.tonWallet) input.value = g.tonWallet;
+  const saved = document.getElementById('tonSavedAddr');
+  if(saved && g.tonWallet) saved.textContent = `✅ Saved: ${g.tonWallet.slice(0,8)}...${g.tonWallet.slice(-6)}`;
+  const status = document.getElementById('tonWalletStatus');
+  if(status) status.textContent = g.tonWallet ? `✅ ${g.tonWallet.slice(0,8)}...${g.tonWallet.slice(-6)}` : 'Connect to prepare for token withdrawal';
+}
+function closeTon() { document.getElementById('tonOverlay')?.classList.remove('show'); }
+function saveTonWallet() {
+  const input = document.getElementById('tonAddressInput');
+  const addr = input?.value?.trim();
+  if(!addr || addr.length < 10) { showToast("Enter valid TON address!"); return; }
+  g.tonWallet = addr;
+  saveGame();
+  const saved = document.getElementById('tonSavedAddr');
+  if(saved) saved.textContent = `✅ Saved: ${addr.slice(0,8)}...${addr.slice(-6)}`;
+  const status = document.getElementById('tonWalletStatus');
+  if(status) status.textContent = `✅ ${addr.slice(0,8)}...${addr.slice(-6)}`;
+  showToast("✅ Wallet saved!");
+}
+
+// ═══ MINI GAME ═══
+let miniSecret = 0, miniAttempts = 0, miniMaxAttempts = 7, miniGameOver = false;
+
+function startMiniGame() {
+  const today = new Date().toDateString();
+  if(g.miniGamesDate !== today) { g.miniGamesDate = today; g.miniGamesUsed = 0; }
+  const left = 3 - (g.miniGamesUsed || 0);
+  const leftEl = document.getElementById('miniGamesLeft');
+  if(leftEl) leftEl.textContent = left;
+  if(left <= 0) {
+    document.getElementById('miniGameMsg').textContent = 'No games left today! Come back tomorrow.';
+    document.getElementById('miniGameEmoji').textContent = '😴';
+    document.getElementById('miniGuessBtn').style.display = 'none';
+    document.getElementById('miniGuessInput').style.display = 'none';
+    return;
+  }
+  miniSecret = Math.floor(Math.random() * 100) + 1;
+  miniAttempts = 0;
+  miniGameOver = false;
+  document.getElementById('miniGameMsg').textContent = "I'm thinking of a number between 1 and 100";
+  document.getElementById('miniGameEmoji').textContent = '🤔';
+  document.getElementById('miniGuessInput').value = '';
+  document.getElementById('miniGuessInput').style.display = 'block';
+  document.getElementById('miniGuessBtn').style.display = 'inline-block';
+  document.getElementById('miniGuessBtn').textContent = 'GUESS!';
+  document.getElementById('miniHintText').textContent = '';
+  document.getElementById('miniAttemptsLeft').textContent = `Attempts: 0/${miniMaxAttempts}`;
+}
+
+function submitMiniGuess() {
+  if(miniGameOver) { startMiniGame(); return; }
+  const input = document.getElementById('miniGuessInput');
+  const guess = parseInt(input.value);
+  if(isNaN(guess) || guess < 1 || guess > 100) { showToast("Enter a number 1-100!"); return; }
+  miniAttempts++;
+  document.getElementById('miniAttemptsLeft').textContent = `Attempts: ${miniAttempts}/${miniMaxAttempts}`;
+
+  if(guess === miniSecret) {
+    // WIN
+    miniGameOver = true;
+    g.miniGamesUsed = (g.miniGamesUsed||0) + 1;
+    const rewards = [10000,10000,5000,5000,5000,2000,500];
+    const reward = rewards[miniAttempts-1] || 500;
+    g.coins += reward;
+    document.getElementById('miniGameEmoji').textContent = '🎉';
+    document.getElementById('miniGameMsg').textContent = `Correct! It was ${miniSecret}!`;
+    document.getElementById('miniHintText').textContent = `+${reward.toLocaleString()} XSPC earned in ${miniAttempts} tries!`;
+    document.getElementById('miniHintText').style.color = '#00ff88';
+    document.getElementById('miniGuessBtn').textContent = 'Play Again';
+    document.getElementById('miniGuessInput').style.display = 'none';
+    const leftEl = document.getElementById('miniGamesLeft');
+    if(leftEl) leftEl.textContent = 3-(g.miniGamesUsed||0);
+    showFloat(`+${reward.toLocaleString()} XSPC!`, window.innerWidth/2, 200, '#FFD700');
+    updateUI(); saveGame();
+  } else if(miniAttempts >= miniMaxAttempts) {
+    // LOSE
+    miniGameOver = true;
+    g.miniGamesUsed = (g.miniGamesUsed||0) + 1;
+    document.getElementById('miniGameEmoji').textContent = '😔';
+    document.getElementById('miniGameMsg').textContent = `Game over! It was ${miniSecret}`;
+    document.getElementById('miniHintText').textContent = 'Better luck next time!';
+    document.getElementById('miniHintText').style.color = '#ff3366';
+    document.getElementById('miniGuessBtn').textContent = 'Try Again';
+    document.getElementById('miniGuessInput').style.display = 'none';
+    const leftEl = document.getElementById('miniGamesLeft');
+    if(leftEl) leftEl.textContent = 3-(g.miniGamesUsed||0);
+    saveGame();
+  } else {
+    // HINT
+    const hint = guess < miniSecret ? '📈 Too low! Go higher' : '📉 Too high! Go lower';
+    const diff = Math.abs(guess - miniSecret);
+    const temp = diff <= 5 ? '🔥 Very hot!' : diff <= 15 ? '♨️ Warm' : diff <= 30 ? '❄️ Cold' : '🧊 Very cold!';
+    document.getElementById('miniHintText').textContent = `${hint} — ${temp}`;
+    document.getElementById('miniHintText').style.color = diff<=5?'#ff3366':diff<=15?'#ff9500':'#4a6080';
+    document.getElementById('miniGameEmoji').textContent = diff<=5?'🔥':diff<=15?'😏':'🤔';
+    input.value = '';
+  }
+}
+
+
+
+// ═══ PLANET DISCOVERY ═══
+function showPlanetDiscovery(planet) {
+  const overlay = document.getElementById('planetDiscoveryOverlay');
+  if(!overlay) return;
+
+  const planetIdx = PLANETS.findIndex(p => p.name === planet.name) + 1;
+  document.getElementById('discoveryPlanetEmoji').textContent = planet.emoji;
+  document.getElementById('discoveryPlanetName').textContent = planet.name.toUpperCase();
+  document.getElementById('discoveryPlanetDesc').textContent = planet.desc;
+  document.getElementById('discoveryBonus').textContent = planet.bonus || 'Special planet bonus!';
+  document.getElementById('discoveryProgress').textContent = `PLANET ${planetIdx} OF ${PLANETS.length} · GOAL: ☀️ SUN`;
+
+  const reward = planet.minLevel * 1000;
+  document.getElementById('discoveryReward').textContent = `+${reward.toLocaleString()} 🪐`;
+
+  // Set glow color
+  const glow = document.getElementById('discoveryPlanetGlow');
+  if(glow) glow.style.background = `radial-gradient(circle, ${planet.glowColor || 'rgba(0,245,255,0.4)'}, transparent 70%)`;
+
+  // Special bg for Sun
+  overlay.style.background = planet.name === 'Sun'
+    ? 'radial-gradient(ellipse at center, #2a0f00 0%, #150500 40%, #000 100%)'
+    : '#000';
+
+  // Spawn stars
+  const stars = document.getElementById('discoveryStars');
+  if(stars) {
+    stars.innerHTML = '';
+    for(let i = 0; i < 100; i++) {
+      const s = document.createElement('div');
+      const size = 1 + Math.random() * 2;
+      s.style.cssText = `position:absolute;width:${size}px;height:${size}px;background:#fff;border-radius:50%;`
+        + `left:${Math.random()*100}%;top:${Math.random()*100}%;`
+        + `animation:starTwinkle ${1+Math.random()*2}s ease-in-out infinite ${Math.random()*3}s;`;
+      stars.appendChild(s);
+    }
+  }
+
+  overlay.classList.add('show');
+
+  // Rewards
+  g.coins += reward;
+  g.keys = (g.keys || 0) + 1;
+  updateUI(); updateKeysUI(); saveGame();
+}
+
+function closePlanetDiscovery() {
+  document.getElementById('planetDiscoveryOverlay')?.classList.remove('show');
+}
+
+
+
+// ═══ VIP SYSTEM ═══
+function buyVip(type) {
+  const tg = window.Telegram?.WebApp;
+  if(!tg) {
+    showToast('Open in Telegram to purchase! 📱');
+    return;
+  }
+
+  const PACKAGES = {
+    booster:     { stars: 50,   title: '⚡ Booster Pack',  desc: 'x1.5 all bonuses for 7 days + 5 XKEY' },
+    vip_month:   { stars: 200,  title: '👑 VIP Month',     desc: 'x2 all bonuses for 30 days + 20 XKEY' },
+    galaxy_pass: { stars: 1000, title: '🌌 Galaxy Pass',   desc: 'Permanent x2 bonus + 100 XKEY' },
+    xspc_pack:   { stars: 30,   title: '🪐 XSPC Pack',     desc: '+50,000 XSPC instantly' },
+    key_pack:    { stars: 25,   title: '🔑 Key Pack',      desc: '+10 XKEY instantly' },
+    energy_pack: { stars: 15,   title: '⚡ Energy Pack',   desc: 'Unlimited energy for 24 hours' },
+  };
+
+  const pkg = PACKAGES[type];
+  if(!pkg) return;
+
+  // Show confirmation popup
+  tg.showPopup({
+    title: pkg.title,
+    message: pkg.desc + `
+
+Price: ${pkg.stars} ⭐ Stars`,
+    buttons: [
+      { id: 'buy', type: 'default', text: `Buy for ${pkg.stars} ⭐` },
+      { id: 'cancel', type: 'cancel' }
+    ]
+  }, (btnId) => {
+    if(btnId !== 'buy') return;
+
+    // Try Telegram Stars invoice
+    if(tg.openInvoice) {
+      tg.openInvoice(`https://coinfarm-production.up.railway.app/invoice/${type}`, (status) => {
+        if(status === 'paid') applyVipPurchase(type);
+      });
+    } else {
+      // Fallback — apply directly (for testing)
+      applyVipPurchase(type);
+    }
+  });
+}
+
+function applyVipPurchase(type) {
+  if(!g.vip) g.vip = {};
+  const now = Date.now();
+
+  if(type === 'booster') {
+    g.vip.boosterUntil = now + 7*86400000;
+    g.keys = (g.keys||0) + 5;
+    showFloat('⚡ Booster x1.5 activated!', window.innerWidth/2, 200, '#FFD700');
+  } else if(type === 'vip_month') {
+    g.vip.vipUntil = now + 30*86400000;
+    g.keys = (g.keys||0) + 20;
+    showFloat('👑 VIP Month activated!', window.innerWidth/2, 200, '#FFD700');
+  } else if(type === 'galaxy_pass') {
+    g.vip.galaxyPass = true;
+    g.keys = (g.keys||0) + 100;
+    showFloat('🌌 Galaxy Pass activated!', window.innerWidth/2, 200, '#7b2fff');
+  } else if(type === 'xspc_pack') {
+    g.coins += 50000;
+    showFloat('+50,000 XSPC!', window.innerWidth/2, 200, '#FFD700');
+  } else if(type === 'key_pack') {
+    g.keys = (g.keys||0) + 10;
+    showFloat('+10 XKEY!', window.innerWidth/2, 200, '#FFD700');
+  } else if(type === 'energy_pack') {
+    g.vip.energyUntil = now + 86400000;
+    g.energy = g.maxEnergy;
+    showFloat('⚡ Unlimited Energy 24h!', window.innerWidth/2, 200, '#00ff88');
+  }
+
+  updateUI(); updateKeysUI(); updateVipStatus(); saveGame();
+}
+
+function updateVipStatus() {
+  const now = Date.now();
+  const statusEl = document.getElementById('vipCurrentStatus');
+  if(!statusEl) return;
+
+  if(!g.vip) { statusEl.textContent = 'No active VIP'; statusEl.style.color = '#4a6080'; return; }
+
+  const perks = [];
+  if(g.vip.galaxyPass) perks.push('🌌 Galaxy Pass (Lifetime)');
+  if(g.vip.vipUntil && g.vip.vipUntil > now) {
+    const days = Math.ceil((g.vip.vipUntil - now)/86400000);
+    perks.push(`👑 VIP Month (${days}d left)`);
+  }
+  if(g.vip.boosterUntil && g.vip.boosterUntil > now) {
+    const days = Math.ceil((g.vip.boosterUntil - now)/86400000);
+    perks.push(`⚡ Booster (${days}d left)`);
+  }
+  if(g.vip.energyUntil && g.vip.energyUntil > now) {
+    perks.push('⚡ Unlimited Energy');
+  }
+
+  statusEl.textContent = perks.length > 0 ? perks.join(' · ') : 'No active VIP';
+  statusEl.style.color = perks.length > 0 ? '#FFD700' : '#4a6080';
+}
+
+function isVip() {
+  if(!g.vip) return false;
+  const now = Date.now();
+  return g.vip.galaxyPass || (g.vip.vipUntil && g.vip.vipUntil > now);
+}
+
+function getVipMultiplier() {
+  if(!g.vip) return 1;
+  const now = Date.now();
+  if(g.vip.galaxyPass) return 2;
+  if(g.vip.vipUntil && g.vip.vipUntil > now) return 2;
+  if(g.vip.boosterUntil && g.vip.boosterUntil > now) return 1.5;
+  return 1;
+}
+
+// ═══ SEASONS ═══
+function getCurrentSeason() {
+  const now = new Date();
+  const seasonNum = Math.floor((now - new Date('2026-01-01')) / (30 * 86400000)) + 1;
+  const seasonEnd = new Date('2026-01-01');
+  seasonEnd.setDate(seasonEnd.getDate() + seasonNum * 30);
+  const daysLeft = Math.ceil((seasonEnd - now) / 86400000);
+  return { num: seasonNum, daysLeft: Math.max(0, daysLeft), end: seasonEnd };
+}
+
+
+// ═══ PvP TAPPING ═══
+let pvpActive=false, pvpScore=0, pvpOpponentScore=0, pvpTimer=0, pvpInterval=null;
+let pvpMode='bot', pvpDifficulty='easy', pvpFriendName='Bot', pvpFriendTaps=0;
+let pvpSelected = null;
+
+// Bot tap speeds per second
+const BOT_SPEEDS = {
+  easy:   {min:2,  max:5,  label:'🟢 Easy Bot',   reward:1000},
+  medium: {min:6,  max:10, label:'🟡 Medium Bot',  reward:3000},
+  hard:   {min:12, max:18, label:'🔴 Hard Bot',    reward:8000},
+};
+
+function selectPvpMode(mode, diff, friendData) {
+  pvpMode = mode;
+  pvpDifficulty = diff || 'easy';
+  pvpSelected = {mode, diff, friendData};
+
+  // Update highlight
+  ['pvpBotEasy','pvpBotMedium','pvpBotHard'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.borderWidth = '2px';
+  });
+
+  if(mode === 'bot') {
+    const el = document.getElementById('pvpBot' + diff[0].toUpperCase() + diff.slice(1));
+    if(el) el.style.borderWidth = '3px';
+    pvpFriendName = BOT_SPEEDS[diff].label;
+    const nameEl = document.getElementById('pvpOpponentName');
+    if(nameEl) nameEl.textContent = 'VS ' + pvpFriendName;
+    const oppLabel = document.getElementById('pvpOppLabel');
+    if(oppLabel) oppLabel.textContent = BOT_SPEEDS[diff].label;
+  } else if(mode === 'friend') {
+    pvpFriendName = friendData.name;
+    pvpFriendTaps = friendData.taps;
+    const nameEl = document.getElementById('pvpOpponentName');
+    if(nameEl) nameEl.textContent = 'VS ' + pvpFriendName;
+    const oppLabel = document.getElementById('pvpOppLabel');
+    if(oppLabel) oppLabel.textContent = pvpFriendName;
+  }
+}
+
+function startPvP() {
+  if(pvpActive) return;
+  if(!pvpSelected) { showToast('Choose an opponent first!'); return; }
+
+  pvpActive = true;
+  pvpScore = 0;
+  pvpOpponentScore = 0;
+  pvpTimer = 60;
+
+  const area = document.getElementById('pvpArea');
+  const setup = document.getElementById('pvpSetup');
+  const result = document.getElementById('pvpResult');
+  if(area) area.style.display = 'block';
+  if(setup) setup.style.display = 'none';
+  if(result) result.style.display = 'none';
+
+  const speed = pvpMode === 'bot' ? BOT_SPEEDS[pvpDifficulty] : null;
+
+  pvpInterval = setInterval(() => {
+    pvpTimer--;
+
+    if(pvpMode === 'bot' && speed) {
+      // Bot taps with some variance
+      const taps = speed.min + Math.random() * (speed.max - speed.min);
+      pvpOpponentScore += Math.floor(taps * g.perClick * 0.3);
+    } else if(pvpMode === 'friend') {
+      // Friend's pre-recorded score simulated over 60s
+      pvpOpponentScore = Math.floor((pvpFriendTaps / 60) * (60 - pvpTimer) * g.perClick * 0.5);
+    }
+
+    const timerEl = document.getElementById('pvpTimer');
+    const myEl = document.getElementById('pvpMyScore');
+    const oppEl = document.getElementById('pvpOppScore');
+    if(timerEl) { timerEl.textContent = pvpTimer + 's'; timerEl.style.color = pvpTimer<=10?'#ff3366':'#FFD700'; }
+    if(myEl) myEl.textContent = pvpScore.toLocaleString();
+    if(oppEl) oppEl.textContent = pvpOpponentScore.toLocaleString();
+
+    if(pvpTimer <= 0) {
+      clearInterval(pvpInterval);
+      pvpActive = false;
+      endPvP();
+    }
+  }, 1000);
+}
+
+function pvpTap() {
+  if(!pvpActive) return;
+  pvpScore += g.perClick * (g.turboActive ? 5 : 1);
+  const myEl = document.getElementById('pvpMyScore');
+  if(myEl) myEl.textContent = pvpScore.toLocaleString();
+  // Visual feedback
+  const btn = document.getElementById('pvpTapBtn');
+  if(btn) { btn.style.transform = 'scale(0.95)'; setTimeout(()=>btn.style.transform='scale(1)',80); }
+}
+
+function endPvP() {
+  const won = pvpScore > pvpOpponentScore;
+  let reward;
+  if(pvpMode === 'bot') {
+    reward = won ? BOT_SPEEDS[pvpDifficulty].reward : Math.floor(BOT_SPEEDS[pvpDifficulty].reward * 0.1);
+  } else {
+    reward = won ? Math.floor(pvpScore * 0.3) : Math.floor(pvpScore * 0.1);
+  }
+
+  g.coins += reward;
+  updateUI(); saveGame();
+
+  const resultEl = document.getElementById('pvpResult');
+  if(resultEl) {
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = won
+      ? `<div style="font-size:40px;margin-bottom:8px;">🏆</div><div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#00ff88;margin-bottom:6px;">YOU WIN!</div><div style="font-size:14px;color:#FFD700;margin-bottom:4px;">+${reward.toLocaleString()} XSPC</div><div style="font-size:12px;color:#4a6080;">${pvpScore.toLocaleString()} vs ${pvpOpponentScore.toLocaleString()} taps</div>`
+      : `<div style="font-size:40px;margin-bottom:8px;">😔</div><div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff3366;margin-bottom:6px;">YOU LOSE!</div><div style="font-size:14px;color:#4a6080;margin-bottom:4px;">+${reward.toLocaleString()} XSPC (consolation)</div><div style="font-size:12px;color:#4a6080;">${pvpScore.toLocaleString()} vs ${pvpOpponentScore.toLocaleString()} taps</div>`;
+  }
+
+  // Show setup again
+  const setup = document.getElementById('pvpSetup');
+  if(setup) {
+    setup.style.display = 'block';
+    const btn = document.getElementById('pvpStartBtn');
+    if(btn) btn.textContent = '⚔️ PLAY AGAIN';
+  }
+}
+
+function loadPvpFriends() {
+  const list = document.getElementById('pvpFriendsList');
+  if(!list) return;
+
+  // Load from g.friendsData if available
+  const friends = g.friendsData || [];
+  if(friends.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:13px;color:#4a6080;margin-bottom:8px;">No friends yet! Invite someone first 🚀</div>
+      <button onclick="showPage('friends')" style="padding:8px 20px;background:var(--accent2);border:none;border-radius:10px;color:#000;font-weight:700;font-size:12px;cursor:pointer;">Invite Friends</button>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = friends.map(f =>
+    `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;cursor:pointer;" onclick="selectPvpMode('friend','',{name:'${f.full_name||'Friend'}',taps:${f.clicks||100}})">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#ff3366,#ff9500);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;">${(f.full_name||'?')[0].toUpperCase()}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:700;">${f.full_name||'Friend'}</div>
+        <div style="font-size:11px;color:#4a6080;">Level ${f.level} · ${f.coins>=1000?(f.coins/1000).toFixed(1)+'K':Math.floor(f.coins||0)} XSPC</div>
+      </div>
+      <div style="font-size:11px;color:#ff9500;font-family:Orbitron,monospace;">CHALLENGE →</div>
+    </div>`
+  ).join('');
+}
+
+
+
+// ═══ VISUAL EFFECTS ═══
+function spawnLevelUpParticles() {
+  const container = document.getElementById('levelupParticles');
+  if(!container) return;
+  container.innerHTML = '';
+  const emojis = ['⭐','✨','🌟','💫','🎉','🎊','🪐'];
+  for(let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.style.cssText = 'position:absolute;font-size:'+(12+Math.random()*16)+'px;'
+      + 'left:50%;top:50%;'
+      + '--px:'+((-100+Math.random()*200))+'px;'
+      + '--py:'+((-150+Math.random()*100))+'px;'
+      + 'animation:particleFly '+(0.5+Math.random()*0.8)+'s ease-out '+(Math.random()*0.3)+'s forwards;';
+    p.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
+function spawnTapEffects(x, y, reward) {
+  // Ripple effect
+  const ripple = document.createElement('div');
+  ripple.className = 'tap-ripple';
+  ripple.style.left = x + 'px';
+  ripple.style.top = y + 'px';
+  ripple.style.borderColor = reward > 50 ? '#FFD700' : 'var(--accent)';
+  document.body.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 500);
+
+  // Stars burst for big rewards
+  if(reward >= 20) {
+    const stars = ['⭐','✨','💫','🌟'];
+    const count = Math.min(6, Math.floor(reward / 10));
+    for(let i = 0; i < count; i++) {
+      const star = document.createElement('div');
+      star.className = 'tap-star';
+      star.textContent = stars[Math.floor(Math.random()*stars.length)];
+      star.style.left = x + 'px';
+      star.style.top = y + 'px';
+      const angle = (i/count)*Math.PI*2;
+      const dist = 40+Math.random()*40;
+      star.style.setProperty('--sx', Math.cos(angle)*dist+'px');
+      star.style.setProperty('--sy', (Math.sin(angle)*dist - 30)+'px');
+      star.style.animationDelay = (Math.random()*0.15)+'s';
+      document.body.appendChild(star);
+      setTimeout(() => star.remove(), 800);
+    }
+  }
+
+  // Planet pulse effect
+  const btn = document.getElementById('coinBtn');
+  if(btn) {
+    btn.style.transform = 'scale(0.96)';
+    setTimeout(() => btn.style.transform = '', 100);
+  }
+}
+
+// ═══ ONBOARDING ═══
+const ONBOARDING_STEPS = [
+  {
+    emoji: '🪐',
+    title: 'Welcome to XSPACECOIN!',
+    subtitle: 'CONQUER THE GALAXY',
+    text: 'Mine planets, earn XSPC tokens and reach the Sun!',
+    btn: "Let's Go! 🚀"
+  },
+  {
+    emoji: '👆',
+    title: 'Tap to Mine',
+    subtitle: 'TAP MECHANICS',
+    text: 'Tap the planet to earn XSPC coins. Buy upgrades to tap faster and earn more!',
+    btn: 'Got it! ⚡'
+  },
+  {
+    emoji: '🌍→☀️',
+    title: 'Conquer 11 Planets',
+    subtitle: 'YOUR GOAL',
+    text: 'Start on Mercury and work your way to the Sun. Each planet gives unique bonuses!',
+    btn: 'Amazing! 🌌'
+  },
+  {
+    emoji: '💰',
+    title: 'XSPC Token Launch',
+    subtitle: 'Q4 2026',
+    text: 'XSPC launches on TON blockchain. Minimum 100,000 XSPC needed for withdrawal. Start mining now!',
+    btn: 'Start Mining! ⛏️'
+  },
+];
+
+let onboardStep = 0;
+
+function showOnboarding() {
+  if(g.onboardingDone) return;
+  onboardStep = 0;
+  renderOnboardStep();
+  document.getElementById('onboardingOverlay').classList.add('show');
+}
+
+function renderOnboardStep() {
+  const step = ONBOARDING_STEPS[onboardStep];
+  const content = document.getElementById('onboardingContent');
+  if(!content) return;
+  const isLast = onboardStep === ONBOARDING_STEPS.length - 1;
+
+  content.innerHTML = `
+    <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:16px;">${step.subtitle}</div>
+    <div style="font-size:80px;margin-bottom:16px;animation:planetReveal 0.5s ease;">${step.emoji}</div>
+    <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:10px;">${step.title}</div>
+    <div style="font-size:14px;color:#aaa;line-height:1.6;margin-bottom:24px;">${step.text}</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;">
+      ${ONBOARDING_STEPS.map((_,i) => `<div style="width:${i===onboardStep?'20px':'8px'};height:8px;border-radius:4px;background:${i===onboardStep?'#FFD700':'rgba(255,255,255,0.2)'};transition:all 0.3s;"></div>`).join('')}
+    </div>
+    <button onclick="nextOnboardStep()" style="width:100%;padding:16px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:16px;color:#000;font-weight:700;font-size:16px;cursor:pointer;font-family:Orbitron,monospace;letter-spacing:1px;">${step.btn}</button>
+    ${onboardStep > 0 ? `<button onclick="closeOnboarding()" style="width:100%;padding:10px;background:transparent;border:none;color:#4a6080;font-size:12px;cursor:pointer;margin-top:8px;">Skip</button>` : ''}
+  `;
+}
+
+function nextOnboardStep() {
+  onboardStep++;
+  if(onboardStep >= ONBOARDING_STEPS.length) {
+    closeOnboarding();
+  } else {
+    renderOnboardStep();
+  }
+}
+
+function closeOnboarding() {
+  g.onboardingDone = true;
+  saveGame();
+  document.getElementById('onboardingOverlay').classList.remove('show');
+  // Give welcome bonus
+  g.coins += 1000;
+  g.keys = (g.keys||0) + 1;
+  showFloat('🎁 Welcome! +1,000 XSPC + 1 XKEY', window.innerWidth/2, 200, '#FFD700');
+  updateUI(); updateKeysUI();
+}
+
+// ═══ ASTEROID EVENT ═══
+let asteroidActive = false;
+let asteroidInterval = null;
+let asteroidTimeLeft = 30;
+
+function triggerAsteroid() {
+  if(asteroidActive) return;
+  asteroidActive = true;
+  asteroidTimeLeft = 30;
+
+  const overlay = document.getElementById('asteroidOverlay');
+  if(overlay) overlay.classList.add('show');
+  // Auto-activate turbo during asteroid
+  g.turboActive = true;
+  const turboEl = document.getElementById('turboTimer');
+  if(turboEl) turboEl.style.display = 'block';
+
+  asteroidInterval = setInterval(() => {
+    asteroidTimeLeft--;
+    const timerEl = document.getElementById('asteroidTimer');
+    if(timerEl) timerEl.textContent = asteroidTimeLeft;
+    if(asteroidTimeLeft <= 0) {
+      clearInterval(asteroidInterval);
+      asteroidActive = false;
+      overlay.classList.remove('show');
+    }
+  }, 1000);
+}
+
+// Random asteroid event every 10-20 minutes
+function scheduleAsteroid() {
+  const delay = (600 + Math.random() * 600) * 1000;
+  setTimeout(() => {
+    triggerAsteroid();
+    scheduleAsteroid();
+  }, delay);
+}
+
+// ═══ PLANET THEME ═══
+function applyPlanetTheme(planetName) {
+  const body = document.body;
+  // Remove all themes
+  body.classList.remove('theme-mercury','theme-venus','theme-earth','theme-mars',
+    'theme-jupiter','theme-saturn','theme-uranus','theme-neptune','theme-pluto','theme-nibiru','theme-sun');
+  body.classList.add('theme-' + planetName.toLowerCase());
+}
+
+// ═══ DAILY FIRST TAP BONUS ═══
+function checkFirstTapBonus() {
+  const today = new Date().toDateString();
+  if(g.lastFirstTapDate === today) return;
+  g.lastFirstTapDate = today;
+  const bonus = g.level * 100;
+  g.coins += bonus;
+  saveGame();
+  setTimeout(() => showFloat(`☀️ First tap today! +${bonus} XSPC`, window.innerWidth/2, 150, '#FFD700'), 500);
+}
+
+// ═══ ENHANCED COIN BURST ═══
+function spawnCoinBurst(x, y, amount) {
+  const count = Math.min(8, Math.floor(amount / g.perClick) + 3);
+  for(let i = 0; i < count; i++) {
+    const coin = document.createElement('div');
+    coin.className = 'coin-burst';
+    coin.textContent = amount >= 50 ? '💎' : '🪐';
+    coin.style.left = x + 'px';
+    coin.style.top = y + 'px';
+    const angle = (i / count) * Math.PI * 2;
+    const dist = 40 + Math.random() * 60;
+    coin.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    coin.style.setProperty('--ty', (Math.sin(angle) * dist - 30) + 'px');
+    coin.style.animationDelay = (Math.random() * 0.2) + 's';
+    document.body.appendChild(coin);
+    setTimeout(() => coin.remove(), 1000);
+  }
+}
+
+// ═══ PASSIVE INCOME NOTIFICATION ═══
+function checkPassiveNotification() {
+  if(passiveAccumulated >= 1000) {
+    const t = document.getElementById('luckyToast');
+    if(t && !t.classList.contains('show')) {
+      t.textContent = `⛏️ +${Math.floor(passiveAccumulated).toLocaleString()} XSPC accumulated! Tap COLLECT`;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+  }
+}
+setInterval(checkPassiveNotification, 60000);
+
+// ═══ MINE PAGE EFFECTS ═══
+function initMinePageEffects() {
+  // Star particles for top block
+  const wrap = document.getElementById('starParticlesWrap');
+  if(wrap && !wrap._initialized) {
+    wrap._initialized = true;
+    setInterval(() => {
+      const star = document.createElement('div');
+      star.textContent = ['⭐','✨','🌟','💫'][Math.floor(Math.random()*4)];
+      star.style.cssText = `position:absolute;font-size:${8+Math.random()*8}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:starFloat ${1+Math.random()*1.5}s ease-out forwards;pointer-events:none;`;
+      wrap.appendChild(star);
+      setTimeout(() => star.remove(), 2500);
+    }, 600);
+  }
+
+  // Update earn tasks preview
+  const earnPrev = document.getElementById('earnTasksPreview');
+  if(earnPrev) {
+    const done = g.partnerTasksDone || {};
+    const remaining = PARTNER_TASKS.filter(t => !done[t.id]).length;
+    if(remaining > 0) {
+      earnPrev.textContent = `${remaining} tasks available → earn XSPC & XKEY`;
+      earnPrev.style.color = '#00ff88';
+    } else {
+      earnPrev.textContent = '✅ All tasks completed!';
+      earnPrev.style.color = '#4a6080';
+    }
+  }
+
+  // Update TON button on mine page
+  const tonMain = document.getElementById('tonBtnMain');
+  const tonStatus = document.getElementById('tonStatusMain');
+  if(tonMain) { tonMain.textContent = g.tonWallet ? '✅' : '🌐'; tonMain.style.borderColor = g.tonWallet?'rgba(0,255,136,0.5)':'rgba(0,136,204,0.4)'; }
+  if(tonStatus) tonStatus.textContent = g.tonWallet ? 'LINKED' : 'TON';
+
+  // Update top preview with player count from leaderboard
+  const topPrev = document.getElementById('topPreviewText');
+  if(topPrev && g.friends !== undefined) {
+    topPrev.textContent = `${g.friends} friends competing • tap to see rankings`;
+  }
+}
+
+// ═══ FULL CARDS PAGE ═══
+function renderFullCards() {
+  const saved = g.boostCards || {};
+  const rate = getPassiveRate();
+  const el1 = document.getElementById('cardsPassiveRate');
+  const el2 = document.getElementById('cardsAccum');
+  const el3 = document.getElementById('collectBtn3');
+  if(el1) el1.textContent = `+${rate} XSPC/hr`;
+  if(el2) el2.textContent = Math.floor(passiveAccumulated).toLocaleString();
+  if(el3) el3.style.display = passiveAccumulated >= 1 ? 'block' : 'none';
+
+  const grid = document.getElementById('fullCardsGrid');
+  if(!grid) return;
+
+  grid.innerHTML = BOOST_CARD_CATEGORIES.map(cat => {
+    const cards = cat.cards.map(c => {
+      const lv = saved[c.id] || 0;
+      const cost = getCardCost({...c, level: lv});
+      const canAfford = g.coins >= cost;
+      const income = c.baseBonus * Math.max(lv, 1);
+      const totalIncome = c.baseBonus * lv;
+      return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:${canAfford?'rgba(0,255,136,0.04)':'var(--card)'};border:1px solid ${canAfford?'rgba(0,255,136,0.25)':'var(--border)'};border-radius:14px;margin-bottom:8px;cursor:pointer;" onclick="buyCard('${c.id}');renderFullCards();">
+        <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,${cat.color}22,${cat.color}11);border:1px solid ${cat.color}44;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">${c.icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:2px;">${c.name}</div>
+          <div style="font-size:11px;color:#00ff88;">+${income} XSPC/hr ${lv>0?`<span style="color:#4a6080">(total: +${totalIncome}/hr)</span>`:''}</div>
+          <div style="font-size:10px;color:#4a6080;margin-top:2px;">Level ${lv}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:12px;font-weight:700;font-family:Orbitron,monospace;color:${canAfford?'#FFD700':'#4a6080'};">${cost>=1000000?(cost/1000000).toFixed(1)+'M':cost>=1000?(cost/1000).toFixed(1)+'K':cost}</div>
+          <div style="font-size:10px;color:#4a6080;">🪐 XSPC</div>
+          ${canAfford?'<div style="font-size:9px;color:#00ff88;margin-top:2px;">✅ BUY</div>':''}
+        </div>
+      </div>`;
+    }).join('');
+    return `<div style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="font-size:11px;color:${cat.color};font-family:Orbitron,monospace;letter-spacing:2px;text-transform:uppercase;">${cat.name}</div>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,${cat.color}44,transparent);"></div>
+      </div>
+      ${cards}
+    </div>`;
+  }).join('');
+}
+
+async function initUser(){
+  let userId, username='', fullName='', referrerId=null;
+  const tg = window.Telegram?.WebApp;
+  if(tg && tg.initDataUnsafe?.user){
+    const u = tg.initDataUnsafe.user;
+    userId = u.id; username = u.username||''; fullName = u.first_name||'';
+    const sp = tg.initDataUnsafe?.start_param || '';
+    if(sp.startsWith('ref_')){
+      const rid = parseInt(sp.replace('ref_',''));
+      if(!isNaN(rid) && rid !== userId) referrerId = rid;
+    } else if(/^\d+$/.test(sp)){
+      const rid = parseInt(sp);
+      if(!isNaN(rid) && rid !== userId) referrerId = rid;
+    }
+  } else {
+    const p = new URLSearchParams(window.location.search);
+    userId = parseInt(p.get('user_id') || p.get('id') || '0');
+    username = p.get('username')||'';
+    fullName = p.get('full_name')||'';
+    const ref = p.get('ref') || p.get('referrer') || p.get('start');
+    if(ref){ const rid=parseInt(ref.replace('ref_','')); if(!isNaN(rid)&&rid!==userId) referrerId=rid; }
+  }
+  if(!userId||isNaN(userId)){
+    const refEl=document.getElementById('refLink');
+    if(refEl) refEl.textContent='Open in Telegram to get your link';
+    return;
+  }
+  g.telegramId = userId;
+  saveGame();
+  await apiRegister(userId, username, fullName, referrerId);
   const refEl = document.getElementById('refLink');
   if(refEl) refEl.textContent = getRefLink();
   const fe = document.getElementById('friendEarnings');
