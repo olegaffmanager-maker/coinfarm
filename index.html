@@ -61,6 +61,48 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 .hub-badge { position: absolute; top: 8px; right: 8px; background: #ff3366; color: #fff; font-size: 8px; font-family: Orbitron, monospace; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
 
 
+
+/* LEVEL UP ANIMATIONS */
+@keyframes levelupBounce {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60% { transform: scale(1.3) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes raysRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes particleFly {
+  0% { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--px), var(--py)) scale(0); opacity: 0; }
+}
+/* TAP EFFECTS */
+@keyframes ripple {
+  0% { transform: translate(-50%,-50%) scale(0); opacity: 0.6; }
+  100% { transform: translate(-50%,-50%) scale(3); opacity: 0; }
+}
+.tap-ripple {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+  animation: ripple 0.5s ease-out forwards;
+  z-index: 998;
+}
+@keyframes tapStar {
+  0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--sx), var(--sy)) scale(0) rotate(360deg); opacity: 0; }
+}
+.tap-star {
+  position: fixed;
+  pointer-events: none;
+  font-size: 14px;
+  animation: tapStar 0.7s ease-out forwards;
+  z-index: 998;
+}
+
 /* ASTEROID */
 @keyframes asteroidSpin {
   from { transform: rotate(0deg) scale(1); }
@@ -932,13 +974,36 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 <!-- ACHIEVEMENTS PAGE -->
 <div class="page" id="pageAchieve">
-  <div style="display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;">
-    <div>
-      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;">COMPLETED</div>
-      <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;" id="achieveCount">0/20</div>
+
+  <!-- Header with progress ring -->
+  <div style="background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,100,0,0.05));border:1px solid rgba(255,215,0,0.2);border-radius:18px;padding:16px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div style="position:relative;width:70px;height:70px;flex-shrink:0;">
+        <svg width="70" height="70" viewBox="0 0 70 70">
+          <circle cx="35" cy="35" r="28" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+          <circle cx="35" cy="35" r="28" fill="none" stroke="#FFD700" stroke-width="6"
+            stroke-dasharray="176" id="achieveRing" stroke-dashoffset="176"
+            stroke-linecap="round" transform="rotate(-90 35 35)" style="transition:stroke-dashoffset 1s;"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;">🏅</div>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:4px;">ACHIEVEMENTS</div>
+        <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="achieveCount">0/22</div>
+        <div style="height:4px;background:rgba(255,255,255,0.06);border-radius:4px;margin-top:6px;">
+          <div id="achieveBar" style="height:100%;background:linear-gradient(90deg,#FFD700,#ff9500);border-radius:4px;width:0%;transition:width 1s;"></div>
+        </div>
+      </div>
     </div>
-    <div style="font-size:40px;">🏅</div>
   </div>
+
+  <!-- Category filter -->
+  <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;" id="achieveCats">
+    <div onclick="filterAchieves('all')" id="catAll" style="flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,215,0,0.4);background:rgba(255,215,0,0.1);cursor:pointer;font-size:11px;font-family:Orbitron,monospace;color:#FFD700;">ALL</div>
+    <div onclick="filterAchieves('done')" id="catDone" style="flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid var(--border);cursor:pointer;font-size:11px;font-family:Orbitron,monospace;color:#4a6080;">✅ DONE</div>
+    <div onclick="filterAchieves('pending')" id="catPending" style="flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid var(--border);cursor:pointer;font-size:11px;font-family:Orbitron,monospace;color:#4a6080;">🔒 PENDING</div>
+  </div>
+
   <div id="achieveList"></div>
 </div>
 
@@ -1849,7 +1914,32 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <script>
 const API_URL='https://coinfarm-production.up.railway.app';
 
-async function apiRegister(u,un,fn,r){try{await fetch(API_URL+'/user/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:u,username:un,full_name:fn,referrer_id:r||null})});}catch(e){}}
+async function apiRegister(u,un,fn,r){
+  try{
+    const res = await fetch(API_URL+'/user/register',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        telegram_id: String(u),
+        user_id: u,
+        username: un,
+        full_name: fn,
+        ref_id: r || null,
+        referrer_id: r || null,
+        coins: Math.floor(g.coins||0),
+        level: g.level||1,
+        clicks: g.clicks||0
+      })
+    });
+    const d = await res.json();
+    if(d.referrals !== undefined) {
+      g.friends = d.referrals;
+      const fc = document.getElementById('friendCount'); if(fc) fc.textContent = d.referrals;
+      const fcl = document.getElementById('friendCountLabel'); if(fcl) fcl.textContent = d.referrals;
+      const fe = document.getElementById('friendEarnings'); if(fe) fe.textContent = (d.referrals*500).toLocaleString();
+    }
+  } catch(e) { console.log('Register failed:', e); }
+}
 async function apiSave(){if(!g.telegramId)return;try{await fetch(API_URL+'/user/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:g.telegramId,coins:g.coins,clicks:g.clicks,level:g.level})});}catch(e){}}
 async function apiGetTop(){try{return await(await fetch(API_URL+'/top')).json();}catch(e){return[];}}
 
@@ -1967,8 +2057,10 @@ function loadGame(){
   const today=new Date().toDateString();
   if(g.lastTaskReset!==today){g.lastTaskReset=today;g.dailyTasksDone={};g.todaySpins=0;g.loggedIn=1;}
   // Level is based on total coins earned, never decreases
-  // Init totalEarned if not set
-  if(!g.totalEarned) g.totalEarned = g.coins || 0;
+  // Init totalEarned if not set - use max of coins and level threshold
+  if(!g.totalEarned || g.totalEarned < (LEVELS[(g.level||1)-1]||0)) {
+    g.totalEarned = Math.max(g.coins||0, LEVELS[(g.level||1)-1]||0);
+  }
   const correctLevel = getLevel(g.totalEarned);
   // Only increase level, never decrease
   if(correctLevel > (g.level||1)) {
@@ -1979,7 +2071,7 @@ function loadGame(){
   // Recalculate perClick from level + multitap
   g.perClick = g.level + ((g.multitapLevel||1) - 1);
   // Fix maxEnergy based on level
-  const baseEnergyCalc = 500 + Math.floor(g.level/3) * 100 + ((g.maxenergyLevel||1)-1)*500;
+  const baseEnergyCalc = 500 + Math.floor(g.level/5) * 100 + ((g.maxenergyLevel||1)-1)*500;
   if(g.maxEnergy < baseEnergyCalc) g.maxEnergy = baseEnergyCalc;
   // Fix maxEnergy — should be 500 + level*100 + maxenergy upgrades
   const baseEnergy = 500 + (g.level - 1) * 100 + ((g.maxenergyLevel||1) - 1) * 500;
@@ -2061,7 +2153,15 @@ function handleClick(e){
   rings[1].style.animationDuration=(speed*0.7)+'s';
   setTimeout(()=>{rings[0].style.animationDuration='12s';rings[1].style.animationDuration='8s';},2000);
 
-  checkLevelUp(); checkAchievements(); updateUI(); setTimeout(renderQuest, 500); saveGame();
+  checkLevelUp(); checkAchievements(); updateUI(); // Init quest with retry
+(function initQuest() {
+  renderQuest();
+  // Retry if still loading after 1s
+  setTimeout(() => {
+    const nameEl = document.getElementById('questName');
+    if(nameEl && nameEl.textContent === 'Loading...') renderQuest();
+  }, 1000);
+})(); saveGame();
 }
 
 function spawnHitEffects(e){
@@ -2188,12 +2288,27 @@ function checkLevelUp(){
     const gained = nl - g.level;
     g.level = nl;
     g.perClick = nl + ((g.multitapLevel||1) - 1);
-    // +100 max energy every 3 levels
-    const energyGain = Math.floor(nl/3) - Math.floor((nl-gained)/3);
+    // +100 max energy every 5 levels
+    const energyGain = Math.floor(nl/5) - Math.floor((nl-gained)/5);
     if(energyGain > 0) { g.maxEnergy += energyGain * 100; g.energy = g.maxEnergy; }
-    document.getElementById('levelupEmoji').textContent=LEVEL_NAMES[nl].split(' ')[0];
-    document.getElementById('levelupSub').textContent=`You reached ${LEVEL_NAMES[nl]}!`;
-    document.getElementById('levelupOverlay').classList.add('show');
+    const lvEmoji = document.getElementById('levelupEmoji');
+    const lvSub = document.getElementById('levelupSub');
+    const lvLevel = document.getElementById('levelupLevel');
+    const lvOverlay = document.getElementById('levelupOverlay');
+    const lvRewards = document.getElementById('levelupRewards');
+    if(lvEmoji) lvEmoji.textContent = LEVEL_NAMES[nl].split(' ')[0];
+    if(lvSub) lvSub.textContent = 'You reached ' + LEVEL_NAMES[nl] + '!';
+    if(lvLevel) lvLevel.textContent = 'LEVEL ' + nl;
+    if(lvRewards) {
+      const planet = getPlanetForLevel(nl);
+      lvRewards.innerHTML = '<div style="text-align:center;"><div style="font-size:16px;font-weight:700;color:#FFD700;">+1 ⚡ per tap</div><div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">TAP POWER UP</div></div>'
+        + (planet.bonus ? '<div style="text-align:center;"><div style="font-size:13px;color:#00ff88;">'+planet.bonus+'</div><div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">PLANET BONUS</div></div>' : '');
+    }
+    if(lvOverlay) {
+      lvOverlay.classList.add('show');
+      // Spawn particles
+      spawnLevelUpParticles();
+    }
     updatePlanet(nl, false);
     renderBoostCards();
 updateKeysUI();
@@ -2419,40 +2534,62 @@ function shareRef(){const l=getRefLink();if(window.Telegram?.WebApp)window.Teleg
 
 async function loadFriends(userId){
   if(!userId) return;
+  
+  // Show loading state
+  const listEl = document.getElementById('friendsList');
+  if(listEl) listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;font-family:Orbitron,monospace;font-size:11px;">LOADING...</div>';
+
   try{
     const r = await fetch(`${API_URL}/user/${userId}/friends`);
     const d = await r.json();
     const refs = d.referrals || 0;
     g.friends = refs;
+    g.friendsData = d.friends || [];
 
-    const setEl = (id, val) => { const e=document.getElementById(id); if(e) e.textContent=val; };
-    setEl('friendCount', refs);
-    setEl('friendCount2', refs);
-    setEl('friendCountLabel', refs);
-    setEl('friendEarnings', (refs*500).toLocaleString());
-    setEl('friendEarned', (refs*500).toLocaleString());
+    // Update all counters
+    ['friendCount','friendCount2','friendCountLabel'].forEach(id => {
+      const e = document.getElementById(id); if(e) e.textContent = refs;
+    });
+    const fe = document.getElementById('friendEarnings'); if(fe) fe.textContent = (refs*500).toLocaleString();
+    const fed = document.getElementById('friendEarned'); if(fed) fed.textContent = (refs*500).toLocaleString();
 
-    // Render friends list
-    const listEl = document.getElementById('friendsList');
+    // Render friends list beautifully
     if(listEl) {
       if(d.friends && d.friends.length > 0) {
-        listEl.innerHTML = d.friends.map((f,i) => `
-          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;">
-            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#000;">${(f.full_name||'?')[0].toUpperCase()}</div>
-            <div style="flex:1;">
-              <div style="font-size:13px;font-weight:700;">${f.full_name || 'Player'}</div>
-              <div style="font-size:11px;color:#4a6080;">Level ${f.level} · ${f.coins>=1000?(f.coins/1000).toFixed(1)+'K':Math.floor(f.coins)} XSPC</div>
-            </div>
-            <div style="font-size:12px;color:#FFD700;font-family:Orbitron,monospace;">#${i+1}</div>
-          </div>`).join('');
+        listEl.innerHTML = d.friends.map((f,i) => {
+          const initials = (f.full_name||'?')[0].toUpperCase();
+          const coins = f.coins>=1000000?(f.coins/1000000).toFixed(1)+'M':f.coins>=1000?(f.coins/1000).toFixed(1)+'K':Math.floor(f.coins||0);
+          const planet = getPlanetForLevel(f.level||1);
+          const colors = ['#7b2fff','#00f5ff','#ff3366','#ff9500','#00ff88'];
+          const color = colors[i % colors.length];
+          return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;">'
+            +'<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,'+color+'44,'+color+'22);border:2px solid '+color+'66;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:'+color+';flex-shrink:0;">'+initials+'</div>'
+            +'<div style="flex:1;min-width:0;">'
+              +'<div style="font-size:14px;font-weight:700;margin-bottom:2px;">'+(f.full_name||'Player')+'</div>'
+              +'<div style="display:flex;align-items:center;gap:6px;">'
+                +'<span style="font-size:11px;color:#4a6080;">'+planet.emoji+' Lv'+(f.level||1)+'</span>'
+                +'<span style="font-size:11px;color:#FFD700;font-family:Orbitron,monospace;">'+coins+' XSPC</span>'
+              +'</div>'
+            +'</div>'
+            +'<div style="text-align:right;flex-shrink:0;">'
+              +'<div style="font-size:14px;font-weight:700;color:'+color+';font-family:Orbitron,monospace;">#'+(i+1)+'</div>'
+              +'<div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;">+500 XSPC</div>'
+            +'</div>'
+            +'</div>';
+        }).join('');
       } else {
-        listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;">No friends yet 🚀<br><small>Share your link to invite!</small></div>';
+        listEl.innerHTML = '<div style="text-align:center;padding:30px;">'
+          +'<div style="font-size:40px;margin-bottom:12px;">🚀</div>'
+          +'<div style="font-size:14px;font-weight:700;margin-bottom:6px;">No friends yet!</div>'
+          +'<div style="font-size:12px;color:#4a6080;margin-bottom:16px;">Share your link and earn rewards together</div>'
+          +'<button onclick="shareRefLink()" style="padding:10px 24px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:12px;color:#000;font-weight:700;font-size:13px;cursor:pointer;">🚀 Invite Friends</button>'
+          +'</div>';
       }
     }
-    g.friendsData = d.friends || [];
     saveGame();
   } catch(e) {
     console.log('Friends load failed:', e);
+    if(listEl) listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;">Could not load friends. Check connection.</div>';
   }
 }
 
@@ -2860,13 +2997,15 @@ function getCurrentQuest() {
 
 function getQuestValue(quest) {
   if(quest.field === 'cards') {
-    const saved = g.boostCards || {};
-    return Object.values(saved).reduce((a,b)=>a+b, 0);
+    return Object.values(g.boostCards||{}).reduce((a,b)=>a+b, 0);
   }
+  if(quest.field === 'totalEarned') return g.totalEarned || g.coins || 0;
+  if(quest.field === 'friends') return g.friends || 0;
   return g[quest.field] || 0;
 }
 
 function renderQuest() {
+  try {
   const quest = getCurrentQuest();
   const nameEl = document.getElementById('questName');
   const progressEl = document.getElementById('questProgress');
@@ -2893,6 +3032,7 @@ function renderQuest() {
   if(barEl) barEl.style.width = pct + '%';
   if(rewardEl) rewardEl.textContent = `+${quest.reward} ${icon}`;
   if(claimEl) claimEl.style.display = pct >= 100 ? 'inline-block' : 'none';
+  } catch(e) { console.log('Quest render error:', e); }
 }
 
 function claimQuest() {
@@ -2904,10 +3044,14 @@ function claimQuest() {
   g.questsDone[quest.id] = true;
   if(quest.rewardType === 'energy') {
     g.energy = Math.min(g.maxEnergy, g.energy + quest.reward);
-    showFloat(`⚡ +${quest.reward} Energy!`, window.innerWidth/2, 200, '#00ff88');
+    showFloat('⚡ +'+quest.reward+' Energy!', window.innerWidth/2, 200, '#00ff88');
+  } else if(quest.rewardType === 'key') {
+    g.keys = (g.keys||0) + quest.reward;
+    showFloat('🔑 +'+quest.reward+' XKEY!', window.innerWidth/2, 200, '#FFD700');
+    updateKeysUI();
   } else {
     g.coins += quest.reward;
-    showFloat(`🪐 +${quest.reward} XSPC!`, window.innerWidth/2, 200, '#FFD700');
+    showFloat('🪐 +'+quest.reward.toLocaleString()+' XSPC!', window.innerWidth/2, 200, '#FFD700');
   }
   updateUI();
   renderQuest();
@@ -3689,26 +3833,60 @@ function claimPartnerTask(id) {
 }
 
 // ═══ ACHIEVEMENTS PAGE ═══
+let achieveFilter = 'all';
+function filterAchieves(cat) {
+  achieveFilter = cat;
+  ['all','done','pending'].forEach(c => {
+    const el = document.getElementById('cat'+c[0].toUpperCase()+c.slice(1));
+    if(el) {
+      el.style.background = c===cat ? 'rgba(255,215,0,0.1)' : 'transparent';
+      el.style.borderColor = c===cat ? 'rgba(255,215,0,0.4)' : 'var(--border)';
+      el.style.color = c===cat ? '#FFD700' : '#4a6080';
+    }
+  });
+  renderAchievements();
+}
+
 function renderAchievements() {
   const list = document.getElementById('achieveList');
   if(!list) return;
   const done = g.achievements || {};
   const count = Object.keys(done).length;
-  const countEl = document.getElementById('achieveCount');
-  if(countEl) countEl.textContent = `${count}/${ACHIEVEMENTS.length}`;
+  const total = ACHIEVEMENTS.length;
 
-  list.innerHTML = ACHIEVEMENTS.map(a => {
-    const isDone = done[a.id];
-    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:${isDone?'rgba(255,215,0,0.06)':'var(--card)'};border:1px solid ${isDone?'rgba(255,215,0,0.25)':'var(--border)'};border-radius:14px;margin-bottom:8px;">
-      <div style="font-size:28px;">${a.name.split(' ')[0]}</div>
-      <div style="flex:1;">
-        <div style="font-size:13px;font-weight:700;">${a.name}</div>
-        <div style="font-size:11px;color:#4a6080;margin-top:2px;">${a.desc}</div>
-        <div style="font-size:11px;color:#FFD700;margin-top:2px;">+${a.reward.toLocaleString()} 🪐</div>
-      </div>
-      <div>${isDone?'<span style="font-size:24px;">✅</span>':'<span style="font-size:20px;opacity:0.3;">🔒</span>'}</div>
-    </div>`;
-  }).join('');
+  // Update header
+  const countEl = document.getElementById('achieveCount');
+  if(countEl) countEl.textContent = count+'/'+total;
+  const bar = document.getElementById('achieveBar');
+  if(bar) bar.style.width = Math.floor(count/total*100)+'%';
+  const ring = document.getElementById('achieveRing');
+  if(ring) ring.style.strokeDashoffset = 176 - (176 * count/total);
+
+  // Filter
+  let filtered = ACHIEVEMENTS;
+  if(achieveFilter === 'done') filtered = ACHIEVEMENTS.filter(a => done[a.id]);
+  if(achieveFilter === 'pending') filtered = ACHIEVEMENTS.filter(a => !done[a.id]);
+
+  list.innerHTML = filtered.map(a => {
+    const isDone = !!done[a.id];
+    const emoji = a.name.split(' ')[0];
+    // Calculate progress for pending
+    let progress = '';
+    if(!isDone && a.req) {
+      // Show progress hint
+    }
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:'+(isDone?'rgba(255,215,0,0.05)':'var(--card)')+';border:1px solid '+(isDone?'rgba(255,215,0,0.2)':'var(--border)')+';border-radius:14px;margin-bottom:8px;transition:all 0.2s;">'
+      +'<div style="width:46px;height:46px;border-radius:14px;background:'+(isDone?'rgba(255,215,0,0.15)':'rgba(255,255,255,0.04)')+';border:1px solid '+(isDone?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">'+(isDone?emoji:'🔒')+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:13px;font-weight:700;margin-bottom:2px;">'+a.name+'</div>'
+        +'<div style="font-size:11px;color:#4a6080;">'+a.desc+'</div>'
+        +'<div style="font-size:11px;color:#FFD700;margin-top:3px;">+'+a.reward.toLocaleString()+' 🪐</div>'
+      +'</div>'
+      +'<div style="flex-shrink:0;font-size:'+(isDone?'24':'18')+'px;opacity:'+(isDone?'1':'0.3')+';">'+(isDone?'✅':'🔒')+'</div>'
+      +'</div>';
+  }).join('') || '<div style="text-align:center;color:#4a6080;padding:30px;">'+
+    (achieveFilter==='done'?'No achievements yet! Keep playing 🚀':
+     achieveFilter==='pending'?'All done! 🎉':'')+'</div>';
 }
 
 // ═══ TON WALLET ═══
@@ -4148,6 +4326,64 @@ function loadPvpFriends() {
 }
 
 
+
+// ═══ VISUAL EFFECTS ═══
+function spawnLevelUpParticles() {
+  const container = document.getElementById('levelupParticles');
+  if(!container) return;
+  container.innerHTML = '';
+  const emojis = ['⭐','✨','🌟','💫','🎉','🎊','🪐'];
+  for(let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.style.cssText = 'position:absolute;font-size:'+(12+Math.random()*16)+'px;'
+      + 'left:50%;top:50%;'
+      + '--px:'+((-100+Math.random()*200))+'px;'
+      + '--py:'+((-150+Math.random()*100))+'px;'
+      + 'animation:particleFly '+(0.5+Math.random()*0.8)+'s ease-out '+(Math.random()*0.3)+'s forwards;';
+    p.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
+function spawnTapEffects(x, y, reward) {
+  // Ripple effect
+  const ripple = document.createElement('div');
+  ripple.className = 'tap-ripple';
+  ripple.style.left = x + 'px';
+  ripple.style.top = y + 'px';
+  ripple.style.borderColor = reward > 50 ? '#FFD700' : 'var(--accent)';
+  document.body.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 500);
+
+  // Stars burst for big rewards
+  if(reward >= 20) {
+    const stars = ['⭐','✨','💫','🌟'];
+    const count = Math.min(6, Math.floor(reward / 10));
+    for(let i = 0; i < count; i++) {
+      const star = document.createElement('div');
+      star.className = 'tap-star';
+      star.textContent = stars[Math.floor(Math.random()*stars.length)];
+      star.style.left = x + 'px';
+      star.style.top = y + 'px';
+      const angle = (i/count)*Math.PI*2;
+      const dist = 40+Math.random()*40;
+      star.style.setProperty('--sx', Math.cos(angle)*dist+'px');
+      star.style.setProperty('--sy', (Math.sin(angle)*dist - 30)+'px');
+      star.style.animationDelay = (Math.random()*0.15)+'s';
+      document.body.appendChild(star);
+      setTimeout(() => star.remove(), 800);
+    }
+  }
+
+  // Planet pulse effect
+  const btn = document.getElementById('coinBtn');
+  if(btn) {
+    btn.style.transform = 'scale(0.96)';
+    setTimeout(() => btn.style.transform = '', 100);
+  }
+}
+
 // ═══ ONBOARDING ═══
 const ONBOARDING_STEPS = [
   {
@@ -4240,6 +4476,10 @@ function triggerAsteroid() {
 
   const overlay = document.getElementById('asteroidOverlay');
   if(overlay) overlay.classList.add('show');
+  // Auto-activate turbo during asteroid
+  g.turboActive = true;
+  const turboEl = document.getElementById('turboTimer');
+  if(turboEl) turboEl.style.display = 'block';
 
   asteroidInterval = setInterval(() => {
     asteroidTimeLeft--;
