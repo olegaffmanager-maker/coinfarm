@@ -1098,7 +1098,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">SECS</div>
       </div>
     </div>
-    <div style="margin-top:10px;font-size:12px;color:#4a6080;">Target: <span style="color:#ff9500;font-family:Orbitron,monospace;" id="launchDateText">Q4 2026</span></div>
+    <div style="margin-top:10px;font-size:12px;color:#4a6080;">Target: <span style="color:#ff9500;font-family:Orbitron,monospace;" id="launchDateText">Q1 2027</span></div>
   </div>
 
   <!-- Tokenomics -->
@@ -4414,7 +4414,7 @@ function getDaysUntilMonday() {
 }
 
 // ═══ WHITEPAPER & TOKEN LAUNCH ═══
-const LAUNCH_DATE = new Date('2026-12-01T00:00:00Z');
+const LAUNCH_DATE = new Date('2027-03-27T00:00:00Z');
 
 function updateCountdown() {
   const now = new Date();
@@ -4451,26 +4451,46 @@ function updateWhitepaperProgress() {
 }
 
 // Fake but convincing player counter based on time
+function getGrowingPlayerCount() {
+  // Base: 12847 at launch (June 1 2026)
+  // Grows: +1 every 10 minutes = +6/hr = +144/day
+  const base = 12847;
+  const start = new Date('2026-06-01T00:00:00Z').getTime();
+  const mins = Math.floor((Date.now() - start) / 60000);
+  const grown = Math.floor(mins / 10); // +1 per 10 min
+  return base + grown + Math.floor(Math.random() * 3);
+}
+
 async function updatePlayerCounter() {
+  const el = document.getElementById('playerCounter');
+  if(!el) return;
+
+  // Show growing fallback immediately
+  el.textContent = getGrowingPlayerCount().toLocaleString();
+
+  // Try real API
   try {
-    const r = await fetch(`${API_URL}/stats`);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    const r = await fetch(`${API_URL}/stats`, {signal: controller.signal});
+    clearTimeout(timer);
     const d = await r.json();
     const real = d.total_players || 0;
-    // Show real + small cosmetic buffer for confidence
-    const display = Math.max(real, 12847) + Math.floor(Math.random() * 10);
-    const el = document.getElementById('playerCounter');
-    if(el) el.textContent = display.toLocaleString();
+    // Use whichever is bigger — real or growing estimate
+    const display = Math.max(real, getGrowingPlayerCount());
+    el.textContent = display.toLocaleString();
   } catch(e) {
-    // Fallback
-    const base = 12847;
-    const hrs = Math.floor((Date.now() - new Date('2026-05-31').getTime()) / 3600000);
-    const el = document.getElementById('playerCounter');
-    if(el) el.textContent = (base + hrs*3).toLocaleString();
+    // Fallback already set above
   }
 }
 
 setInterval(updateCountdown, 1000);
-setInterval(updatePlayerCounter, 30000);
+setInterval(updatePlayerCounter, 600000); // update every 10 min
+setInterval(() => {
+  // Live update counter every 10 minutes in real time
+  const el = document.getElementById('playerCounter');
+  if(el) el.textContent = getGrowingPlayerCount().toLocaleString();
+}, 600000);
 
 // ═══ PARTNER TASKS ═══
 const PARTNER_TASKS = [
