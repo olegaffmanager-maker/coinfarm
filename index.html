@@ -390,6 +390,50 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     radial-gradient(circle at 50% 50%, rgba(255,100,150,0.2) 0%, transparent 60%);
   pointer-events:none;animation:planetSpin 8s linear infinite;
 }
+
+/* COSMOS */
+.planet-cosmos{
+  background:radial-gradient(circle at 38% 32%, #e040fb 0%, #7b1fa2 30%, #4a148c 60%, #1a0030 100%);
+  box-shadow:0 0 80px rgba(123,47,255,0.9),0 0 160px rgba(100,0,255,0.5),inset 0 -15px 30px rgba(0,0,0,0.5);
+}
+.planet-cosmos::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:repeating-conic-gradient(rgba(200,100,255,0.2) 0deg 15deg,transparent 15deg 30deg);
+  pointer-events:none;animation:planetSpin 6s linear infinite;
+}
+/* GALAXY */
+.planet-galaxy{
+  background:radial-gradient(circle at 50% 50%, #e0f7fa 0%, #00bcd4 20%, #006064 50%, #001b1d 100%);
+  box-shadow:0 0 90px rgba(0,245,255,1.0),0 0 180px rgba(0,200,220,0.6),inset 0 -15px 30px rgba(0,0,0,0.4);
+  animation:galaxySpin 3s ease-in-out infinite;
+}
+.planet-galaxy::after{
+  content:'';position:absolute;inset:-20px;border-radius:50%;
+  background:conic-gradient(transparent 0deg,rgba(0,245,255,0.3) 60deg,transparent 120deg,rgba(0,245,255,0.2) 180deg,transparent 240deg,rgba(0,245,255,0.3) 300deg,transparent 360deg);
+  pointer-events:none;animation:planetSpin 4s linear infinite;
+}
+@keyframes galaxySpin{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+/* UNIVERSE */
+.planet-universe{
+  background:radial-gradient(circle at 50% 50%, #ffffff 0%, #ff80ab 15%, #ff1744 35%, #b71c1c 60%, #1a0000 100%);
+  box-shadow:0 0 100px rgba(255,50,100,1.0),0 0 200px rgba(255,0,50,0.7),0 0 300px rgba(200,0,0,0.4),inset 0 -10px 20px rgba(0,0,0,0.3);
+  animation:universePulse 2s ease-in-out infinite;
+}
+@keyframes universePulse{0%,100%{filter:brightness(1) hue-rotate(0deg)}50%{filter:brightness(1.4) hue-rotate(20deg)}}
+/* OMNIVERSE */
+.planet-omniverse{
+  background:radial-gradient(circle at 50% 50%, #ffffff 0%, #fff9c4 5%, #FFD700 20%, #ff9800 40%, #7b2fff 65%, #000000 100%);
+  box-shadow:0 0 120px rgba(255,215,0,1.0),0 0 240px rgba(255,150,0,0.8),0 0 400px rgba(123,47,255,0.5);
+  animation:omniPulse 1s ease-in-out infinite;
+}
+.planet-omniverse::after{
+  content:'';position:absolute;inset:-30px;border-radius:50%;
+  background:conic-gradient(#FFD700,#ff9800,#ff3366,#7b2fff,#00f5ff,#00ff88,#FFD700);
+  opacity:0.3;pointer-events:none;animation:planetSpin 2s linear infinite;
+  filter:blur(10px);
+}
+@keyframes omniPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.08);filter:brightness(1.5)}}
+
 @keyframes nibiruPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
 
 /* SUN — blazing star */
@@ -1492,13 +1536,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-icon">⚔️</div><div class="hub-name">PvP Battle</div>
       <div class="hub-desc">Tap faster than opponent</div>
     </div>
-    <div class="hub-card" onclick="showPage('top')">
-      <div class="hub-icon">🏆</div><div class="hub-name">Leaderboard</div>
-      <div class="hub-desc">Global ranking</div>
+    <div class="hub-card" onclick="showPage('clans')">
+      <div class="hub-icon">👥</div><div class="hub-name">Clans</div>
+      <div class="hub-desc" id="myClanBadge">Join or create clan</div>
     </div>
-    <div class="hub-card" onclick="showPage('pvp')">
-      <div class="hub-icon">🏅</div><div class="hub-name">Season</div>
+    <div class="hub-card" onclick="showPage('seasons')">
+      <div class="hub-icon">🏆</div><div class="hub-name">Season</div>
       <div class="hub-desc" id="battleSeasonDesc">Season 1 · prizes await</div>
+    </div>
+    <div class="hub-card" onclick="showPage('top')">
+      <div class="hub-icon">📊</div><div class="hub-name">Leaderboard</div>
+      <div class="hub-desc">Global ranking</div>
     </div>
     <div class="hub-card" onclick="showPage('friends')">
       <div class="hub-icon">🥊</div><div class="hub-name">Tournament</div>
@@ -1533,6 +1581,118 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     </div>
     <button class="btn-primary" onclick="claimStreakPage()" id="streakClaimBtnPage">Claim Reward! 🎁</button>
   </div>
+</div>
+
+<!-- CLANS PAGE -->
+<div class="page" id="pageClans">
+
+  <div style="background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(123,47,255,0.06));border:1px solid rgba(0,245,255,0.2);border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;">
+    <div style="font-size:11px;color:var(--accent);font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;">👥 CLANS</div>
+    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;">Conquer Together</div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;">Join a clan and compete for galaxy domination</div>
+  </div>
+
+  <!-- My clan -->
+  <div id="myClanSection">
+    <div class="section-title">⚔️ My Clan</div>
+    <div id="myClanInfo">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;margin-bottom:14px;">
+        <div style="font-size:36px;margin-bottom:8px;">🚀</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px;">No Clan</div>
+        <div style="font-size:12px;color:#4a6080;margin-bottom:14px;">Join or create a clan to compete!</div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="showCreateClan()" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:10px;color:#000;font-weight:700;font-size:13px;cursor:pointer;">+ Create Clan</button>
+          <button onclick="showJoinClan()" style="flex:1;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:700;font-size:13px;cursor:pointer;">🔍 Find Clan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create clan form -->
+  <div id="createClanForm" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;">✨ Create New Clan</div>
+    <input id="clanNameInput" placeholder="Clan name (3-20 chars)" maxlength="20" style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;margin-bottom:8px;box-sizing:border-box;">
+    <input id="clanTagInput" placeholder="Tag [3-5 chars]" maxlength="5" style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;outline:none;margin-bottom:10px;box-sizing:border-box;text-transform:uppercase;">
+    <div style="font-size:11px;color:#4a6080;margin-bottom:10px;">Cost: 5 🔑 XKEY</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="createClan()" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:10px;color:#000;font-weight:700;font-size:13px;cursor:pointer;">Create!</button>
+      <button onclick="hideCreateClan()" style="flex:1;padding:10px;background:transparent;border:1px solid var(--border);border-radius:10px;color:#4a6080;font-size:13px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Top clans -->
+  <div class="section-title">🏆 Top Clans</div>
+  <div id="clansList"></div>
+
+</div>
+
+<!-- SEASONS PAGE -->
+<div class="page" id="pageSeasons">
+
+  <div style="background:linear-gradient(135deg,rgba(255,150,0,0.1),rgba(255,50,100,0.06));border:1px solid rgba(255,150,0,0.25);border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;">
+    <div style="font-size:11px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;">🏆 SEASONS</div>
+    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;" id="seasonTitle">Season 1</div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;" id="seasonSubtitle">30 days of glory</div>
+  </div>
+
+  <!-- Countdown -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;text-align:center;">
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">SEASON ENDS IN</div>
+    <div style="display:flex;justify-content:center;gap:10px;">
+      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.2);border-radius:10px;padding:8px 12px;min-width:50px;">
+        <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;" id="seasonDaysCD">30</div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;">DAYS</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.2);border-radius:10px;padding:8px 12px;min-width:50px;">
+        <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;" id="seasonHoursCD">00</div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;">HRS</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.2);border-radius:10px;padding:8px 12px;min-width:50px;">
+        <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;" id="seasonMinsCD">00</div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;">MINS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Your season stats -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">🏆</div>
+      <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;" id="mySeasonRank">#--</div>
+      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">YOUR RANK</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">🪐</div>
+      <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;" id="mySeasonScore">0</div>
+      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">SEASON SCORE</div>
+    </div>
+  </div>
+
+  <!-- Prize pool -->
+  <div class="section-title">🎁 Prize Pool</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,100,0,0.04));border:1px solid rgba(255,215,0,0.2);border-radius:12px;">
+      <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:24px;">🥇</span><div><div style="font-size:13px;font-weight:700;">1st Place</div><div style="font-size:11px;color:#4a6080;">Top scorer</div></div></div>
+      <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;">500 🔑</div><div style="font-size:11px;color:#4a6080;">+ 5M 🪐</div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:24px;">🥈</span><div><div style="font-size:13px;font-weight:700;">2nd-5th</div><div style="font-size:11px;color:#4a6080;">Top 5</div></div></div>
+      <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#aaa;font-family:Orbitron,monospace;">100 🔑</div><div style="font-size:11px;color:#4a6080;">+ 1M 🪐</div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:24px;">🥉</span><div><div style="font-size:13px;font-weight:700;">6th-20th</div><div style="font-size:11px;color:#4a6080;">Top 20</div></div></div>
+      <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#cd7f32;font-family:Orbitron,monospace;">20 🔑</div><div style="font-size:11px;color:#4a6080;">+ 100K 🪐</div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:24px;">🎖️</span><div><div style="font-size:13px;font-weight:700;">21st-100th</div><div style="font-size:11px;color:#4a6080;">Top 100</div></div></div>
+      <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#4a6080;font-family:Orbitron,monospace;">5 🔑</div><div style="font-size:11px;color:#4a6080;">+ 10K 🪐</div></div>
+    </div>
+  </div>
+
+  <!-- Season leaderboard -->
+  <div class="section-title">📊 Season Leaderboard</div>
+  <div id="seasonLeaderboard"></div>
+
 </div>
 
 <!-- KEYS PAGE -->
@@ -1955,7 +2115,11 @@ const PLANETS = [
   {minLevel:45, name:"Neptune", emoji:"💙", cssClass:"planet-neptune", color:"#1565c0", desc:"Stormy blue giant of deep space",   glowColor:"rgba(0,80,255,0.6)",    bonus:"🌊 +40% Combo Power"},
   {minLevel:50, name:"Pluto",   emoji:"🩶", cssClass:"planet-pluto",   color:"#9e9e9e", desc:"Dwarf planet at the edge",          glowColor:"rgba(150,150,200,0.6)", bonus:"🔑 +1 Key every 50 taps"},
   {minLevel:55, name:"Nibiru",  emoji:"🌑", cssClass:"planet-nibiru",  color:"#ff3366", desc:"Mysterious rogue planet",           glowColor:"rgba(255,0,100,0.7)",   bonus:"💥 +50% Crit Chance"},
-  {minLevel:60, name:"Sun",     emoji:"☀️", cssClass:"planet-sun",     color:"#ffeb3b", desc:"You became the Sun itself!",        glowColor:"rgba(255,220,0,0.9)",   bonus:"☀️ +50% ALL Bonuses"},
+  {minLevel:60, name:"Sun",      emoji:"☀️", cssClass:"planet-sun",     color:"#ffeb3b", desc:"You became the Sun itself!",         glowColor:"rgba(255,220,0,0.9)",  bonus:"☀️ +50% ALL Bonuses"},
+  {minLevel:61, name:"Cosmos",   emoji:"🌌", cssClass:"planet-cosmos",   color:"#7b2fff", desc:"Beyond the solar system — pure energy",glowColor:"rgba(123,47,255,0.9)", bonus:"🌌 +60% Passive Income"},
+  {minLevel:71, name:"Galaxy",   emoji:"🌀", cssClass:"planet-galaxy",   color:"#00f5ff", desc:"You control an entire galaxy",          glowColor:"rgba(0,245,255,0.9)",  bonus:"🌀 +70% All Bonuses"},
+  {minLevel:81, name:"Universe", emoji:"🔮", cssClass:"planet-universe", color:"#ff3366", desc:"Master of the Universe",                glowColor:"rgba(255,50,100,0.9)", bonus:"🔮 +80% Everything"},
+  {minLevel:91, name:"Omniverse",emoji:"👑", cssClass:"planet-omniverse",color:"#FFD700", desc:"The ultimate XSPACE Legend",            glowColor:"rgba(255,215,0,1.0)",  bonus:"👑 +100% ALL"},
 ];
 
 function getPlanetForLevel(lv){
@@ -1970,7 +2134,15 @@ const LEVELS=[
   220000,262000,311000,368000,434000,510000,597000,696000,808000,935000,
   1080000,1244000,1430000,1641000,1881000,2154000,2464000,2816000,3214000,3664000,
   4172000,4744000,5387000,6108000,6915000,7816000,8820000,9936000,11175000,12550000,
-  14100000,15800000,17700000,19800000,22100000,24700000,27600000,30800000,34400000,38400000
+  14100000,15800000,17700000,19800000,22100000,24700000,27600000,30800000,34400000,38400000,
+  // Lv61-70: Post-Sun COSMIC levels
+  43000000,48000000,54000000,60000000,67000000,75000000,84000000,94000000,105000000,117000000,
+  // Lv71-80: GALACTIC levels  
+  130000000,145000000,161000000,179000000,199000000,221000000,246000000,273000000,303000000,337000000,
+  // Lv81-90: UNIVERSAL levels
+  374000000,415000000,461000000,512000000,569000000,632000000,702000000,780000000,867000000,963000000,
+  // Lv91-100: OMNIVERSAL levels
+  1070000000,1188000000,1320000000,1466000000,1628000000,1808000000,2008000000,2230000000,2476000000,2750000000
 ];
 const LEVEL_NAMES=[
   "",
@@ -2245,7 +2417,7 @@ function updatePlanet(level, isInit){
   g.currentPlanetName=planet.name;
 
   // Update CSS class
-  btn.classList.remove('planet-mercury','planet-venus','planet-earth','planet-mars','planet-jupiter','planet-saturn','planet-uranus','planet-neptune','planet-pluto','planet-nibiru','planet-sun');
+  btn.classList.remove('planet-mercury','planet-venus','planet-earth','planet-mars','planet-jupiter','planet-saturn','planet-uranus','planet-neptune','planet-pluto','planet-nibiru','planet-sun','planet-cosmos','planet-galaxy','planet-universe','planet-omniverse');
   btn.classList.add(planet.cssClass);
 
   // Saturn rings
@@ -2278,7 +2450,7 @@ function getLevel(c){
   const earned = Math.max(c, g ? (g.totalEarned||0) : 0);
   let l=1;
   for(let i=0;i<LEVELS.length;i++) if(earned>=LEVELS[i]) l=i+1;
-  return Math.min(l,60);
+  return Math.min(l,100);
 }
 function getLeague(c){let league=LEAGUES[0];for(const l of LEAGUES)if(c>=l.min)league=l;return league;}
 
@@ -2638,6 +2810,8 @@ function showPage(page){
   if(page==='upgrade'){updateUpgradeHub();}
   if(page==='galaxy'){updateGalaxyHub();}
   if(page==='battle'){updateBattleHub();}
+  if(page==='clans'){renderMyClan();renderClansList();}
+  if(page==='seasons'){updateSeasons();}
   if(page==='keys'){updateKeysUI();}
   if(page==='cards'){renderFullCards();}
   if(page==='artifacts'){renderArtifacts();}
@@ -2706,7 +2880,9 @@ function updateGalaxyHub() {
 function updateBattleHub() {
   const s = getCurrentSeason();
   const bd = document.getElementById('battleSeasonDesc');
-  if(bd) bd.textContent = 'Season '+s.num+' · '+s.daysLeft+' days left';
+  if(bd) bd.textContent = 'Season '+s.num+' · '+s.daysLeft+'d left';
+  const cb = document.getElementById('myClanBadge');
+  if(cb) cb.textContent = g.clan ? '['+g.clan.tag+'] '+g.clan.name : 'Join or create clan';
 }
 
 function redeemPromoPage() {
@@ -3580,11 +3756,24 @@ function checkKeyReward(oldLevel, newLevel) {
 
 // ═══ PROMO CODES ═══
 const PROMO_CODES = {
-  'XSPACE2026':  {reward:'coins', value:10000, msg:'+10,000 XSPC! 🪐'},
-  'LAUNCH':      {reward:'coins', value:25000, msg:'+25,000 XSPC! 🚀'},
-  'XKEY2026':    {reward:'key',   value:3,     msg:'+3 XKEY! 🔑'},
-  'SPACE100':    {reward:'coins', value:5000,  msg:'+5,000 XSPC! 🌌'},
-  'WELCOMEGIFT': {reward:'both',  value:5000, value2:1, msg:'+5,000 XSPC + 1 XKEY! 🎁'},
+  // ── Стартовые ──
+  'XSPACE2026':  {reward:'coins', value:10000,  msg:'+10,000 XSPC! 🪐'},
+  'LAUNCH':      {reward:'coins', value:25000,  msg:'+25,000 XSPC! 🚀'},
+  'XKEY2026':    {reward:'key',   value:3,      msg:'+3 XKEY! 🔑'},
+  'SPACE100':    {reward:'coins', value:5000,   msg:'+5,000 XSPC! 🌌'},
+  'WELCOMEGIFT': {reward:'both',  value:5000,  value2:1, msg:'+5,000 XSPC + 1 XKEY! 🎁'},
+  // ── Продвижение / соцсети ──
+  'XSPC_TG':     {reward:'both',  value:8000,  value2:1, msg:'+8,000 XSPC + 1 XKEY! 📢'},
+  'GALAXY2026':  {reward:'coins', value:15000,  msg:'+15,000 XSPC! 🌌'},
+  'MINEHARD':    {reward:'coins', value:7500,   msg:'+7,500 XSPC! ⛏️'},
+  'PLANET5':     {reward:'both',  value:10000, value2:2, msg:'+10,000 XSPC + 2 XKEY! 🪐'},
+  // ── Партнёрские / инфлюенсеры ──
+  'XSPACE_VIP':  {reward:'both',  value:20000, value2:3, msg:'+20,000 XSPC + 3 XKEY! 👑'},
+  'CRYPTO100':   {reward:'coins', value:12000,  msg:'+12,000 XSPC! 🔥'},
+  'TONCHAIN':    {reward:'both',  value:6000,  value2:1, msg:'+6,000 XSPC + 1 XKEY! ⛓️'},
+  // ── Ивентовые ──
+  'SUMMER2026':  {reward:'coins', value:30000,  msg:'+30,000 XSPC! ☀️'},
+  'ASTEROID':    {reward:'both',  value:5000,  value2:2, msg:'+5,000 XSPC + 2 XKEY! ☄️'},
 };
 
 function redeemPromo() {
@@ -3706,22 +3895,29 @@ function updateWhitepaperProgress() {
   if(el('wpRemaining')) el('wpRemaining').textContent = remaining > 0 ? remaining.toLocaleString() + ' more needed' : '✅ Ready to withdraw!';
 }
 
-// Fake but convincing player counter based on time
+// Player counter — shows immediately from fallback, updates from API
+function getPlayerCountFallback() {
+  const base = 12847;
+  const hrs = Math.floor((Date.now() - new Date('2026-05-31').getTime()) / 3600000);
+  return Math.max(base, base + hrs * 3) + Math.floor(Math.random() * 10);
+}
 async function updatePlayerCounter() {
+  // Show fallback immediately so counter is never empty
+  const el = document.getElementById('playerCounter');
+  if(el && el.textContent === '...') el.textContent = getPlayerCountFallback().toLocaleString();
+  // Then try to get real count from API
   try {
-    const r = await fetch(`${API_URL}/stats`);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    const r = await fetch(`${API_URL}/stats`, { signal: controller.signal });
+    clearTimeout(timer);
     const d = await r.json();
     const real = d.total_players || 0;
-    // Show real + small cosmetic buffer for confidence
     const display = Math.max(real, 12847) + Math.floor(Math.random() * 10);
-    const el = document.getElementById('playerCounter');
     if(el) el.textContent = display.toLocaleString();
   } catch(e) {
-    // Fallback
-    const base = 12847;
-    const hrs = Math.floor((Date.now() - new Date('2026-05-31').getTime()) / 3600000);
-    const el = document.getElementById('playerCounter');
-    if(el) el.textContent = (base + hrs*3).toLocaleString();
+    // Fallback already shown above
+    if(el) el.textContent = getPlayerCountFallback().toLocaleString();
   }
 }
 
@@ -3730,13 +3926,22 @@ setInterval(updatePlayerCounter, 30000);
 
 // ═══ PARTNER TASKS ═══
 const PARTNER_TASKS = [
-  {id:'tg_channel',  name:'Join XSPACECOIN Channel', icon:'📢', desc:'Subscribe to our Telegram channel', reward:5000,  rewardKey:0, url:'https://t.me/xspacecoin',     type:'telegram'},
-  {id:'tg_chat',     name:'Join Community Chat',     icon:'💬', desc:'Join our community discussion',    reward:3000,  rewardKey:0, url:'https://t.me/xspacecoin_chat', type:'telegram'},
-  {id:'share_game',  name:'Share the Game',          icon:'📤', desc:'Share XSPACECOIN with friends',    reward:2000,  rewardKey:1, url:'',                              type:'share'},
-  {id:'invite_3',    name:'Invite 3 Friends',        icon:'👥', desc:'Have 3 referrals',                reward:10000, rewardKey:1, url:'',                              type:'referral', need:3},
-  {id:'invite_10',   name:'Invite 10 Friends',       icon:'🚀', desc:'Have 10 referrals',               reward:50000, rewardKey:3, url:'',                              type:'referral', need:10},
-  {id:'reach_lv10',  name:'Reach Level 10',          icon:'🏆', desc:'Become a Diamond miner',          reward:8000,  rewardKey:1, url:'',                              type:'level', need:10},
-  {id:'reach_lv25',  name:'Reach Level 25',          icon:'🌌', desc:'Reach Cosmic rank',               reward:30000, rewardKey:2, url:'',                              type:'level', need:25},
+  // ── Telegram каналы ──
+  {id:'tg_channel',  name:'Join XSPACECOIN Channel', icon:'📢', desc:'Subscribe to our main Telegram channel', reward:5000,  rewardKey:0, url:'https://t.me/xspacecoin',       type:'telegram'},
+  {id:'tg_chat',     name:'Join Community Chat',     icon:'💬', desc:'Join our community discussion group',    reward:3000,  rewardKey:0, url:'https://t.me/xspacecoin_chat',  type:'telegram'},
+  {id:'tg_news',     name:'Follow News Channel',     icon:'📰', desc:'Get the latest XSPACECOIN news',         reward:2500,  rewardKey:0, url:'https://t.me/xspacecoin',       type:'telegram'},
+  {id:'tg_ann',      name:'Announcements Channel',   icon:'🔔', desc:'Stay updated on launches & events',     reward:2000,  rewardKey:0, url:'https://t.me/xspacecoin',       type:'telegram'},
+  // ── Соцсети / X (Twitter) ──
+  {id:'follow_x',    name:'Follow on X / Twitter',   icon:'🐦', desc:'Follow @xspacecoin on X for updates',   reward:4000,  rewardKey:0, url:'https://x.com/xspacecoin',      type:'telegram'},
+  // ── Игровые задачи ──
+  {id:'share_game',  name:'Share the Game',          icon:'📤', desc:'Share XSPACECOIN with friends',          reward:2000,  rewardKey:1, url:'',                               type:'share'},
+  {id:'invite_3',    name:'Invite 3 Friends',        icon:'👥', desc:'Have 3 referrals',                       reward:10000, rewardKey:1, url:'',                               type:'referral', need:3},
+  {id:'invite_10',   name:'Invite 10 Friends',       icon:'🚀', desc:'Have 10 referrals',                      reward:50000, rewardKey:3, url:'',                               type:'referral', need:10},
+  {id:'invite_25',   name:'Invite 25 Friends',       icon:'🌌', desc:'Become a space ambassador!',             reward:150000,rewardKey:5, url:'',                               type:'referral', need:25},
+  // ── Прогрессовые ──
+  {id:'reach_lv10',  name:'Reach Level 10',          icon:'🏆', desc:'Become a Diamond miner',                 reward:8000,  rewardKey:1, url:'',                               type:'level', need:10},
+  {id:'reach_lv25',  name:'Reach Level 25',          icon:'🌌', desc:'Reach Cosmic rank',                      reward:30000, rewardKey:2, url:'',                               type:'level', need:25},
+  {id:'reach_lv50',  name:'Reach Level 50',          icon:'☀️', desc:'Become a SUN GOD!',                      reward:100000,rewardKey:5, url:'',                               type:'level', need:50},
 ];
 
 const NEWS_ITEMS = [
@@ -4554,6 +4759,150 @@ function checkPassiveNotification() {
 }
 setInterval(checkPassiveNotification, 60000);
 
+
+// ═══ CLANS SYSTEM ═══
+function showCreateClan() {
+  document.getElementById('createClanForm').style.display = 'block';
+}
+function hideCreateClan() {
+  document.getElementById('createClanForm').style.display = 'none';
+}
+function showJoinClan() {
+  renderClansList();
+  showToast('Choose a clan from the list below!');
+}
+
+function createClan() {
+  const name = document.getElementById('clanNameInput').value.trim();
+  const tag = document.getElementById('clanTagInput').value.trim().toUpperCase();
+  if(name.length < 3) { showToast('Name must be at least 3 chars!'); return; }
+  if(tag.length < 2) { showToast('Tag must be 2-5 chars!'); return; }
+  if((g.keys||0) < 5) { showToast('Need 5 🔑 XKEY to create clan!'); return; }
+
+  g.keys -= 5;
+  g.clan = { name, tag, members: 1, totalCoins: Math.floor(g.coins), rank: 1 };
+  updateKeysUI(); saveGame();
+  renderMyClan();
+  hideCreateClan();
+  showFloat('🎉 Clan ['+tag+'] created!', window.innerWidth/2, 200, '#00ff88');
+}
+
+function joinClan(clanName, clanTag) {
+  g.clan = { name: clanName, tag: clanTag, members: Math.floor(5+Math.random()*20), totalCoins: Math.floor(g.coins*10), rank: Math.floor(Math.random()*50+1) };
+  saveGame();
+  renderMyClan();
+  showFloat('✅ Joined ['+clanTag+']!', window.innerWidth/2, 200, '#00ff88');
+}
+
+function leaveClan() {
+  g.clan = null;
+  saveGame();
+  renderMyClan();
+}
+
+function renderMyClan() {
+  const el = document.getElementById('myClanInfo');
+  if(!el) return;
+  if(g.clan) {
+    el.innerHTML = '<div style="background:linear-gradient(135deg,rgba(0,245,255,0.06),rgba(123,47,255,0.04));border:1px solid rgba(0,245,255,0.2);border-radius:14px;padding:16px;margin-bottom:14px;">'
+      +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
+        +'<div style="width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-family:Orbitron,monospace;font-size:14px;font-weight:700;color:#000;">'+g.clan.tag+'</div>'
+        +'<div style="flex:1;">'
+          +'<div style="font-size:16px;font-weight:700;">'+g.clan.name+'</div>'
+          +'<div style="font-size:11px;color:#4a6080;margin-top:2px;">👥 '+g.clan.members+' members · Rank #'+g.clan.rank+'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;">'
+        +'<div style="flex:1;text-align:center;background:rgba(0,0,0,0.2);border-radius:10px;padding:8px;">'
+          +'<div style="font-size:13px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;">'+Math.floor(g.clan.totalCoins/1000)+'K</div>'
+          +'<div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;">CLAN XSPC</div>'
+        +'</div>'
+        +'<button onclick="leaveClan()" style="padding:8px 14px;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.2);border-radius:10px;color:#ff3366;font-size:12px;cursor:pointer;">Leave</button>'
+      +'</div>'
+      +'</div>';
+  } else {
+    el.innerHTML = '<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;margin-bottom:14px;">'
+      +'<div style="font-size:36px;margin-bottom:8px;">🚀</div>'
+      +'<div style="font-size:14px;font-weight:700;margin-bottom:4px;">No Clan</div>'
+      +'<div style="font-size:12px;color:#4a6080;margin-bottom:14px;">Join or create a clan to compete!</div>'
+      +'<div style="display:flex;gap:8px;">'
+        +'<button onclick="showCreateClan()" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:10px;color:#000;font-weight:700;font-size:13px;cursor:pointer;">+ Create Clan</button>'
+        +'<button onclick="showJoinClan()" style="flex:1;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:700;font-size:13px;cursor:pointer;">🔍 Find Clan</button>'
+      +'</div>'
+      +'</div>';
+  }
+}
+
+const SAMPLE_CLANS = [
+  {name:'Space Raiders',    tag:'SR',   members:47, totalCoins:8500000, rank:1},
+  {name:'Galaxy Miners',    tag:'GM',   members:38, totalCoins:6200000, rank:2},
+  {name:'Cosmic Warriors',  tag:'CW',   members:52, totalCoins:5800000, rank:3},
+  {name:'Star Crushers',    tag:'SC',   members:31, totalCoins:4100000, rank:4},
+  {name:'Nebula Force',     tag:'NF',   members:28, totalCoins:3700000, rank:5},
+  {name:'Dark Matter',      tag:'DM',   members:44, totalCoins:3200000, rank:6},
+  {name:'TON Hunters',      tag:'TH',   members:19, totalCoins:2800000, rank:7},
+  {name:'XSPC Masters',     tag:'XM',   members:35, totalCoins:2400000, rank:8},
+];
+
+function renderClansList() {
+  const list = document.getElementById('clansList');
+  if(!list) return;
+  list.innerHTML = SAMPLE_CLANS.map(c => {
+    const isMyClam = g.clan && g.clan.tag === c.tag;
+    const safeName = c.name.replace(/'/g, "\\'");
+    const safeTag  = c.tag.replace(/'/g, "\\'");
+    const joinBtn = `<button onclick="joinClan('${safeName}','${safeTag}')" style="padding:6px 12px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:8px;color:var(--accent);font-size:11px;cursor:pointer;font-family:Orbitron,monospace;">JOIN</button>`;
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid '+(isMyClam?'rgba(0,255,136,0.3)':'var(--border)')+';border-radius:14px;margin-bottom:8px;">'
+      +'<div style="font-size:13px;font-weight:700;color:#4a6080;width:24px;text-align:center;">#'+c.rank+'</div>'
+      +'<div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,rgba(0,245,255,0.2),rgba(123,47,255,0.1));border:1px solid rgba(0,245,255,0.2);display:flex;align-items:center;justify-content:center;font-family:Orbitron,monospace;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;">'+c.tag+'</div>'
+      +'<div style="flex:1;">'
+        +'<div style="font-size:13px;font-weight:700;">'+c.name+'</div>'
+        +'<div style="font-size:11px;color:#4a6080;">👥 '+c.members+' · '+Math.floor(c.totalCoins/1000)+'K XSPC</div>'
+      +'</div>'
+      +(isMyClam ? '<span style="color:#00ff88;font-size:12px;">✅ Joined</span>' : joinBtn)
+      +'</div>';
+  }).join('');
+}
+
+function updateSeasons() {
+  const s = getCurrentSeason();
+  const titleEl = document.getElementById('seasonTitle');
+  const subEl = document.getElementById('seasonSubtitle');
+  if(titleEl) titleEl.textContent = 'Season ' + s.num;
+  if(subEl) subEl.textContent = s.daysLeft + ' days remaining';
+
+  // Countdown
+  const now = new Date();
+  const seasonEnd = new Date('2026-01-01');
+  seasonEnd.setDate(seasonEnd.getDate() + s.num * 30);
+  const diff = seasonEnd - now;
+  const days = Math.floor(diff/86400000);
+  const hrs = Math.floor((diff%86400000)/3600000);
+  const mins = Math.floor((diff%3600000)/60000);
+  const dEl = document.getElementById('seasonDaysCD'); if(dEl) dEl.textContent = String(days).padStart(2,'0');
+  const hEl = document.getElementById('seasonHoursCD'); if(hEl) hEl.textContent = String(hrs).padStart(2,'0');
+  const mEl = document.getElementById('seasonMinsCD'); if(mEl) mEl.textContent = String(mins).padStart(2,'0');
+
+  // Season score = level * taps
+  const score = g.level * (g.clicks||0);
+  const scoreEl = document.getElementById('mySeasonScore');
+  if(scoreEl) scoreEl.textContent = score.toLocaleString();
+
+  // Mock rank based on score
+  const rank = Math.max(1, Math.floor(100000 / (score+1)));
+  const rankEl = document.getElementById('mySeasonRank');
+  if(rankEl) rankEl.textContent = '#' + Math.min(rank, 9999);
+
+  // Season leaderboard (top from server + player)
+  renderSeasonLeaderboard();
+}
+
+function renderSeasonLeaderboard() {
+  const lb = document.getElementById('seasonLeaderboard');
+  if(!lb) return;
+  lb.innerHTML = '<div style="text-align:center;color:#4a6080;padding:16px;font-size:12px;">🏆 Season rankings reset every 30 days<br>Earn points by tapping and leveling up!</div>';
+}
+
 // ═══ MINE PAGE EFFECTS ═══
 function initMinePageEffects() {
   // Star particles for top block
@@ -4642,26 +4991,75 @@ function renderFullCards() {
 }
 
 async function initUser(){
-  let userId,username='',fullName='',referrerId=null;
-  const tg=window.Telegram?.WebApp;
-  if(tg&&tg.initDataUnsafe?.user){
-    const u=tg.initDataUnsafe.user;userId=u.id;username=u.username||'';fullName=u.first_name||'';
-    const sp=tg.initDataUnsafe?.start_param;
-    if(sp?.startsWith('ref_')){referrerId=parseInt(sp.replace('ref_',''));if(referrerId===userId)referrerId=null;}
-  }else{
-    const p=new URLSearchParams(window.location.search);
-    userId=parseInt(p.get('user_id'));username=p.get('username')||'';fullName=p.get('full_name')||'';
-    const ref=p.get('ref');if(ref)referrerId=parseInt(ref);
+  let userId, username='', fullName='', referrerId=null;
+  const tg = window.Telegram?.WebApp;
+
+  // ── Источник 1: Telegram WebApp ──
+  if(tg && tg.initDataUnsafe?.user){
+    const u = tg.initDataUnsafe.user;
+    userId   = u.id;
+    username = u.username || '';
+    fullName = u.first_name || (u.last_name ? '' : '') + (u.last_name||'');
+    fullName = fullName.trim() || u.username || 'Player';
+
+    // Реферал из start_param (поддержка ref_XXX и просто числа)
+    const sp = tg.initDataUnsafe?.start_param || '';
+    if(sp.startsWith('ref_')){
+      const rid = parseInt(sp.replace('ref_',''));
+      if(!isNaN(rid) && rid !== userId) referrerId = rid;
+    } else if(/^\d+$/.test(sp)){
+      const rid = parseInt(sp);
+      if(!isNaN(rid) && rid !== userId) referrerId = rid;
+    }
+    console.log('[XSPC] TG user:', userId, '| ref:', referrerId, '| start_param:', sp);
+
+  // ── Источник 2: URL-параметры (для тестов в браузере) ──
+  } else {
+    const p = new URLSearchParams(window.location.search);
+    userId   = parseInt(p.get('user_id') || p.get('id') || '0');
+    username = p.get('username') || '';
+    fullName = p.get('full_name') || p.get('name') || 'Player';
+    const ref = p.get('ref') || p.get('referrer') || p.get('start');
+    if(ref){
+      const rid = parseInt(ref.replace('ref_',''));
+      if(!isNaN(rid) && rid !== userId) referrerId = rid;
+    }
+    console.log('[XSPC] URL user:', userId, '| ref:', referrerId);
   }
-  if(!userId||isNaN(userId)){document.getElementById('refLink').textContent='Open in Telegram to get your link';return;}
-  g.telegramId=userId;
+
+  // Нет userId — показываем заглушку
+  if(!userId || isNaN(userId)){
+    const refEl = document.getElementById('refLink');
+    if(refEl) refEl.textContent = 'Open in Telegram to get your link';
+    console.warn('[XSPC] No userId found. Skipping registration.');
+    return;
+  }
+
+  // Сохраняем ID и регистрируем
+  g.telegramId = userId;
+  if(fullName && fullName !== 'Player') g.fullName = fullName;
   saveGame();
-  await apiRegister(userId,username,fullName,referrerId);
-  // Update ref link after we have the ID
-  const refEl = document.getElementById('refLink');
-  if(refEl) refEl.textContent = getRefLink();
+
+  await apiRegister(userId, username, fullName, referrerId);
+
+  // Обновляем реф-ссылку во всех элементах
+  const refLink = getRefLink();
+  ['refLink','refLink2'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = refLink;
+  });
+
+  // Обновляем счётчик заработка от рефералов
   const fe = document.getElementById('friendEarnings');
   if(fe) fe.textContent = ((g.friends||0)*500).toLocaleString();
+
+  // Имя в шапке
+  const nameEl = document.getElementById('headerName');
+  if(nameEl && fullName && fullName !== 'Player'){
+    nameEl.textContent = fullName.split(' ')[0];
+  }
+
+  // Загружаем список рефералов
   loadFriends(userId);
 }
 
