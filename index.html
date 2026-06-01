@@ -476,6 +476,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-110px) scale(1.4)}}
 
 /* BOTTOM MENU */
+.back-btn{display:none;position:fixed;top:60px;left:12px;z-index:500;background:rgba(0,245,255,0.12);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:6px 14px;color:var(--accent);font-family:Orbitron,monospace;font-size:11px;cursor:pointer;backdrop-filter:blur(10px);}
+.back-btn.visible{display:flex;align-items:center;gap:6px;}
 .bottom-menu{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(2,5,16,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 20px;}
 .menu-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 10px;border-radius:12px;transition:all 0.2s;min-width:52px;}
 .menu-item .m-icon{font-size:20px;filter:grayscale(0.5);transition:filter 0.2s;}
@@ -619,6 +621,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <span id="progressLabel">Lv1 → Lv2</span>
     <span id="progressPct">0%</span>
   </div>
+  <div class="back-btn" id="globalBackBtn" onclick="goBack()">◀ BACK</div>
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
 </div>
 
@@ -1183,6 +1186,131 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 </div>
 
 <!-- PVP PAGE -->
+<!-- SEASON PAGE -->
+<!-- TOURNAMENT PAGE -->
+<div class="page" id="pageTournament">
+  <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff9500;margin-bottom:14px;letter-spacing:2px;">🥊 TOURNAMENT</div>
+
+  <!-- Timer -->
+  <div style="background:linear-gradient(135deg,rgba(255,149,0,0.12),rgba(255,50,50,0.08));border:1px solid rgba(255,149,0,0.3);border-radius:18px;padding:16px;margin-bottom:12px;text-align:center;">
+    <div style="font-size:12px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;">RESETS IN</div>
+    <div style="font-family:Orbitron,monospace;font-size:28px;font-weight:700;color:#ff9500;" id="tournamentTimer">--:--:--</div>
+    <div style="font-size:11px;color:#4a6080;margin-top:4px;">Every Monday 00:00 UTC</div>
+  </div>
+
+  <!-- How it works -->
+  <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">📋 HOW IT WORKS</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;">
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:10px;"><div style="font-size:18px;">👥</div><div style="font-size:12px;">Invite friends this week to earn points</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><div style="font-size:18px;">🔑</div><div style="font-size:12px;">Each referral = 1 point + 500 XSPC bonus</div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><div style="font-size:18px;">🏆</div><div style="font-size:12px;">Top 3 win massive XKEY rewards</div></div>
+    </div>
+  </div>
+
+  <!-- Prizes -->
+  <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">🏅 WEEKLY PRIZES</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(255,149,0,0.08));border:1px solid rgba(255,215,0,0.3);border-radius:12px;">
+      <div style="font-size:24px;">🥇</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#FFD700;">1st Place</div><div style="font-size:11px;color:#4a6080;">Most referrals this week</div></div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#FFD700;">100K XSPC + 20🔑</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(192,192,192,0.1),rgba(150,150,150,0.06));border:1px solid rgba(192,192,192,0.2);border-radius:12px;">
+      <div style="font-size:24px;">🥈</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#C0C0C0;">2nd Place</div></div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#C0C0C0;">50K XSPC + 10🔑</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(205,127,50,0.1),rgba(150,80,0,0.06));border:1px solid rgba(205,127,50,0.2);border-radius:12px;">
+      <div style="font-size:24px;">🥉</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#cd7f32;">3rd Place</div></div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#cd7f32;">20K XSPC + 5🔑</div>
+    </div>
+  </div>
+
+  <!-- Your stats -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+    <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
+      <div style="font-size:11px;color:#4a6080;">Your Referrals</div>
+      <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:var(--accent);" id="tournamentRefs">0</div>
+    </div>
+    <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
+      <div style="font-size:11px;color:#4a6080;">Your Rank</div>
+      <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#ff9500;" id="tournamentRank">#--</div>
+    </div>
+  </div>
+
+  <!-- Share button -->
+  <button onclick="shareRef()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ff9500,#ff3366);border:none;border-radius:16px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:Orbitron,monospace;letter-spacing:2px;">🚀 INVITE FRIENDS</button>
+</div>
+
+<div class="page" id="pageSeason">
+  <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff9500;margin-bottom:14px;letter-spacing:2px;">🏆 SEASON</div>
+
+  <!-- Current Season -->
+  <div style="background:linear-gradient(135deg,rgba(255,149,0,0.12),rgba(255,50,50,0.08));border:1px solid rgba(255,149,0,0.3);border-radius:18px;padding:16px;margin-bottom:12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div>
+        <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;" id="seasonPageName">Season 6</div>
+        <div style="font-size:12px;color:#4a6080;margin-top:2px;" id="seasonPageDays">29 days remaining</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:#4a6080;">YOUR RANK</div>
+        <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff9500;" id="seasonPageRank">#--</div>
+      </div>
+    </div>
+    <div style="background:rgba(0,0,0,0.2);border-radius:8px;height:6px;overflow:hidden;">
+      <div id="seasonPageProgress" style="height:100%;background:linear-gradient(90deg,#ff9500,#ff3366);border-radius:8px;width:30%;transition:width 0.5s;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:#4a6080;margin-top:4px;">
+      <span>Season start</span><span id="seasonPageEnd">Season end</span>
+    </div>
+  </div>
+
+  <!-- Season Prizes -->
+  <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">🏅 SEASON PRIZES</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(255,149,0,0.08));border:1px solid rgba(255,215,0,0.3);border-radius:12px;">
+      <div style="font-size:24px;">🥇</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#FFD700;">1st Place</div><div style="font-size:11px;color:#4a6080;">Top of the galaxy</div></div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#FFD700;">500K XSPC + 50🔑</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(192,192,192,0.1),rgba(150,150,150,0.06));border:1px solid rgba(192,192,192,0.2);border-radius:12px;">
+      <div style="font-size:24px;">🥈</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#C0C0C0;">2nd Place</div><div style="font-size:11px;color:#4a6080;">Silver miner</div></div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#C0C0C0;">200K XSPC + 20🔑</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(205,127,50,0.1),rgba(150,80,0,0.06));border:1px solid rgba(205,127,50,0.2);border-radius:12px;">
+      <div style="font-size:24px;">🥉</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#cd7f32;">3rd Place</div><div style="font-size:11px;color:#4a6080;">Bronze warrior</div></div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:#cd7f32;">50K XSPC + 10🔑</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:24px;">🏅</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Top 10</div><div style="font-size:11px;color:#4a6080;">Elite players</div></div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:var(--accent);">10K XSPC + 5🔑</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:24px;">🚀</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Top 100</div><div style="font-size:11px;color:#4a6080;">Galaxy explorers</div></div>
+      <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:var(--accent);">2K XSPC + 1🔑</div>
+    </div>
+  </div>
+
+  <!-- Your Stats -->
+  <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">📊 YOUR STATS</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+    <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
+      <div style="font-size:11px;color:#4a6080;">Season Score</div>
+      <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:var(--accent);" id="seasonScore">0</div>
+    </div>
+    <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
+      <div style="font-size:11px;color:#4a6080;">Battles Won</div>
+      <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#00ff88;" id="seasonWins">0</div>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="pagePvp">
 
   <!-- Header -->
@@ -1496,11 +1624,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-icon">🏆</div><div class="hub-name">Leaderboard</div>
       <div class="hub-desc">Global ranking</div>
     </div>
-    <div class="hub-card" onclick="showPage('pvp')">
+    <div class="hub-card" onclick="showPage('season')">
       <div class="hub-icon">🏅</div><div class="hub-name">Season</div>
-      <div class="hub-desc" id="battleSeasonDesc">Season 1 · prizes await</div>
+      <div class="hub-desc" id="battleSeasonDesc">Season 6 · 29 days left</div>
     </div>
-    <div class="hub-card" onclick="showPage('friends')">
+    <div class="hub-card" onclick="showPage('tournament')">
       <div class="hub-icon">🥊</div><div class="hub-name">Tournament</div>
       <div class="hub-desc">Weekly referral contest</div>
     </div>
@@ -2008,26 +2136,59 @@ const LEAGUES=[
   {name:"Legend",   icon:"🚀",min:12000000,  color:"#ff3366"},
 ];
 const ACHIEVEMENTS=[
-  {id:"first", name:"🎯 First Tap",   desc:"Tap for the first time",   req:()=>g.clicks>=1,       reward:10},
-  {id:"c100",  name:"⛏️ 100 Taps",   desc:"Tap 100 times",             req:()=>g.clicks>=100,     reward:25},
-  {id:"c1000", name:"💪 1K Taps",    desc:"Tap 1,000 times",           req:()=>g.clicks>=1000,    reward:100},
-  {id:"c10k",  name:"🔥 10K Taps",   desc:"Tap 10,000 times",          req:()=>g.clicks>=10000,   reward:500},
-  {id:"m1000", name:"💎 1K XSPC",    desc:"Earn 1,000 XSPC",           req:()=>g.coins>=1000,     reward:50},
-  {id:"m10k",  name:"👑 10K XSPC",   desc:"Earn 10,000 XSPC",          req:()=>g.coins>=10000,    reward:200},
-  {id:"m100k", name:"🚀 100K XSPC",  desc:"Earn 100,000 XSPC",         req:()=>g.coins>=100000,   reward:1000},
-  {id:"m1m",   name:"🌌 1M XSPC",    desc:"Earn 1,000,000 XSPC",       req:()=>g.coins>=1000000,  reward:5000},
-  {id:"lv5",   name:"🥇 Level 5",    desc:"Reach level 5",             req:()=>g.level>=5,        reward:200},
-  {id:"lv10",  name:"💎 Level 10",   desc:"Reach level 10",            req:()=>g.level>=10,       reward:500},
-  {id:"lv25",  name:"🌌 Level 25",   desc:"Reach level 25",            req:()=>g.level>=25,       reward:2000},
-  {id:"lv50",  name:"⭐ Max Level",  desc:"Reach max level 50",        req:()=>g.level>=50,       reward:50000},
-  {id:"combo10",name:"🔥 Combo x10", desc:"Get x10 combo",             req:()=>g.maxCombo>=10,    reward:50},
-  {id:"combo20",name:"💥 Combo x20", desc:"Get x20 combo",             req:()=>g.maxCombo>=20,    reward:200},
-  {id:"spin3",  name:"🎰 Gambler",   desc:"Spin the wheel 3 times",    req:()=>g.totalSpins>=3,   reward:100},
-  {id:"mars",   name:"🔴 Mars",      desc:"Unlock Mars planet",        req:()=>g.level>=5,        reward:300},
-  {id:"jupiter",name:"🟠 Jupiter",   desc:"Unlock Jupiter planet",     req:()=>g.level>=15,       reward:1000},
-  {id:"neptune",name:"🔵 Neptune",   desc:"Unlock Neptune planet",     req:()=>g.level>=25,       reward:2500},
-  {id:"saturn", name:"💍 Saturn",    desc:"Unlock Saturn planet",      req:()=>g.level>=30,       reward:5000},
-  {id:"star",   name:"⭐ Star",      desc:"Become a star!",            req:()=>g.level>=50,       reward:100000},
+  // Taps
+  {id:"first",   name:"🎯 First Tap",       desc:"Tap for the first time",      req:()=>g.clicks>=1,           reward:10},
+  {id:"c100",    name:"⛏️ 100 Taps",       desc:"Tap 100 times",               req:()=>g.clicks>=100,         reward:25},
+  {id:"c1000",   name:"💪 1K Taps",          desc:"Tap 1,000 times",             req:()=>g.clicks>=1000,        reward:100},
+  {id:"c10k",    name:"🔥 10K Taps",         desc:"Tap 10,000 times",            req:()=>g.clicks>=10000,       reward:500},
+  {id:"c50k",    name:"🧨 50K Taps",         desc:"Tap 50,000 times",            req:()=>g.clicks>=50000,       reward:2000},
+  {id:"c100k",   name:"👾 100K Taps",        desc:"Tap 100,000 times",           req:()=>g.clicks>=100000,      reward:10000},
+  // Coins
+  {id:"m1000",   name:"💎 1K XSPC",          desc:"Earn 1,000 XSPC",             req:()=>g.totalEarned>=1000,   reward:50},
+  {id:"m10k",    name:"👑 10K XSPC",         desc:"Earn 10,000 XSPC",            req:()=>g.totalEarned>=10000,  reward:200},
+  {id:"m100k",   name:"🚀 100K XSPC",        desc:"Earn 100,000 XSPC",           req:()=>g.totalEarned>=100000, reward:1000},
+  {id:"m1m",     name:"🌌 1M XSPC",          desc:"Earn 1,000,000 XSPC",         req:()=>g.totalEarned>=1000000,reward:5000},
+  {id:"m10m",    name:"🌟 10M XSPC",         desc:"Earn 10,000,000 XSPC",        req:()=>g.totalEarned>=10000000,reward:25000},
+  // Levels
+  {id:"lv5",     name:"🥇 Level 5",           desc:"Reach level 5",               req:()=>g.level>=5,            reward:200},
+  {id:"lv10",    name:"💎 Level 10",          desc:"Reach level 10",              req:()=>g.level>=10,           reward:500},
+  {id:"lv25",    name:"🌌 Level 25",          desc:"Reach level 25",              req:()=>g.level>=25,           reward:2000},
+  {id:"lv50",    name:"⭐ Level 50",              desc:"Reach level 50",              req:()=>g.level>=50,           reward:10000},
+  {id:"lv75",    name:"🌟 Level 75",          desc:"Reach level 75",              req:()=>g.level>=75,           reward:50000},
+  {id:"lv100",   name:"👑 Level 100",         desc:"Reach max level",             req:()=>g.level>=100,          reward:200000},
+  // Planets
+  {id:"mercury", name:"☯ Mercury",               desc:"Start your journey",          req:()=>g.level>=1,            reward:50},
+  {id:"venus",   name:"♀ Venus",                 desc:"Reach Venus",                 req:()=>g.level>=5,            reward:150},
+  {id:"earth",   name:"🌍 Earth",             desc:"Reach Earth",                 req:()=>g.level>=10,           reward:300},
+  {id:"mars",    name:"🔴 Mars",              desc:"Reach Mars",                  req:()=>g.level>=15,           reward:600},
+  {id:"jupiter", name:"🟠 Jupiter",           desc:"Reach Jupiter",               req:()=>g.level>=25,           reward:1500},
+  {id:"saturn",  name:"🪐 Saturn",            desc:"Reach Saturn",                req:()=>g.level>=35,           reward:3000},
+  {id:"uranus",  name:"🔵 Uranus",            desc:"Reach Uranus",                req:()=>g.level>=45,           reward:5000},
+  {id:"neptune", name:"💙 Neptune",           desc:"Reach Neptune",               req:()=>g.level>=50,           reward:8000},
+  {id:"pluto",   name:"🖤 Pluto",             desc:"Reach Pluto",                 req:()=>g.level>=55,           reward:15000},
+  {id:"nibiru",  name:"🟣 Nibiru",            desc:"Reach Nibiru",                req:()=>g.level>=60,           reward:30000},
+  {id:"sungod",  name:"☀ SUN GOD",               desc:"Reach the ultimate level!",   req:()=>g.level>=100,          reward:500000},
+  // Combo
+  {id:"combo10", name:"🔥 Combo x10",         desc:"Get x10 combo",               req:()=>g.maxCombo>=10,        reward:50},
+  {id:"combo20", name:"💥 Combo x20",         desc:"Get x20 combo",               req:()=>g.maxCombo>=20,        reward:200},
+  {id:"combo50", name:"🧨 Combo x50",         desc:"Get x50 combo",               req:()=>g.maxCombo>=50,        reward:1000},
+  // Keys & Artifacts
+  {id:"key5",    name:"🔑 Key Collector",     desc:"Collect 5 XKEY",              req:()=>(g.totalKeys||0)>=5,   reward:300},
+  {id:"key20",   name:"🗝 Key Master",        desc:"Collect 20 XKEY",             req:()=>(g.totalKeys||0)>=20,  reward:1500},
+  {id:"art1",    name:"🔮 Artifact Found",    desc:"Buy your first artifact",     req:()=>Object.keys(g.artifacts||{}).length>=1, reward:500},
+  {id:"art5",    name:"🏺 Collector",         desc:"Buy 5 artifacts",             req:()=>Object.keys(g.artifacts||{}).length>=5, reward:5000},
+  {id:"art12",   name:"👑 Full Collection",   desc:"Collect all 12 artifacts",    req:()=>Object.keys(g.artifacts||{}).length>=12,reward:50000},
+  // Referrals
+  {id:"ref1",    name:"👥 First Recruit",     desc:"Invite 1 friend",             req:()=>(g.friends||0)>=1,     reward:500},
+  {id:"ref5",    name:"🚀 Space Recruiter",   desc:"Invite 5 friends",            req:()=>(g.friends||0)>=5,     reward:3000},
+  {id:"ref25",   name:"🌌 Galaxy Recruiter",  desc:"Invite 25 friends",           req:()=>(g.friends||0)>=25,    reward:25000},
+  // Wheel
+  {id:"spin3",   name:"🎰 Gambler",           desc:"Spin the wheel 3 times",      req:()=>g.totalSpins>=3,       reward:100},
+  {id:"spin20",  name:"🎰 Lucky Star",        desc:"Spin the wheel 20 times",     req:()=>g.totalSpins>=20,      reward:1000},
+  // Streak
+  {id:"streak3", name:"📅 3-Day Streak",      desc:"Login 3 days in a row",       req:()=>(g.streak||0)>=3,      reward:300},
+  {id:"streak7", name:"🔥 Week Warrior",      desc:"Login 7 days in a row",       req:()=>(g.streak||0)>=7,      reward:1500},
+  {id:"streak30",name:"🏆 Monthly Legend",    desc:"Login 30 days in a row",      req:()=>(g.streak||0)>=30,     reward:15000},
 ];
 const DAILY_TASKS=[
   {id:"tap50",   name:"⛏️ Mine 50 times", goal:50,  field:"clicks",     reward:200,label:"taps"},
@@ -2634,9 +2795,31 @@ function updateUI(){
 }
 
 // ═══ NAVIGATION ═══
+function goBack(){
+  const hubs = {
+    'keys':'earn','combo':'earn','tasks':'earn','streak':'earn','wheel':'earn','promo':'earn',
+    'cards':'upgrade','artifacts':'upgrade',
+    'top':'mine','whitepaper':'mine','stats':'mine',
+    'clans':'galaxy','pvp':'battle','season':'battle','tournament':'battle',
+    'friends':'friends'
+  };
+  const current = document.querySelector('.page.active');
+  const id = current ? current.id.replace('page','').toLowerCase() : '';
+  const parent = hubs[id] || 'mine';
+  showPage(parent);
+}
+
 function showPage(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
+  
+  // Show/hide back button
+  const mainPages = ['mine','earn','upgrade','galaxy','battle','friends'];
+  const backBtn = document.getElementById('globalBackBtn');
+  if(backBtn){
+    if(mainPages.includes(page)) backBtn.classList.remove('visible');
+    else backBtn.classList.add('visible');
+  }
   const pageEl = document.getElementById('page'+page[0].toUpperCase()+page.slice(1));
   const menuEl = document.getElementById('menu'+page[0].toUpperCase()+page.slice(1));
   if(pageEl) pageEl.classList.add('active');
@@ -2648,6 +2831,20 @@ function showPage(page){
   if(page==='upgrade'){updateUpgradeHub();}
   if(page==='galaxy'){updateGalaxyHub();}
   if(page==='battle'){updateBattleHub();}
+  if(page==='tournament'){
+    const td=document.getElementById('tournamentRefs'); if(td) td.textContent=(g.friends||0);
+    const tr=document.getElementById('tournamentRank'); if(tr) tr.textContent='#'+Math.max(1,Math.floor(Math.random()*50+1));
+    updateTournamentTimer();
+  }
+  if(page==='season'){
+    const s=getCurrentSeason();
+    const sn=document.getElementById('seasonPageName'); if(sn) sn.textContent='Season '+s.num;
+    const sd=document.getElementById('seasonPageDays'); if(sd) sd.textContent=s.daysLeft+' days remaining';
+    const sr=document.getElementById('seasonPageRank'); if(sr) sr.textContent='#'+Math.max(1,Math.floor(Math.random()*100+1));
+    const ss=document.getElementById('seasonScore'); if(ss) ss.textContent=(g.clicks||0).toLocaleString();
+    const sw=document.getElementById('seasonWins'); if(sw) sw.textContent=(g.pvpWins||0);
+    const se=document.getElementById('seasonPageEnd'); if(se) se.textContent=s.end.toLocaleDateString();
+  }
   if(page==='keys'){updateKeysUI();}
   if(page==='cards'){renderFullCards();}
   if(page==='artifacts'){renderArtifacts();}
@@ -3749,8 +3946,7 @@ setInterval(updatePlayerCounter, 30000);
 
 // ═══ PARTNER TASKS ═══
 const PARTNER_TASKS = [
-  {id:'tg_channel',  name:'Join XSPACECOIN Channel', icon:'📢', desc:'Subscribe to our Telegram channel', reward:5000,  rewardKey:0, url:'https://t.me/xspacecoin',     type:'telegram'},
-  {id:'tg_chat',     name:'Join Community Chat',     icon:'💬', desc:'Join our community discussion',    reward:3000,  rewardKey:0, url:'https://t.me/xspacecoin_chat', type:'telegram'},
+
   {id:'share_game',  name:'Share the Game',          icon:'📤', desc:'Share XSPACECOIN with friends',    reward:2000,  rewardKey:1, url:'',                              type:'share'},
   {id:'invite_3',    name:'Invite 3 Friends',        icon:'👥', desc:'Have 3 referrals',                reward:10000, rewardKey:1, url:'',                              type:'referral', need:3},
   {id:'invite_10',   name:'Invite 10 Friends',       icon:'🚀', desc:'Have 10 referrals',               reward:50000, rewardKey:3, url:'',                              type:'referral', need:10},
@@ -4183,6 +4379,23 @@ function getVipMultiplier() {
 }
 
 // ═══ SEASONS ═══
+function updateTournamentTimer() {
+  const el = document.getElementById('tournamentTimer');
+  if(!el) return;
+  const now = new Date();
+  const day = now.getUTCDay(); // 0=Sun, 1=Mon
+  const daysUntilMonday = day === 1 ? 7 : (8 - day) % 7;
+  const monday = new Date(now);
+  monday.setUTCDate(now.getUTCDate() + daysUntilMonday);
+  monday.setUTCHours(0,0,0,0);
+  const diff = Math.max(0, monday - now);
+  const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+  const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+  el.textContent = h+':'+m+':'+s;
+}
+setInterval(updateTournamentTimer, 1000);
+
 function getCurrentSeason() {
   const now = new Date();
   const seasonNum = Math.floor((now - new Date('2026-01-01')) / (30 * 86400000)) + 1;
@@ -4760,18 +4973,18 @@ initUser();
 setTimeout(showStreakOverlay, 1500);
 // ═══ ARTIFACTS ═══
 const ARTIFACTS_LIST = [
-  {id:'space_crystal',  name:'Space Crystal',   icon:'💎', rarity:'Common',    desc:'+5% tap power',        unlockLevel:5,  unlockCost:5000,   keysCost:0},
-  {id:'moon_dust',      name:'Moon Dust',        icon:'🌙', rarity:'Common',    desc:'+5% energy regen',     unlockLevel:8,  unlockCost:8000,   keysCost:0},
-  {id:'solar_fragment', name:'Solar Fragment',   icon:'☀️', rarity:'Uncommon',  desc:'+10% passive income',  unlockLevel:12, unlockCost:20000,  keysCost:0},
-  {id:'alien_core',     name:'Alien Core',       icon:'👽', rarity:'Uncommon',  desc:'+10% tap power',       unlockLevel:18, unlockCost:40000,  keysCost:0},
-  {id:'dark_matter',    name:'Dark Matter',      icon:'🕳️', rarity:'Rare',      desc:'+20% passive income',  unlockLevel:25, unlockCost:100000, keysCost:0},
-  {id:'nebula_core',    name:'Nebula Core',      icon:'🌌', rarity:'Rare',      desc:'+15% all income',      unlockLevel:30, unlockCost:200000, keysCost:0},
-  {id:'ancient_relic',  name:'Ancient Relic',    icon:'🏺', rarity:'Epic',      desc:'+25% tap power',       unlockLevel:35, unlockCost:500000, keysCost:0},
-  {id:'void_crystal',   name:'Void Crystal',     icon:'🔮', rarity:'Epic',      desc:'+25% passive income',  unlockLevel:40, unlockCost:800000, keysCost:0},
-  {id:'star_heart',     name:'Star Heart',       icon:'💫', rarity:'Legendary', desc:'+50% passive income',  unlockLevel:50, unlockCost:2000000,keysCost:0},
-  {id:'quantum_shard',  name:'Quantum Shard',    icon:'⚛️', rarity:'Legendary', desc:'+30% all bonuses',     unlockLevel:55, unlockCost:5000000,keysCost:0},
-  {id:'cosmos_gem',     name:'Cosmos Gem',       icon:'🌟', rarity:'Mythic',    desc:'+100% passive income', unlockLevel:58, unlockCost:10000000,keysCost:0},
-  {id:'solar_crown',    name:'Solar Crown',      icon:'👑', rarity:'Mythic',    desc:'+100% all bonuses',    unlockLevel:60, unlockCost:0,      keysCost:20},
+  {id:'space_crystal',  name:'Space Crystal',   icon:'💎', rarity:'Common',    desc:'+5% tap power',        unlockLevel:5,  keysCost:3},
+  {id:'moon_dust',      name:'Moon Dust',        icon:'🌙', rarity:'Common',    desc:'+5% energy regen',     unlockLevel:8,  keysCost:5},
+  {id:'solar_fragment', name:'Solar Fragment',   icon:'☀️', rarity:'Uncommon',  desc:'+10% passive income',  unlockLevel:12, keysCost:8},
+  {id:'alien_core',     name:'Alien Core',       icon:'👽', rarity:'Uncommon',  desc:'+10% tap power',       unlockLevel:18, keysCost:10},
+  {id:'dark_matter',    name:'Dark Matter',      icon:'🕳️', rarity:'Rare',      desc:'+20% passive income',  unlockLevel:25, keysCost:15},
+  {id:'nebula_core',    name:'Nebula Core',      icon:'🌌', rarity:'Rare',      desc:'+15% all income',      unlockLevel:30, keysCost:20},
+  {id:'ancient_relic',  name:'Ancient Relic',    icon:'🏺', rarity:'Epic',      desc:'+25% tap power',       unlockLevel:35, keysCost:30},
+  {id:'void_crystal',   name:'Void Crystal',     icon:'🔮', rarity:'Epic',      desc:'+25% passive income',  unlockLevel:40, keysCost:40},
+  {id:'star_heart',     name:'Star Heart',       icon:'💫', rarity:'Legendary', desc:'+50% passive income',  unlockLevel:50, keysCost:60},
+  {id:'quantum_shard',  name:'Quantum Shard',    icon:'⛛️', rarity:'Legendary', desc:'+30% all bonuses',     unlockLevel:55, keysCost:80},
+  {id:'cosmos_gem',     name:'Cosmos Gem',       icon:'🌟', rarity:'Mythic',    desc:'+100% passive income', unlockLevel:58, keysCost:120},
+  {id:'solar_crown',    name:'Solar Crown',      icon:'👑', rarity:'Mythic',    desc:'+100% all bonuses',    unlockLevel:60, keysCost:200},
 ];
 
 const RARITY_COLORS = {Common:'#9e9e9e',Uncommon:'#00ff88',Rare:'#00f5ff',Epic:'#7b2fff',Legendary:'#ff9500',Mythic:'#ff3366'};
@@ -4786,9 +4999,9 @@ function renderArtifacts() {
   grid.innerHTML = ARTIFACTS_LIST.map(a => {
     const isOwned = !!owned[a.id];
     const color = RARITY_COLORS[a.rarity] || '#fff';
-    const canAfford = g.level >= a.unlockLevel && (a.keysCost ? (g.keys||0)>=a.keysCost : g.coins>=a.unlockCost);
-    const cost = a.keysCost ? a.keysCost+' 🔑' : a.unlockCost>=1000000 ? (a.unlockCost/1000000).toFixed(1)+'M 🪐' : a.unlockCost>=1000 ? (a.unlockCost/1000).toFixed(0)+'K 🪐' : a.unlockCost+' 🪐';
-    const clickFn = isOwned ? '' : 'buyArtifact('+JSON.stringify(a.id)+')';
+    const canAfford = g.level >= a.unlockLevel && (g.keys||0) >= a.keysCost;
+    const cost = a.keysCost+' 🔑 XKEY';
+    const clickFn = isOwned ? '' : 'buyArtifact(\'' + a.id + '\')';
     return '<div style="display:flex;align-items:center;gap:12px;padding:12px;background:'+(isOwned?'rgba(100,100,200,0.08)':'var(--card)')+';border:1px solid '+(isOwned?color+'66':'var(--border)')+';border-radius:14px;margin-bottom:8px;cursor:'+(isOwned?'default':'pointer')+';" onclick="'+clickFn+'">'
       +'<div style="width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,'+color+'22,'+color+'11);border:1px solid '+color+'44;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">'+(isOwned?a.icon:'🔒')+'</div>'
       +'<div style="flex:1;">'
@@ -4811,13 +5024,8 @@ function buyArtifact(id) {
   if(g.level < art.unlockLevel) { showToast('Need Level '+art.unlockLevel+'!'); return; }
   if(!g.artifacts) g.artifacts = {};
   if(g.artifacts[id]) { showToast('Already owned!'); return; }
-  if(art.keysCost) {
-    if((g.keys||0) < art.keysCost) { showToast('Need '+art.keysCost+' 🔑!'); return; }
-    g.keys -= art.keysCost;
-  } else {
-    if(g.coins < art.unlockCost) { showToast('Not enough XSPC!'); return; }
-    g.coins -= art.unlockCost;
-  }
+  if((g.keys||0) < art.keysCost) { showToast('Need '+art.keysCost+' 🔑 XKEY!'); return; }
+  g.keys -= art.keysCost;
   g.artifacts[id] = true;
   showFloat('🔮 '+art.name+'!', window.innerWidth/2, 200, RARITY_COLORS[art.rarity]);
   updateUI(); updateKeysUI(); saveGame(); renderArtifacts(); checkAchievements();
