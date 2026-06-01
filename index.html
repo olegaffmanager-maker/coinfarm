@@ -4851,9 +4851,7 @@ function buyArtifact(id) {
   if(!list) return;
   list.innerHTML = SAMPLE_CLANS.map(c => {
     const isMyClam = g.clan && g.clan.tag === c.tag;
-    const safeName = c.name.replace(/'/g, "\\'");
-    const safeTag  = c.tag.replace(/'/g, "\\'");
-    const joinBtn = '<button onclick="joinClan(\'' + safeName + '\',\'' + safeTag + '\')" style="padding:6px 12px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:8px;color:var(--accent);font-size:11px;cursor:pointer;font-family:Orbitron,monospace;">JOIN</button>';
+    const joinBtn = '<button onclick="joinClan(\"'+c.name+'\",\"'+c.tag+'\")" style="padding:6px 12px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:8px;color:var(--accent);font-size:11px;cursor:pointer;font-family:Orbitron,monospace;">JOIN</button>';
     return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid '+(isMyClam?'rgba(0,255,136,0.3)':'var(--border)')+';border-radius:14px;margin-bottom:8px;">'
       +'<div style="font-size:13px;font-weight:700;color:#4a6080;width:24px;text-align:center;">#'+c.rank+'</div>'
       +'<div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,rgba(0,245,255,0.2),rgba(123,47,255,0.1));border:1px solid rgba(0,245,255,0.2);display:flex;align-items:center;justify-content:center;font-family:Orbitron,monospace;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;">'+c.tag+'</div>'
