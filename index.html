@@ -1426,6 +1426,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
     <!-- Start button -->
     <button id="pvpStartBtn" onclick="startPvP()" style="width:100%;padding:16px;background:linear-gradient(135deg,#ff3366,#ff9500);border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;font-family:Orbitron,monospace;letter-spacing:2px;">⚔️ START BATTLE</button>
+    <div id="pvpBattlesLeft" style="text-align:center;font-size:12px;color:#00ff88;font-family:Orbitron,monospace;margin-top:8px;">⚔️ Battles today: 5/5</div>
   </div>
 
   <!-- Season -->
@@ -2475,10 +2476,34 @@ function getPlayerPower() {
   return (g.coins || 0) * 0.001 + (g.level || 1) * 1000 + (g.perClick || 1) * 500 + getPassiveRate() * 100;
 }
 
+function getAttackCooldownLeft(idx) {
+  const last = (g.lastAttack || {})[idx] || 0;
+  return Math.max(0, 4 * 3600000 - (Date.now() - last));
+}
+
+function formatCooldown(ms) {
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return h+'h '+m+'m';
+}
+
 function attackBot(idx) {
   const bot = PVP_BOTS[idx];
+
+  // Check cooldown
+  const cdLeft = getAttackCooldownLeft(idx);
+  if(cdLeft > 0) {
+    showToast('⏰ Cooldown: '+formatCooldown(cdLeft)+' remaining!');
+    return;
+  }
+
   const myPower = getPlayerPower();
   const win = myPower > bot.power * (0.5 + Math.random() * 0.8);
+
+  // Set cooldown
+  if(!g.lastAttack) g.lastAttack = {};
+  g.lastAttack[idx] = Date.now();
+
   if(win) {
     g.coins += bot.reward;
     g.totalEarned = (g.totalEarned||0) + bot.reward;
@@ -2491,7 +2516,28 @@ function attackBot(idx) {
     showToast('💥 Defeated! Lost '+loss.toLocaleString()+' XSPC');
     showFloat('⚔️ DEFEAT -'+loss.toLocaleString(), window.innerWidth/2, 300, '#ff3366');
   }
+
   updateUI(); saveGame(); checkAchievements();
+  renderAttackBots();
+}
+
+function renderAttackBots() {
+  const container = document.getElementById('pvpPlanetList');
+  if(!container) return;
+  container.innerHTML = PVP_BOTS.map((bot, i) => {
+    const cdLeft = getAttackCooldownLeft(i);
+    const onCd = cdLeft > 0;
+    const colors = ['','rgba(0,255,136,0.15)','rgba(0,245,255,0.12)','rgba(123,47,255,0.12)','rgba(255,149,0,0.12)','rgba(255,50,50,0.12)'];
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid '+(onCd?'var(--border)':'rgba(255,50,50,0.3)')+';border-radius:10px;">'
+      +'<div style="font-size:22px;">'+bot.icon+'</div>'
+      +'<div style="flex:1;">'
+        +'<div style="font-size:12px;font-weight:700;">'+bot.name+'</div>'
+        +'<div style="font-size:10px;color:#4a6080;">Reward: +'+bot.reward.toLocaleString()+' XSPC</div>'
+        +(onCd?'<div style="font-size:10px;color:#ff9500;">⏰ '+formatCooldown(cdLeft)+'</div>':'<div style="font-size:10px;color:#00ff88;">✅ Ready!</div>')
+      +'</div>'
+      +'<button onclick="attackBot('+i+')" style="padding:6px 12px;background:'+(onCd?'rgba(100,100,100,0.2)':'linear-gradient(135deg,#ff3366,#ff9500)')+';border:1px solid '+(onCd?'var(--border)':'none')+';border-radius:8px;color:'+(onCd?'#4a6080':'#fff')+';font-weight:700;font-size:11px;cursor:pointer;">'+(onCd?'⏰':'⚔️ ATTACK')+'</button>'
+      +'</div>';
+  }).join('');
 }
 
 
@@ -3276,6 +3322,7 @@ function showPage(page){
   if(page==='upgrade'){updateUpgradeHub();}
   if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();updateExpeditionStatus();}
   if(page==='battle'){updateBattleHub();}
+  if(page==='pvp'){renderAttackBots();updatePvpBattlesUI();}
   if(page==='tournament'){
     const td=document.getElementById('tournamentRefs'); if(td) td.textContent=(g.friends||0);
     const tr=document.getElementById('tournamentRank'); if(tr) tr.textContent='#'+Math.max(1,Math.floor(Math.random()*50+1));
@@ -4928,9 +4975,28 @@ function selectPvpMode(mode, diff, friendData) {
   }
 }
 
+function getPvpBattlesLeft() {
+  const today = new Date().toDateString();
+  if(g.pvpBattlesDate !== today) return 5;
+  return Math.max(0, 5 - (g.pvpBattlesToday || 0));
+}
+
 function startPvP() {
   if(pvpActive) return;
   if(!pvpSelected) { showToast('Choose an opponent first!'); return; }
+
+  // Check daily limit
+  const battlesLeft = getPvpBattlesLeft();
+  if(battlesLeft <= 0) {
+    showToast('⏰ No battles left today! Come back tomorrow.');
+    return;
+  }
+
+  // Deduct battle
+  const today = new Date().toDateString();
+  if(g.pvpBattlesDate !== today) { g.pvpBattlesDate = today; g.pvpBattlesToday = 0; }
+  g.pvpBattlesToday = (g.pvpBattlesToday || 0) + 1;
+  updatePvpBattlesUI();
 
   pvpActive = true;
   pvpScore = 0;
@@ -4971,6 +5037,25 @@ function startPvP() {
       endPvP();
     }
   }, 1000);
+}
+
+function updatePvpBattlesUI() {
+  const left = getPvpBattlesLeft();
+  const el = document.getElementById('pvpBattlesLeft');
+  if(el) {
+    el.textContent = '⚔️ Battles today: '+left+'/5';
+    el.style.color = left === 0 ? '#ff3366' : left <= 2 ? '#ff9500' : '#00ff88';
+  }
+  const btn = document.getElementById('pvpStartBtn');
+  if(btn) {
+    if(left === 0) {
+      btn.style.opacity = '0.5';
+      btn.textContent = '⏰ No battles left today';
+    } else {
+      btn.style.opacity = '1';
+      btn.textContent = '⚔️ START BATTLE ('+left+' left)';
+    }
+  }
 }
 
 function pvpTap() {
