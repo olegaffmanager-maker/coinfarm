@@ -672,6 +672,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="energy-bar"><div class="energy-fill" id="energyFill" style="width:100%"></div></div>
     </div>
 
+    <!-- DAILY EVENT BANNER -->
+    <div id="dailyEventBanner" style="display:none;margin-bottom:8px;"></div>
+
     <!-- PASSIVE INCOME -->
     <div style="width:100%;padding:0 16px 6px;">
       <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.15);border-radius:12px;padding:8px 14px;">
@@ -1657,6 +1660,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-icon">📊</div><div class="hub-name">My Stats</div>
       <div class="hub-desc">Profile & records</div>
     </div>
+    <div class="hub-card" onclick="showPage('cosmosmap')">
+      <div class="hub-icon">🗺️</div><div class="hub-name">Cosmos Map</div>
+      <div class="hub-desc">Your journey through space</div>
+    </div>
     <div class="hub-card" onclick="showPage('clans')">
       <div class="hub-icon">🛸</div><div class="hub-name">Clans</div>
       <div class="hub-desc">Join a clan</div>
@@ -1664,6 +1671,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div class="hub-card" onclick="forceExpedition()" style="border-color:rgba(0,245,255,0.3);">
       <div class="hub-icon">🛸</div><div class="hub-name">Expedition</div>
       <div class="hub-desc" id="expeditionStatus">Ready to explore!</div>
+    </div>
+    <div class="hub-card" onclick="showPage('rareplanets');renderRarePlanets();">
+      <div class="hub-icon">🌟</div><div class="hub-name">Rare Planets</div>
+      <div class="hub-desc">Collect rare planets</div>
     </div>
     <div class="hub-card" onclick="showPage('whitepaper')">
       <div class="hub-icon">📄</div><div class="hub-name">Whitepaper</div>
@@ -1862,6 +1873,62 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Cards grid by category -->
   <div id="fullCardsGrid"></div>
 
+</div>
+
+
+
+
+<!-- RARE PLANETS PAGE -->
+<div class="page" id="pageRareplanets">
+  <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#FFD700;margin-bottom:14px;letter-spacing:2px;">🌟 RARE PLANETS</div>
+  <div style="font-size:12px;color:#4a6080;margin-bottom:14px;">Tap to discover rare planet variants. Each has unique bonuses!</div>
+  <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;margin-bottom:8px;" id="rarePlanetsCount">0/5 discovered</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="rarePlanetsGrid"></div>
+</div>
+
+<!-- BOSS PAGE -->
+<div class="page" id="pageBoss">
+  <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff3366;margin-bottom:14px;letter-spacing:2px;">💀 BOSS BATTLE</div>
+
+  <div style="text-align:center;background:linear-gradient(135deg,rgba(255,50,50,0.1),rgba(123,47,255,0.08));border:1px solid rgba(255,50,50,0.3);border-radius:18px;padding:20px;margin-bottom:14px;">
+    <div style="font-size:56px;margin-bottom:8px;" id="bossEmoji">💀</div>
+    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#ff3366;" id="bossName">SPACE WORM</div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;" id="bossDesc">Defeat it to unlock the next planet!</div>
+
+    <!-- Boss HP bar -->
+    <div style="margin:14px 0 6px;">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#4a6080;font-family:Orbitron,monospace;margin-bottom:4px;">
+        <span>BOSS HP</span><span id="bossHpText">10000/10000</span>
+      </div>
+      <div style="height:12px;background:rgba(0,0,0,0.3);border-radius:6px;overflow:hidden;">
+        <div id="bossHpBar" style="height:100%;background:linear-gradient(90deg,#ff3366,#ff9500);border-radius:6px;width:100%;transition:width 0.3s;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attack buttons -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+    <button onclick="attackBoss('tap')" style="padding:14px;background:linear-gradient(135deg,rgba(255,50,50,0.15),rgba(255,50,50,0.05));border:1px solid rgba(255,50,50,0.4);border-radius:14px;color:#ff3366;font-weight:700;font-size:14px;cursor:pointer;">
+      ⚔️ TAP ATTACK<br><span style="font-size:10px;color:#4a6080;">-tap power dmg</span>
+    </button>
+    <button onclick="attackBoss('power')" style="padding:14px;background:linear-gradient(135deg,rgba(123,47,255,0.15),rgba(123,47,255,0.05));border:1px solid rgba(123,47,255,0.4);border-radius:14px;color:#7b2fff;font-weight:700;font-size:14px;cursor:pointer;">
+      💥 POWER BLAST<br><span style="font-size:10px;color:#4a6080;">-1000 XSPC cost</span>
+    </button>
+  </div>
+
+  <div style="padding:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
+    <div style="font-size:11px;color:#4a6080;">YOUR POWER</div>
+    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:var(--accent);" id="bossMyPower">0</div>
+  </div>
+</div>
+
+<!-- COSMOS MAP PAGE -->
+<div class="page" id="pageCosmosmap">
+  <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;letter-spacing:2px;">🌌 COSMOS MAP</div>
+
+  <div style="overflow-x:auto;padding-bottom:10px;">
+    <div id="cosmosMapContainer" style="min-width:320px;"></div>
+  </div>
 </div>
 
 <!-- ARTIFACTS PAGE -->
@@ -2294,6 +2361,249 @@ const LEAGUES=[
   {name:"Master",   icon:"👑",min:5000000,   color:"#ff9500"},
   {name:"Legend",   icon:"🚀",min:12000000,  color:"#ff3366"},
 ];
+
+
+
+
+
+// ═══ RARE PLANETS ═══
+const RARE_PLANET_VARIANTS = [
+  {id:'golden_earth',   base:'Earth',   name:'Golden Earth',   emoji:'🟡', color:'#FFD700', bonus:'+200% coins',   dropChance:0.005, bg:'radial-gradient(circle at 35% 35%,#ffffa0,#FFD700,#cc8800)'},
+  {id:'diamond_mars',   base:'Mars',    name:'Diamond Mars',   emoji:'💎', color:'#00f5ff', bonus:'+300% tap',     dropChance:0.003, bg:'radial-gradient(circle at 35% 35%,#aaffff,#00c8ff,#0044aa)'},
+  {id:'dark_venus',     base:'Venus',   name:'Dark Venus',     emoji:'🌑', color:'#7b2fff', bonus:'+400% passive', dropChance:0.002, bg:'radial-gradient(circle at 35% 35%,#8800ff,#440088,#110022)'},
+  {id:'crystal_jupiter',base:'Jupiter', name:'Crystal Jupiter',emoji:'🔮', color:'#00ff88', bonus:'+500% all',     dropChance:0.001, bg:'radial-gradient(circle at 35% 35%,#88ffcc,#00dd88,#004422)'},
+  {id:'void_saturn',    base:'Saturn',  name:'Void Saturn',    emoji:'🧿', color:'#ff3366', bonus:'+1000% passive',dropChance:0.0005,bg:'radial-gradient(circle at 35% 35%,#ff88aa,#ff0055,#440011)'},
+];
+
+function checkRarePlanetDrop() {
+  if(Math.random() > 0.005) return; // Check 0.5% of taps
+  for(const rp of RARE_PLANET_VARIANTS) {
+    if(Math.random() < rp.dropChance * 200) {
+      if(!(g.rarePlanets||{})[rp.id]) {
+        if(!g.rarePlanets) g.rarePlanets = {};
+        g.rarePlanets[rp.id] = true;
+        // Flash effect
+        const flash = document.createElement('div');
+        flash.style.cssText = 'position:fixed;inset:0;background:'+rp.color+';opacity:0.25;z-index:9997;pointer-events:none;transition:opacity 1s;';
+        document.body.appendChild(flash);
+        setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),1000); },300);
+        showToast('🌟 RARE PLANET! '+rp.emoji+' '+rp.name+' discovered! '+rp.bonus);
+        showFloat('🌟 '+rp.name+'!', window.innerWidth/2, 150, rp.color);
+        saveGame();
+        return;
+      }
+    }
+  }
+}
+
+function renderRarePlanets() {
+  const grid = document.getElementById('rarePlanetsGrid');
+  if(!grid) return;
+  const owned = g.rarePlanets || {};
+  grid.innerHTML = RARE_PLANET_VARIANTS.map(rp => {
+    const have = !!owned[rp.id];
+    return '<div style="padding:10px;background:'+(have?rp.bg:'var(--card)')+';border:1px solid '+(have?rp.color:'var(--border)')+';border-radius:12px;text-align:center;">'
+      +'<div style="font-size:28px;">'+(have?rp.emoji:'🔒')+'</div>'
+      +'<div style="font-size:10px;font-weight:700;color:'+(have?rp.color:'#4a6080')+';margin-top:4px;">'+(have?rp.name:'???')+'</div>'
+      +'<div style="font-size:9px;color:'+(have?'#aaa':'#333')+';margin-top:2px;">'+(have?rp.bonus:'Undiscovered')+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+// ═══ DAILY EVENTS ═══
+const DAILY_EVENTS = [
+  {id:'meteor',   name:'Meteor Shower!',      icon:'☄️', duration:2, bonus:'x3 Mining', multiplier:3, color:'#ff9500',
+   desc:'Meteors are hitting your planet! Mine faster for 2 hours!'},
+  {id:'solar',    name:'Solar Flare!',         icon:'☀️', duration:1, bonus:'x5 Passive', multiplier:5, color:'#FFD700',
+   desc:'A solar flare boosts your passive income for 1 hour!'},
+  {id:'darkzone', name:'Dark Zone Detected!',  icon:'🌑', duration:3, bonus:'x2 ALL',     multiplier:2, color:'#7b2fff',
+   desc:'Enter the dark zone for 3 hours of doubled income!'},
+  {id:'wormhole', name:'Wormhole Opened!',     icon:'🌀', duration:2, bonus:'x4 XKEY',    multiplier:4, color:'#00f5ff',
+   desc:'A wormhole boosts key drops for 2 hours!'},
+];
+
+let activeDailyEvent = null;
+let dailyEventEnd = 0;
+
+function checkDailyEvent() {
+  // New event every 6 hours
+  const now = Date.now();
+  const lastEvent = g.lastDailyEvent || 0;
+  if(now - lastEvent >= 6 * 3600000 && !activeDailyEvent) {
+    activeDailyEvent = DAILY_EVENTS[Math.floor(Math.random() * DAILY_EVENTS.length)];
+    dailyEventEnd = now + activeDailyEvent.duration * 3600000;
+    g.lastDailyEvent = now;
+    showDailyEventBanner();
+    saveGame();
+  }
+  // Check if active event expired
+  if(activeDailyEvent && now > dailyEventEnd) {
+    activeDailyEvent = null;
+    hideDailyEventBanner();
+  }
+}
+
+function getDailyEventMultiplier() {
+  if(!activeDailyEvent || Date.now() > dailyEventEnd) return 1;
+  return activeDailyEvent.multiplier;
+}
+
+function showDailyEventBanner() {
+  if(!activeDailyEvent) return;
+  const banner = document.getElementById('dailyEventBanner');
+  if(!banner) return;
+  const minsLeft = Math.floor((dailyEventEnd - Date.now()) / 60000);
+  banner.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:linear-gradient(135deg,rgba(255,149,0,0.15),rgba(255,50,50,0.08));border:1px solid rgba(255,149,0,0.4);border-radius:12px;cursor:pointer;" onclick="showPage(\'earn\')">'
+    + '<span style="font-size:18px;">'+activeDailyEvent.icon+'</span>'
+    + '<div style="flex:1;"><div style="font-size:11px;font-weight:700;color:#ff9500;font-family:Orbitron,monospace;">'+activeDailyEvent.name+'</div>'
+    + '<div style="font-size:10px;color:#4a6080;">'+activeDailyEvent.bonus+' · '+minsLeft+'m left</div></div>'
+    + '<span style="font-size:14px;color:#ff9500;">→</span></div>';
+  banner.style.display = 'block';
+}
+
+function hideDailyEventBanner() {
+  const banner = document.getElementById('dailyEventBanner');
+  if(banner) banner.style.display = 'none';
+}
+
+setInterval(checkDailyEvent, 60000);
+setTimeout(checkDailyEvent, 5000);
+
+// ═══ BOSS SYSTEM ═══
+const PLANET_BOSSES = {
+  'Venus':   {name:'Space Pirates',    emoji:'🏴', desc:'Pirate fleet blocking your path!',    hp:5000,   reward:10000},
+  'Mars':    {name:'Cosmic Worm',      emoji:'🐍', desc:'A giant worm guards the red planet!', hp:20000,  reward:50000},
+  'Jupiter': {name:'Alien Fleet',      emoji:'🛸', desc:'Alien warships surround Jupiter!',    hp:80000,  reward:200000},
+  'Saturn':  {name:'Dark Matter Beast',emoji:'👾', desc:'A creature made of dark matter!',     hp:300000, reward:800000},
+  'Nibiru':  {name:'Void Leviathan',   emoji:'🧿', desc:'The destroyer of worlds!',            hp:1000000,reward:5000000},
+};
+
+let currentBoss = null;
+let bossHp = 0;
+let bossMaxHp = 0;
+
+function fightBoss(planetName) {
+  const boss = PLANET_BOSSES[planetName];
+  if(!boss) { showToast('No boss here!'); return; }
+  if((g.bossesDefeated||{})[planetName]) { showToast('✅ Boss already defeated!'); return; }
+
+  currentBoss = {...boss, planet: planetName};
+  bossMaxHp = boss.hp;
+  bossHp = boss.hp;
+  updateBossUI();
+  showPage('boss');
+}
+
+function updateBossUI() {
+  if(!currentBoss) return;
+  const pct = Math.max(0, bossHp / bossMaxHp * 100);
+  const hpBar = document.getElementById('bossHpBar');
+  const hpText = document.getElementById('bossHpText');
+  const myPower = document.getElementById('bossMyPower');
+  const bossEmoji = document.getElementById('bossEmoji');
+  const bossName = document.getElementById('bossName');
+  const bossDesc = document.getElementById('bossDesc');
+
+  if(hpBar) hpBar.style.width = pct + '%';
+  if(hpText) hpText.textContent = Math.max(0,bossHp).toLocaleString()+'/'+bossMaxHp.toLocaleString();
+  if(myPower) myPower.textContent = Math.floor(getPlayerPower()).toLocaleString();
+  if(bossEmoji) bossEmoji.textContent = currentBoss.emoji;
+  if(bossName) bossName.textContent = currentBoss.name.toUpperCase();
+  if(bossDesc) bossDesc.textContent = currentBoss.desc;
+}
+
+function attackBoss(type) {
+  if(!currentBoss) return;
+  let dmg = 0;
+  if(type === 'tap') {
+    dmg = g.perClick * 10;
+    showFloat('-'+dmg.toLocaleString()+' HP', window.innerWidth/2, 300, '#ff3366');
+  } else if(type === 'power') {
+    if((g.coins||0) < 1000) { showToast('Need 1,000 XSPC!'); return; }
+    g.coins -= 1000;
+    dmg = Math.floor(getPlayerPower() * 0.5);
+    showFloat('💥 -'+dmg.toLocaleString()+' HP', window.innerWidth/2, 300, '#7b2fff');
+    updateUI();
+  }
+
+  bossHp -= dmg;
+  updateBossUI();
+
+  if(bossHp <= 0) {
+    // Boss defeated!
+    if(!g.bossesDefeated) g.bossesDefeated = {};
+    g.bossesDefeated[currentBoss.planet] = true;
+    g.coins += currentBoss.reward;
+    g.totalEarned = (g.totalEarned||0) + currentBoss.reward;
+
+    const flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed;inset:0;background:#ff3366;opacity:0.3;z-index:9998;pointer-events:none;transition:opacity 0.8s;';
+    document.body.appendChild(flash);
+    setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),800); },200);
+
+    showToast('🏆 BOSS DEFEATED! +'+currentBoss.reward.toLocaleString()+' XSPC!');
+    showFloat('🏆 VICTORY!', window.innerWidth/2, 200, '#FFD700');
+    currentBoss = null;
+    updateUI(); saveGame();
+    setTimeout(()=>showPage('cosmosmap'), 2000);
+  }
+}
+
+// ═══ COSMOS MAP ═══
+function renderCosmosMap() {
+  const container = document.getElementById('cosmosMapContainer');
+  if(!container) return;
+
+  const planets = PLANETS.slice(0, 12); // Show first 12
+  let html = '<div style="display:flex;flex-direction:column;gap:0;">';
+
+  planets.forEach((p, i) => {
+    const unlocked = g.level >= p.minLevel;
+    const current = getPlanetForLevel(g.level).name === p.name;
+    const nextP = PLANETS[i+1];
+    const maxLv = nextP ? nextP.minLevel - 1 : 200;
+    const hasBoss = (i+1) % 5 === 0 && i > 0;
+    const bossDefeated = (g.bossesDefeated || {})[p.name];
+
+    html += '<div style="display:flex;align-items:center;gap:0;">';
+
+    // Planet node
+    html += '<div style="display:flex;flex-direction:column;align-items:center;width:80px;flex-shrink:0;">';
+    html += '<div onclick="'+(unlocked?'showPage(\'mine\')':'')+'" style="width:60px;height:60px;border-radius:50%;background:'+(unlocked?'linear-gradient(135deg,'+p.color+','+p.glowColor+')':'rgba(50,50,80,0.5)')+';border:2px solid '+(current?'#00f5ff':unlocked?p.color+'88':'rgba(255,255,255,0.1)')+';display:flex;align-items:center;justify-content:center;font-size:24px;cursor:'+(unlocked?'pointer':'default')+';box-shadow:'+(current?'0 0 20px #00f5ff':'none')+'">'+(unlocked?p.emoji:'🔒')+'</div>';
+    html += '<div style="font-size:9px;font-family:Orbitron,monospace;color:'+(current?'#00f5ff':unlocked?'#aaa':'#444')+';margin-top:4px;text-align:center;max-width:70px;">'+p.name.toUpperCase()+'</div>';
+    html += '<div style="font-size:8px;color:#4a6080;">Lv'+p.minLevel+'</div>';
+    html += '</div>';
+
+    // Route line + boss
+    if(i < planets.length - 1) {
+      html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">';
+      if(hasBoss) {
+        html += '<div style="font-size:8px;color:#ff3366;font-family:Orbitron,monospace;">BOSS</div>';
+        html += '<div onclick="'+(unlocked && !bossDefeated?'fightBoss(\''+p.name+'\')':'')+'" style="font-size:20px;cursor:'+(unlocked && !bossDefeated?'pointer':'default')+';opacity:'+(unlocked?'1':'0.3')+'">'+(bossDefeated?'✅':'💀')+'</div>';
+        html += '<div style="width:100%;height:2px;background:linear-gradient(90deg,#ff3366,#ff9500);margin-top:2px;"></div>';
+      } else {
+        html += '<div style="width:100%;height:2px;background:'+(unlocked?'linear-gradient(90deg,'+p.color+','+( nextP?nextP.color:'#fff')+')':'rgba(255,255,255,0.1)')+';"></div>';
+        html += '<div style="font-size:9px;color:#4a6080;">→</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  html += '</div>';
+
+  // Legend
+  html += '<div style="margin-top:16px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">';
+  html += '<div style="font-size:10px;font-family:Orbitron,monospace;color:#4a6080;margin-bottom:8px;">LEGEND</div>';
+  html += '<div style="display:flex;gap:16px;flex-wrap:wrap;">';
+  html += '<div style="display:flex;align-items:center;gap:6px;font-size:11px;">📍<span style="color:#aaa;">Current</span></div>';
+  html += '<div style="display:flex;align-items:center;gap:6px;font-size:11px;">💀<span style="color:#ff3366;">Boss (fight to pass)</span></div>';
+  html += '<div style="display:flex;align-items:center;gap:6px;font-size:11px;">✅<span style="color:#00ff88;">Boss defeated</span></div>';
+  html += '<div style="display:flex;align-items:center;gap:6px;font-size:11px;">🔒<span style="color:#4a6080;">Locked</span></div>';
+  html += '</div></div>';
+
+  container.innerHTML = html;
+}
 
 // ═══ EXPEDITIONS ═══
 const EXPEDITION_EVENTS = [
@@ -2751,8 +3061,10 @@ function handleClick(e){
   g.maxCombo=Math.max(g.maxCombo,g.combo);
   g.hitCount++;
 
-  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier());
+  const dailyMult = (activeDailyEvent && activeDailyEvent.id==='meteor') ? getDailyEventMultiplier() : 1;
+  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier()*dailyMult);
   checkRareDrop();
+  if(Math.random() < 0.005) checkRarePlanetDrop();
   const comboMult = 1 + (g.comboMultLevel||0) * 2;
   if(g.combo>=10)reward+=20*comboMult;
   else if(g.combo>=5)reward+=10*comboMult;
@@ -3290,7 +3602,7 @@ function goBack(){
     'keys':'earn','combo':'earn','tasks':'earn','streak':'earn','wheel':'earn','promo':'earn',
     'cards':'upgrade','artifacts':'upgrade',
     'top':'mine','whitepaper':'mine','stats':'mine',
-    'clans':'galaxy','pvp':'battle','season':'battle','tournament':'battle','staking':'earn',
+    'clans':'galaxy','pvp':'battle','season':'battle','tournament':'battle','staking':'earn','cosmosmap':'galaxy','boss':'cosmosmap','rareplanets':'galaxy',
     'friends':'friends'
   };
   const current = document.querySelector('.page.active');
@@ -3321,6 +3633,9 @@ function showPage(page){
   if(page==='staking'){updateStakingUI();}
   if(page==='upgrade'){updateUpgradeHub();}
   if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();updateExpeditionStatus();}
+  if(page==='cosmosmap'){renderCosmosMap();}
+  if(page==='boss'){updateBossUI();}
+  if(page==='rareplanets'){renderRarePlanets();const rc=document.getElementById('rarePlanetsCount');if(rc)rc.textContent=Object.keys(g.rarePlanets||{}).length+'/5 discovered';}
   if(page==='battle'){updateBattleHub();}
   if(page==='pvp'){renderAttackBots();updatePvpBattlesUI();}
   if(page==='tournament'){
@@ -3330,7 +3645,7 @@ function showPage(page){
   }
   if(page==='season'){
     const s=getCurrentSeason();
-    const sn=document.getElementById('seasonPageName'); if(sn) sn.textContent='Season '+s.num;
+    const sn=document.getElementById('seasonPageName'); if(sn) sn.textContent=(s.icon||'')+' Season '+s.num+': '+(s.name||'');
     const sd=document.getElementById('seasonPageDays'); if(sd) sd.textContent=s.daysLeft+' days remaining';
     const sr=document.getElementById('seasonPageRank'); if(sr) sr.textContent='#'+Math.max(1,Math.floor(Math.random()*100+1));
     const ss=document.getElementById('seasonScore'); if(ss) ss.textContent=(g.clicks||0).toLocaleString();
@@ -4944,13 +5259,23 @@ function updateTournamentTimer() {
 }
 setInterval(updateTournamentTimer, 1000);
 
+const SEASONS = [
+  {num:1, name:'Solar System',  icon:'☀️', desc:'Conquer the Solar System', minLv:1,   maxLv:60,  color:'#ff9500'},
+  {num:2, name:'Andromeda',     icon:'🌀', desc:'Explore Andromeda Galaxy',  minLv:61,  maxLv:100, color:'#00f5ff'},
+  {num:3, name:'Dark Galaxy',   icon:'⚫',     desc:'Survive the Dark Galaxy',   minLv:101, maxLv:140, color:'#7b2fff'},
+  {num:4, name:'Supercluster',  icon:'🟢', desc:'Rule the Supercluster',     minLv:141, maxLv:170, color:'#00ff88'},
+  {num:5, name:'Multiverse',    icon:'🧿', desc:'Transcend the Multiverse',  minLv:171, maxLv:200, color:'#ff3366'},
+];
+
 function getCurrentSeason() {
+  const season = SEASONS.find(s => g.level >= s.minLv && g.level <= s.maxLv) || SEASONS[0];
   const now = new Date();
-  const seasonNum = Math.floor((now - new Date('2026-01-01')) / (30 * 86400000)) + 1;
   const seasonEnd = new Date('2026-01-01');
-  seasonEnd.setDate(seasonEnd.getDate() + seasonNum * 30);
-  const daysLeft = Math.ceil((seasonEnd - now) / 86400000);
-  return { num: seasonNum, daysLeft: Math.max(0, daysLeft), end: seasonEnd };
+  seasonEnd.setDate(seasonEnd.getDate() + season.num * 30);
+  const daysLeft = Math.max(0, Math.ceil((seasonEnd - now) / 86400000));
+  return { num: season.num, name: season.name, icon: season.icon, desc: season.desc,
+           daysLeft, end: seasonEnd, color: season.color,
+           progress: Math.floor((g.level - season.minLv) / (season.maxLv - season.minLv) * 100) };
 }
 
 
