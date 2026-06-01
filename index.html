@@ -1966,11 +1966,21 @@ function loadGame(){
   try{const s=localStorage.getItem('xspacecoin_v2');if(s)Object.assign(g,JSON.parse(s));}catch(e){}
   const today=new Date().toDateString();
   if(g.lastTaskReset!==today){g.lastTaskReset=today;g.dailyTasksDone={};g.todaySpins=0;g.loggedIn=1;}
-  // Recalculate level from coins to fix stale level
-  const correctLevel = getLevel(g.coins);
-  if(correctLevel > g.level) g.level = correctLevel;
+  // Level is based on total coins earned, never decreases
+  // Init totalEarned if not set
+  if(!g.totalEarned) g.totalEarned = g.coins || 0;
+  const correctLevel = getLevel(g.totalEarned);
+  // Only increase level, never decrease
+  if(correctLevel > (g.level||1)) {
+    g.level = correctLevel;
+  }
+  // Ensure level is at least 1
+  if(!g.level || g.level < 1) g.level = 1;
   // Recalculate perClick from level + multitap
   g.perClick = g.level + ((g.multitapLevel||1) - 1);
+  // Fix maxEnergy based on level
+  const baseEnergyCalc = 500 + Math.floor(g.level/3) * 100 + ((g.maxenergyLevel||1)-1)*500;
+  if(g.maxEnergy < baseEnergyCalc) g.maxEnergy = baseEnergyCalc;
   // Fix maxEnergy — should be 500 + level*100 + maxenergy upgrades
   const baseEnergy = 500 + (g.level - 1) * 100 + ((g.maxenergyLevel||1) - 1) * 500;
   if(g.maxEnergy < baseEnergy) g.maxEnergy = baseEnergy;
@@ -2028,6 +2038,7 @@ function handleClick(e){
   const saveChance = (g.energySaveLevel||0) * 0.10;
   const energyCost = unlimitedEnergy ? 0 : (Math.random() < saveChance ? 0 : 1);
   g.coins+=reward; g.clicks++;
+  g.totalEarned = (g.totalEarned||0) + reward;
   if(g.clicks===1||g.lastFirstTapDate!==new Date().toDateString()) checkFirstTapBonus(); g.energy=Math.max(0,g.energy-energyCost);
 
   // Visual effects
@@ -2162,11 +2173,17 @@ function updatePlanet(level, isInit){
 function closePlanetUnlock(){document.getElementById('planetUnlockOverlay').classList.remove('show');}
 
 // ═══ LEVEL ═══
-function getLevel(c){let l=1;for(let i=0;i<LEVELS.length;i++)if(c>=LEVELS[i])l=i+1;return Math.min(l,60);}
+function getLevel(c){
+  // Use totalEarned for level if available (so spending doesn't reduce level)
+  const earned = Math.max(c, g ? (g.totalEarned||0) : 0);
+  let l=1;
+  for(let i=0;i<LEVELS.length;i++) if(earned>=LEVELS[i]) l=i+1;
+  return Math.min(l,60);
+}
 function getLeague(c){let league=LEAGUES[0];for(const l of LEAGUES)if(c>=l.min)league=l;return league;}
 
 function checkLevelUp(){
-  const nl=getLevel(g.coins);
+  const nl=getLevel(g.totalEarned || g.coins);
   if(nl>g.level){
     const gained = nl - g.level;
     g.level = nl;
@@ -2442,7 +2459,7 @@ async function loadFriends(userId){
 // ═══ UI UPDATE ═══
 function updateUI(){
   // Recalc level only upward, never down
-  const realLv = getLevel(g.coins);
+  const realLv = getLevel(g.totalEarned || g.coins);
   if(realLv > g.level) { g.level = realLv; g.perClick = realLv + ((g.multitapLevel||1)-1); }
   const coins=Math.floor(g.coins),lv=g.level;
   const league=getLeague(coins);
@@ -2455,8 +2472,9 @@ function updateUI(){
   document.getElementById('statCoins').textContent=coins>=1000?`${(coins/1000).toFixed(1)}K`:coins;
   document.getElementById('statPerClick').textContent=g.perClick*(g.turboActive?5:1);
   document.getElementById('statClicks').textContent=g.clicks>=1000?`${(g.clicks/1000).toFixed(1)}K`:g.clicks;
-  const curReq=LEVELS[lv-1]||0,nextReq=LEVELS[lv]||LEVELS[LEVELS.length-1];
-  const pct=Math.max(0,Math.min(100,Math.floor((g.coins-curReq)/(nextReq-curReq)*100)));
+  const curReq=LEVELS[lv-1]||0, nextReq=LEVELS[lv]||LEVELS[LEVELS.length-1];
+  const earned = g.totalEarned || g.coins;
+  const pct=Math.max(0,Math.min(100,Math.floor((earned-curReq)/(nextReq-curReq)*100)));
   document.getElementById('progressFill').style.width=pct+'%';
   document.getElementById('progressPct').textContent=pct+'%';
   const nextPlanet = PLANETS.find(p => p.minLevel > lv);
