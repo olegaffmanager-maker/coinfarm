@@ -60,6 +60,41 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 .hub-desc { font-size: 10px; color: var(--muted); line-height: 1.3; }
 .hub-badge { position: absolute; top: 8px; right: 8px; background: #ff3366; color: #fff; font-size: 8px; font-family: Orbitron, monospace; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
 
+
+/* ASTEROID */
+@keyframes asteroidSpin {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(360deg) scale(1.1); }
+}
+#asteroidOverlay.show { display: flex !important; }
+#onboardingOverlay.show { display: flex !important; }
+
+/* PLANET THEME BACKGROUNDS */
+.theme-mercury { background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%) !important; }
+.theme-venus   { background: linear-gradient(180deg, #1a1200 0%, #0d0a00 100%) !important; }
+.theme-earth   { background: linear-gradient(180deg, #001a2e 0%, #000d1a 100%) !important; }
+.theme-mars    { background: linear-gradient(180deg, #1a0500 0%, #0d0200 100%) !important; }
+.theme-jupiter { background: linear-gradient(180deg, #1a0e00 0%, #0d0700 100%) !important; }
+.theme-saturn  { background: linear-gradient(180deg, #1a1400 0%, #0d0b00 100%) !important; }
+.theme-uranus  { background: linear-gradient(180deg, #001a18 0%, #000d0c 100%) !important; }
+.theme-neptune { background: linear-gradient(180deg, #00091a 0%, #00040d 100%) !important; }
+.theme-pluto   { background: linear-gradient(180deg, #0d0d14 0%, #06060a 100%) !important; }
+.theme-nibiru  { background: linear-gradient(180deg, #1a0008 0%, #0d0004 100%) !important; }
+.theme-sun     { background: linear-gradient(180deg, #1a0800 0%, #0d0400 100%) !important; }
+
+/* COIN BURST ANIMATION */
+@keyframes coinBurst {
+  0% { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+.coin-burst {
+  position: fixed;
+  pointer-events: none;
+  font-size: 16px;
+  animation: coinBurst 0.8s ease-out forwards;
+  z-index: 999;
+}
+
 /* BOOST CARDS GRID */
 .boost-card-grid {
   display: grid;
@@ -1791,6 +1826,24 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   </div>
 </div>
 
+<!-- ONBOARDING OVERLAY -->
+<div id="onboardingOverlay" style="display:none;position:fixed;inset:0;z-index:9998;background:linear-gradient(180deg,#020510 0%,#050a1a 100%);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+  <div style="max-width:360px;width:100%;text-align:center;" id="onboardingContent">
+  </div>
+</div>
+
+<!-- ASTEROID EVENT -->
+<div id="asteroidOverlay" style="display:none;position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;">
+  <div style="text-align:center;padding:20px;">
+    <div style="font-size:80px;animation:asteroidSpin 1s linear infinite;" id="asteroidEmoji">☄️</div>
+    <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff3366;margin:12px 0 6px;letter-spacing:2px;">⚠️ ASTEROID!</div>
+    <div style="font-size:13px;color:#aaa;margin-bottom:16px;">Tap as fast as you can!</div>
+    <div style="font-family:Orbitron,monospace;font-size:48px;font-weight:900;color:#FFD700;" id="asteroidTimer">30</div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;font-family:Orbitron,monospace;">SECONDS LEFT</div>
+    <div style="margin-top:16px;font-size:14px;color:#00ff88;font-family:Orbitron,monospace;" id="asteroidBonus">x5 COINS!</div>
+  </div>
+</div>
+
 <div class="lucky-toast" id="luckyToast">🍀 LUCKY! +50 XSPC!</div>
 
 <script>
@@ -1948,7 +2001,7 @@ function handleClick(e){
   g.maxCombo=Math.max(g.maxCombo,g.combo);
   g.hitCount++;
 
-  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*getVipMultiplier());
+  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier());
   const comboMult = 1 + (g.comboMultLevel||0) * 2;
   if(g.combo>=10)reward+=20*comboMult;
   else if(g.combo>=5)reward+=10*comboMult;
@@ -1966,14 +2019,16 @@ function handleClick(e){
   const critChance = (g.critLevel||0) * 0.05;
   if(Math.random() < critChance) {
     reward *= 3;
-    showFloat('💥 CRIT!', e.clientX, e.clientY-40, '#ff3366');
+    spawnCoinBurst(e.clientX, e.clientY, reward);
+  showFloat('💥 CRIT!', e.clientX, e.clientY-40, '#ff3366');
   }
   // Energy saver
   // Unlimited energy from VIP
   const unlimitedEnergy = g.vip && g.vip.energyUntil && g.vip.energyUntil > Date.now();
   const saveChance = (g.energySaveLevel||0) * 0.10;
   const energyCost = unlimitedEnergy ? 0 : (Math.random() < saveChance ? 0 : 1);
-  g.coins+=reward; g.clicks++; g.energy=Math.max(0,g.energy-energyCost);
+  g.coins+=reward; g.clicks++;
+  if(g.clicks===1||g.lastFirstTapDate!==new Date().toDateString()) checkFirstTapBonus(); g.energy=Math.max(0,g.energy-energyCost);
 
   // Visual effects
   spawnHitEffects(e);
@@ -2116,8 +2171,9 @@ function checkLevelUp(){
     const gained = nl - g.level;
     g.level = nl;
     g.perClick = nl + ((g.multitapLevel||1) - 1);
-    g.maxEnergy += gained * 100;
-    g.energy = g.maxEnergy;
+    // +100 max energy every 3 levels
+    const energyGain = Math.floor(nl/3) - Math.floor((nl-gained)/3);
+    if(energyGain > 0) { g.maxEnergy += energyGain * 100; g.energy = g.maxEnergy; }
     document.getElementById('levelupEmoji').textContent=LEVEL_NAMES[nl].split(' ')[0];
     document.getElementById('levelupSub').textContent=`You reached ${LEVEL_NAMES[nl]}!`;
     document.getElementById('levelupOverlay').classList.add('show');
@@ -2329,7 +2385,18 @@ async function renderTop(){
     </div>`).join('');
 }
 
-function getRefLink(){return `https://t.me/play1xfarmbot?start=ref_${g.telegramId||Date.now()}`;}
+function getRefLink(){
+  // Try multiple sources for telegram ID
+  const tg = window.Telegram?.WebApp;
+  const tgId = g.telegramId
+    || tg?.initDataUnsafe?.user?.id
+    || new URLSearchParams(window.location.search).get('user_id')
+    || null;
+  if(!tgId) return 'https://t.me/play1xfarmbot';
+  // Save it if found
+  if(tgId && !g.telegramId) { g.telegramId = tgId; saveGame(); }
+  return `https://t.me/play1xfarmbot?start=ref_${tgId}`;
+}
 function copyRef(){const l=getRefLink();navigator.clipboard?.writeText(l).catch(()=>{});document.getElementById('refLink').textContent='✅ Copied!';setTimeout(()=>document.getElementById('refLink').textContent=l,2000);}
 function shareRef(){const l=getRefLink();if(window.Telegram?.WebApp)window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(l)}&text=${encodeURIComponent('🪐 Join XSPACECOIN! Earn XSPC tokens!')}`);else copyRef();}
 
@@ -4062,6 +4129,173 @@ function loadPvpFriends() {
   ).join('');
 }
 
+
+// ═══ ONBOARDING ═══
+const ONBOARDING_STEPS = [
+  {
+    emoji: '🪐',
+    title: 'Welcome to XSPACECOIN!',
+    subtitle: 'CONQUER THE GALAXY',
+    text: 'Mine planets, earn XSPC tokens and reach the Sun!',
+    btn: "Let's Go! 🚀"
+  },
+  {
+    emoji: '👆',
+    title: 'Tap to Mine',
+    subtitle: 'TAP MECHANICS',
+    text: 'Tap the planet to earn XSPC coins. Buy upgrades to tap faster and earn more!',
+    btn: 'Got it! ⚡'
+  },
+  {
+    emoji: '🌍→☀️',
+    title: 'Conquer 11 Planets',
+    subtitle: 'YOUR GOAL',
+    text: 'Start on Mercury and work your way to the Sun. Each planet gives unique bonuses!',
+    btn: 'Amazing! 🌌'
+  },
+  {
+    emoji: '💰',
+    title: 'XSPC Token Launch',
+    subtitle: 'Q4 2026',
+    text: 'XSPC launches on TON blockchain. Minimum 100,000 XSPC needed for withdrawal. Start mining now!',
+    btn: 'Start Mining! ⛏️'
+  },
+];
+
+let onboardStep = 0;
+
+function showOnboarding() {
+  if(g.onboardingDone) return;
+  onboardStep = 0;
+  renderOnboardStep();
+  document.getElementById('onboardingOverlay').classList.add('show');
+}
+
+function renderOnboardStep() {
+  const step = ONBOARDING_STEPS[onboardStep];
+  const content = document.getElementById('onboardingContent');
+  if(!content) return;
+  const isLast = onboardStep === ONBOARDING_STEPS.length - 1;
+
+  content.innerHTML = `
+    <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:16px;">${step.subtitle}</div>
+    <div style="font-size:80px;margin-bottom:16px;animation:planetReveal 0.5s ease;">${step.emoji}</div>
+    <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:10px;">${step.title}</div>
+    <div style="font-size:14px;color:#aaa;line-height:1.6;margin-bottom:24px;">${step.text}</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;">
+      ${ONBOARDING_STEPS.map((_,i) => `<div style="width:${i===onboardStep?'20px':'8px'};height:8px;border-radius:4px;background:${i===onboardStep?'#FFD700':'rgba(255,255,255,0.2)'};transition:all 0.3s;"></div>`).join('')}
+    </div>
+    <button onclick="nextOnboardStep()" style="width:100%;padding:16px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:16px;color:#000;font-weight:700;font-size:16px;cursor:pointer;font-family:Orbitron,monospace;letter-spacing:1px;">${step.btn}</button>
+    ${onboardStep > 0 ? `<button onclick="closeOnboarding()" style="width:100%;padding:10px;background:transparent;border:none;color:#4a6080;font-size:12px;cursor:pointer;margin-top:8px;">Skip</button>` : ''}
+  `;
+}
+
+function nextOnboardStep() {
+  onboardStep++;
+  if(onboardStep >= ONBOARDING_STEPS.length) {
+    closeOnboarding();
+  } else {
+    renderOnboardStep();
+  }
+}
+
+function closeOnboarding() {
+  g.onboardingDone = true;
+  saveGame();
+  document.getElementById('onboardingOverlay').classList.remove('show');
+  // Give welcome bonus
+  g.coins += 1000;
+  g.keys = (g.keys||0) + 1;
+  showFloat('🎁 Welcome! +1,000 XSPC + 1 XKEY', window.innerWidth/2, 200, '#FFD700');
+  updateUI(); updateKeysUI();
+}
+
+// ═══ ASTEROID EVENT ═══
+let asteroidActive = false;
+let asteroidInterval = null;
+let asteroidTimeLeft = 30;
+
+function triggerAsteroid() {
+  if(asteroidActive) return;
+  asteroidActive = true;
+  asteroidTimeLeft = 30;
+
+  const overlay = document.getElementById('asteroidOverlay');
+  if(overlay) overlay.classList.add('show');
+
+  asteroidInterval = setInterval(() => {
+    asteroidTimeLeft--;
+    const timerEl = document.getElementById('asteroidTimer');
+    if(timerEl) timerEl.textContent = asteroidTimeLeft;
+    if(asteroidTimeLeft <= 0) {
+      clearInterval(asteroidInterval);
+      asteroidActive = false;
+      overlay.classList.remove('show');
+    }
+  }, 1000);
+}
+
+// Random asteroid event every 10-20 minutes
+function scheduleAsteroid() {
+  const delay = (600 + Math.random() * 600) * 1000;
+  setTimeout(() => {
+    triggerAsteroid();
+    scheduleAsteroid();
+  }, delay);
+}
+
+// ═══ PLANET THEME ═══
+function applyPlanetTheme(planetName) {
+  const body = document.body;
+  // Remove all themes
+  body.classList.remove('theme-mercury','theme-venus','theme-earth','theme-mars',
+    'theme-jupiter','theme-saturn','theme-uranus','theme-neptune','theme-pluto','theme-nibiru','theme-sun');
+  body.classList.add('theme-' + planetName.toLowerCase());
+}
+
+// ═══ DAILY FIRST TAP BONUS ═══
+function checkFirstTapBonus() {
+  const today = new Date().toDateString();
+  if(g.lastFirstTapDate === today) return;
+  g.lastFirstTapDate = today;
+  const bonus = g.level * 100;
+  g.coins += bonus;
+  saveGame();
+  setTimeout(() => showFloat(`☀️ First tap today! +${bonus} XSPC`, window.innerWidth/2, 150, '#FFD700'), 500);
+}
+
+// ═══ ENHANCED COIN BURST ═══
+function spawnCoinBurst(x, y, amount) {
+  const count = Math.min(8, Math.floor(amount / g.perClick) + 3);
+  for(let i = 0; i < count; i++) {
+    const coin = document.createElement('div');
+    coin.className = 'coin-burst';
+    coin.textContent = amount >= 50 ? '💎' : '🪐';
+    coin.style.left = x + 'px';
+    coin.style.top = y + 'px';
+    const angle = (i / count) * Math.PI * 2;
+    const dist = 40 + Math.random() * 60;
+    coin.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    coin.style.setProperty('--ty', (Math.sin(angle) * dist - 30) + 'px');
+    coin.style.animationDelay = (Math.random() * 0.2) + 's';
+    document.body.appendChild(coin);
+    setTimeout(() => coin.remove(), 1000);
+  }
+}
+
+// ═══ PASSIVE INCOME NOTIFICATION ═══
+function checkPassiveNotification() {
+  if(passiveAccumulated >= 1000) {
+    const t = document.getElementById('luckyToast');
+    if(t && !t.classList.contains('show')) {
+      t.textContent = `⛏️ +${Math.floor(passiveAccumulated).toLocaleString()} XSPC accumulated! Tap COLLECT`;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+  }
+}
+setInterval(checkPassiveNotification, 60000);
+
 // ═══ MINE PAGE EFFECTS ═══
 function initMinePageEffects() {
   // Star particles for top block
@@ -4163,8 +4397,11 @@ async function initUser(){
   }
   if(!userId||isNaN(userId)){document.getElementById('refLink').textContent='Open in Telegram to get your link';return;}
   g.telegramId=userId;
+  saveGame();
   await apiRegister(userId,username,fullName,referrerId);
-  document.getElementById('refLink').textContent=getRefLink();
+  // Update ref link after we have the ID
+  const refEl = document.getElementById('refLink');
+  if(refEl) refEl.textContent = getRefLink();
   const fe = document.getElementById('friendEarnings');
   if(fe) fe.textContent = ((g.friends||0)*500).toLocaleString();
   loadFriends(userId);
@@ -4172,7 +4409,7 @@ async function initUser(){
 
 // ═══ TIMERS ═══
 setInterval(()=>{if(g.energy<g.maxEnergy){g.energy=Math.min(g.maxEnergy,g.energy+g.rechargeRate);updateUI();}},5000);
-setInterval(saveGame,5000);
+setInterval(()=>{checkLevelUp();saveGame();},5000);
 
 // ═══ START ═══
 loadGame();
