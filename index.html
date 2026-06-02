@@ -2626,7 +2626,19 @@ function hideDailyEventBanner() {
   if(banner) banner.style.display = 'none';
 }
 
-setInterval(checkDailyEvent, 60000);
+
+// ═══ INTERVAL MANAGER — предотвращает утечки ═══
+const _intervals = {};
+function setManagedInterval(key, fn, ms) {
+  if(_intervals[key]) clearInterval(_intervals[key]);
+  _intervals[key] = setInterval(fn, ms);
+  return _intervals[key];
+}
+function clearManagedInterval(key) {
+  if(_intervals[key]) { clearInterval(_intervals[key]); delete _intervals[key]; }
+}
+
+setManagedInterval("dailyEvent", checkDailyEvent, 60000);
 setTimeout(checkDailyEvent, 5000);
 
 // ═══ BOSS SYSTEM ═══
@@ -2851,7 +2863,7 @@ function contributeToСlan() {
   g.clan.treasury = (g.clan.treasury || 0) + contrib;
   // Level up clan
   const newLevel = Math.min(10, Math.floor(g.clan.treasury / 1000000) + 1);
-  if(newLevel > g.clan.level) {
+  if(g.clan && newLevel > (g.clan.level||1)) {
     g.clan.level = newLevel;
     g.clan.bonus = newLevel * 5;
     showToast('🏆 Clan leveled up to Lv'+newLevel+'! Bonus: +'+g.clan.bonus+'%');
@@ -2865,7 +2877,7 @@ function contributeToСlan() {
 
 function getClanBonus() {
   if(!g.clan) return 1;
-  return 1 + (g.clan.bonus || 5) / 100;
+  return g.clan ? 1 + (g.clan.bonus || 5) / 100 : 1;
 }
 
 function updateClanUI() {
@@ -3070,7 +3082,7 @@ function updateExpeditionStatus() {
   }
 }
 // Update expedition timer every second
-setInterval(updateExpeditionStatus, 1000);
+setManagedInterval("expStatus", updateExpeditionStatus, 5000);
 
 function checkExpedition() {
   const now = Date.now();
@@ -3142,7 +3154,7 @@ function chooseExpedition(idx) {
 }
 
 // Check every 10 minutes
-setInterval(checkExpedition, 600000);
+setManagedInterval("expCheck", checkExpedition, 600000);
 
 
 // ═══ RARE ARTIFACTS DROP ═══
@@ -3477,7 +3489,7 @@ function initNotifications() {
   requestNotificationPermission();
 }
 
-setInterval(checkNotifications, 30000);
+setManagedInterval("notifications", checkNotifications, 30000);
 
 
 // ═══ SHARE ACHIEVEMENT ═══
@@ -3661,7 +3673,7 @@ function updatePerfCache() {
   _cachedArtTap = (g && g.artifacts) ? getArtifactBonus().tap : 1;
   _cachedPassiveRate = getPassiveRate();
 }
-setInterval(updatePerfCache, 5000);
+setManagedInterval("perfCache", updatePerfCache, 5000);
 
 // ═══ CLICK HANDLER — оптимизирован для мобильного ═══
 // Кэшируем DOM элементы один раз
@@ -3706,16 +3718,20 @@ function handleClick(e){
   const txt=g.combo>=3?'+'+reward+' 🔥×'+g.combo:'+'+reward;
   showFloat(txt,e.clientX,e.clientY,color);
 
-  // Кольцо расширяется от центра планеты — CSS анимация (GPU)
+  // Простое кольцо
   const orbit = document.getElementById('coinOrbit');
   if(orbit) {
-    const ring = _ringPool.pop() || (() => { const r=document.createElement('div'); r.className='tap-ring'; orbit.appendChild(r); return r; })();
-    ring.style.borderColor = color;
-    ring.style.display = 'block';
-    requestAnimationFrame(()=>{
-      ring.style.animation = 'tapRingExpand 0.4s ease-out forwards';
-    });
-    setTimeout(() => { ring.style.display='none'; _ringPool.push(ring); }, 420);
+    const ring = document.createElement('div');
+    ring.style.cssText = 'position:absolute;top:50%;left:50%;width:60px;height:60px'
+      +';border-radius:50%;border:2px solid '+color
+      +';pointer-events:none;transform:translate(-50%,-50%) scale(0.5);opacity:0.8'
+      +';transition:transform 0.4s ease-out,opacity 0.4s ease-out;';
+    orbit.appendChild(ring);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      ring.style.transform='translate(-50%,-50%) scale(2.5)';
+      ring.style.opacity='0';
+    }));
+    setTimeout(()=>ring.remove(), 420);
   }
 
   // Combo display
@@ -3830,27 +3846,18 @@ function spawnShockwave(){
 const _ringPool = [];
 const _floatPool = [];
 function showFloat(text,x,y,color){
-  let el = _floatPool.pop();
-  if(!el){
-    el = document.createElement('div');
-    el.className = 'float-coin';
-    document.body.appendChild(el);
-  }
+  const el = document.createElement('div');
   el.textContent = text;
-  el.style.left = (x-20)+'px';
-  el.style.top = (y-20)+'px';
-  el.style.color = color;
-  el.style.opacity = '1';
-  el.style.transform = 'translateY(0) scale(1.2)';
-  el.style.display = 'block';
-  el.style.transition = 'none';
-  // Анимация через transition — надёжнее чем animation на мобильном
-  requestAnimationFrame(()=>{
-    el.style.transition = 'transform 0.7s ease-out, opacity 0.7s ease-out';
-    el.style.transform = 'translateY(-70px) scale(1)';
-    el.style.opacity = '0';
-  });
-  setTimeout(()=>{ el.style.display='none'; el.style.transition='none'; _floatPool.push(el); }, 750);
+  el.style.cssText = 'position:fixed;left:'+(x-30)+'px;top:'+(y-40)+'px;color:'+color
+    +';font-size:20px;font-weight:800;pointer-events:none;z-index:9999'
+    +';text-shadow:0 2px 8px rgba(0,0,0,0.9);transition:transform 0.6s ease-out,opacity 0.6s ease-out'
+    +';transform:translateY(0);opacity:1;';
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    el.style.transform='translateY(-65px)';
+    el.style.opacity='0';
+  }));
+  setTimeout(()=>el.remove(), 650);
 }
 
 // ═══ PLANET SYSTEM ═══
@@ -4851,7 +4858,7 @@ function collectPassive() {
 }
 
 // Run passive every 10 seconds
-setInterval(updatePassive, 10000);
+setManagedInterval("passive", updatePassive, 10000);
 // Also update UI every 30s visually
 setInterval(() => { const el=document.getElementById('passiveAccum'); if(el) el.textContent=Math.floor(passiveAccumulated).toLocaleString(); }, 30000);
 
@@ -5744,9 +5751,9 @@ async function updatePlayerCounter() {
 }
 
 // Update player count every 5 minutes with smooth animation
-setInterval(updatePlayerCounter, 300000);
+setManagedInterval("playerCounter", updatePlayerCounter, 300000);
 
-setInterval(updateCountdown, 1000);
+setManagedInterval("countdown", updateCountdown, 1000);
 setInterval(updatePlayerCounter, 600000); // update every 10 min
 setInterval(() => {
   // Live update counter every 10 minutes in real time
@@ -6148,7 +6155,7 @@ function applyVipPurchase(type) {
     g.keys = (g.keys||0) + 10;
     showFloat('+10 XKEY!', window.innerWidth/2, 200, '#FFD700');
   } else if(type === 'energy_pack') {
-    g.vip.energyUntil = now + 86400000;
+    if(g.vip) g.vip.energyUntil = now + 86400000;
     g.energy = g.maxEnergy;
     showFloat('⚡ Unlimited Energy 24h!', window.innerWidth/2, 200, '#00ff88');
   }
@@ -6163,7 +6170,7 @@ function getVipStatusText() {
   if(g.vip.galaxyPass) parts.push('🌌 Galaxy Pass (permanent)');
   if(g.vip.vipUntil && g.vip.vipUntil > now) parts.push('👑 VIP '+ Math.ceil((g.vip.vipUntil-now)/86400000)+'d left');
   if(g.vip.boosterUntil && g.vip.boosterUntil > now) parts.push('⚡ Booster '+Math.ceil((g.vip.boosterUntil-now)/86400000)+'d left');
-  if(g.vip.energyUntil && g.vip.energyUntil > now) parts.push('⚡ Energy '+Math.ceil((g.vip.energyUntil-now)/3600000)+'h left');
+  if(g.vip?.energyUntil && g.vip.energyUntil > now) parts.push('⚡ Energy '+Math.ceil((g.vip.energyUntil-now)/3600000)+'h left');
   return parts.length ? parts.join(' · ') : 'No active VIP';
 }
 
@@ -6184,7 +6191,7 @@ function updateVipStatus() {
     const days = Math.ceil((g.vip.boosterUntil - now)/86400000);
     perks.push(`⚡ Booster (${days}d left)`);
   }
-  if(g.vip.energyUntil && g.vip.energyUntil > now) {
+  if(g.vip?.energyUntil && g.vip.energyUntil > now) {
     perks.push('⚡ Unlimited Energy');
   }
 
@@ -6223,7 +6230,7 @@ function updateTournamentTimer() {
   const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
   el.textContent = h+':'+m+':'+s;
 }
-setInterval(updateTournamentTimer, 1000);
+setManagedInterval("tournament", updateTournamentTimer, 1000);
 
 const SEASONS = [
   {num:1, name:'Solar System',  icon:'☀️', desc:'Conquer the Solar System', minLv:1,   maxLv:60,  color:'#ff9500'},
@@ -6718,7 +6725,7 @@ function checkPassiveNotification() {
     }
   }
 }
-setInterval(checkPassiveNotification, 60000);
+setManagedInterval("passiveNotify", checkPassiveNotification, 60000);
 
 // ═══ MINE PAGE EFFECTS ═══
 function initMinePageEffects() {
@@ -6861,9 +6868,9 @@ setInterval(()=>{
     if(energyText) energyText.textContent=Math.floor(g.energy)+'/'+g.maxEnergy;
   }
 },3000); // every 3 seconds instead of 5
-setInterval(()=>{checkLevelUp();updatePlanet(g.level,false);saveGame();},5000);
+setManagedInterval("levelCheck", ()=>{checkLevelUp();updatePlanet(g.level,false);saveGame();}, 5000);
 // Sync with server every 30 seconds
-setInterval(()=>{ if(g.telegramId) apiSave(); }, 30000);
+setManagedInterval("apiSave", ()=>{ if(g.telegramId) apiSave(); }, 30000);
 
 // ═══ START ═══
 loadGame();
