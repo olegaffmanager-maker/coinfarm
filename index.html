@@ -650,7 +650,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#00f5ff;margin-bottom:8px;" id="expTitle">Expedition!</div>
     <div style="font-size:13px;color:#4a6080;margin-bottom:20px;" id="expDesc">A mysterious event...</div>
     <div id="expButtons"></div>
-    <button onclick="document.getElementById('expeditionOverlay').style.display='none';g.lastExpedition=Date.now();expeditionAvailable=false;" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:12px;cursor:pointer;margin-top:4px;">Skip for now</button>
+    <button onclick="skipExpedition()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:12px;cursor:pointer;margin-top:4px;">Skip for now</button>
   </div>
 </div>
 
@@ -2671,16 +2671,37 @@ function attackBoss(type) {
   let dmg = 0;
   if(type === 'tap') {
     dmg = g.perClick * 10;
+    // Tap animation
+    const bossEl = document.getElementById('bossEmoji');
+    if(bossEl) {
+      bossEl.style.transform = 'scale(1.3) rotate(-5deg)';
+      bossEl.style.transition = 'transform 0.1s';
+      setTimeout(() => { if(bossEl) bossEl.style.transform = 'scale(1) rotate(0)'; }, 150);
+    }
+    playSound('tap');
     showFloat('-'+dmg.toLocaleString()+' HP', window.innerWidth/2, 300, '#ff3366');
   } else if(type === 'power') {
     if((g.coins||0) < 1000) { showToast('Need 1,000 XSPC!'); return; }
     g.coins -= 1000;
     dmg = Math.floor(getPlayerPower() * 0.5);
+    // Power blast animation
+    const bossEl = document.getElementById('bossEmoji');
+    if(bossEl) {
+      bossEl.style.transform = 'scale(0.7)';
+      bossEl.style.transition = 'transform 0.2s';
+      setTimeout(() => { if(bossEl) { bossEl.style.transform = 'scale(1.4)'; setTimeout(() => { bossEl.style.transform = 'scale(1)'; }, 200); } }, 200);
+    }
+    const flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed;inset:0;background:#7b2fff;opacity:0.2;z-index:9997;pointer-events:none;transition:opacity 0.4s;';
+    document.body.appendChild(flash);
+    setTimeout(() => { flash.style.opacity='0'; setTimeout(() => flash.remove(), 400); }, 100);
+    playSound('win');
     showFloat('💥 -'+dmg.toLocaleString()+' HP', window.innerWidth/2, 300, '#7b2fff');
     updateUI();
   }
 
   bossHp -= dmg;
+  if(navigator.vibrate) navigator.vibrate(30);
   updateBossUI();
 
   if(bossHp <= 0) {
@@ -2934,6 +2955,16 @@ const EXPEDITION_EVENTS = [
 
 let expeditionAvailable = false;
 let currentExpedition = null;
+
+function skipExpedition() {
+  // Skip without starting cooldown — expedition stays available for 30 min
+  document.getElementById('expeditionOverlay').style.display = 'none';
+  expeditionAvailable = false;
+  currentExpedition = null;
+  // Set lastExpedition to 3.5 hours ago so it respawns in 30 min
+  g.lastExpedition = Date.now() - (3.5 * 3600000);
+  updateExpeditionStatus();
+}
 
 function forceExpedition() {
   const now = Date.now();
@@ -3221,11 +3252,42 @@ function updateStakingUI() {
   const staked = g.stakedAmount || 0;
   const rate = staked >= 1000000 ? 0.20 : staked >= 100000 ? 0.10 : 0.05;
   const dailyReward = Math.floor(staked * rate);
+
+  // Calculate current reward
+  const hrs = (Date.now() - (g.stakeTime||Date.now())) / 3600000;
+  const currentReward = Math.floor(staked * rate * hrs / 24);
+
   const rw = document.getElementById('stakeRewards');
-  if(rw) rw.textContent = 'Daily reward: '+dailyReward.toLocaleString()+' XSPC';
+  if(rw) {
+    if(staked > 0 && currentReward > 0) {
+      rw.textContent = 'Ready to collect: +'+currentReward.toLocaleString()+' XSPC';
+      rw.style.color = '#00ff88';
+    } else if(staked > 0) {
+      // Show time until reward is meaningful (1 hour)
+      const minsToReward = Math.max(0, Math.floor(60 - hrs * 60));
+      if(minsToReward > 0) {
+        rw.textContent = '⏰ First reward in '+minsToReward+'m · Daily: '+dailyReward.toLocaleString()+' XSPC';
+        rw.style.color = '#4a6080';
+      } else {
+        rw.textContent = 'Daily reward: '+dailyReward.toLocaleString()+' XSPC';
+        rw.style.color = '#00ff88';
+      }
+    } else {
+      rw.textContent = 'Stake XSPC to earn daily rewards';
+      rw.style.color = '#4a6080';
+    }
+  }
+
   const cb = document.getElementById('collectStakeBtn');
   const ub = document.getElementById('unstakeBtn');
-  if(cb) cb.style.display = staked > 0 ? 'block' : 'none';
+  if(cb) {
+    cb.style.display = staked > 0 ? 'block' : 'none';
+    if(currentReward > 0) {
+      cb.textContent = '💰 COLLECT +'+currentReward.toLocaleString()+' XSPC';
+    } else {
+      cb.textContent = '💰 COLLECT REWARDS';
+    }
+  }
   if(ub) ub.style.display = staked > 0 ? 'block' : 'none';
 }
 
@@ -3856,7 +3918,7 @@ function spinWheel(){
   wheelSpinning=true;document.getElementById('spinBtn').disabled=true;
   const freshPrizes = getWheelPrizes();
   const winIdx=Math.floor(Math.random()*freshPrizes.length);
-  const sa=(2*Math.PI)/_prizes.length;
+  const sa=(2*Math.PI)/freshPrizes.length;
   const targetAngle=(2*Math.PI*5)+(Math.PI*2-winIdx*sa-sa/2)-Math.PI/2;
   let start=null;const duration=4000;const startAngle=wheelAngle;
   function animate(ts){
@@ -4173,7 +4235,7 @@ function showPage(page){
   // Hub-specific logic
   if(page==='mine'){initMinePageEffects();if(activeDailyEvent)showDailyEventBanner();}
   if(page==='earn'){updateEarnHub();}
-  if(page==='staking'){updateStakingUI();}
+  if(page==='staking'){updateStakingUI();clearInterval(window._stakingTimer);window._stakingTimer=setInterval(updateStakingUI,60000);}
   if(page==='upgrade'){updateUpgradeHub();}
   if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();updateExpeditionStatus();}
   if(page==='cosmosmap'){renderCosmosMap();}
