@@ -29,7 +29,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 .progress-wrap{position:relative;z-index:10;padding:8px 16px;background:rgba(0,0,0,0.3);}
 .progress-info{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px;font-family:'Orbitron',monospace;letter-spacing:1px;}
-.progress-bar{height:6px;background:rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;}
+.progress-bar{height:10px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:10px;transition:width 0.5s ease;box-shadow:0 0 10px var(--accent);}
 
 .stats-row{position:relative;z-index:10;display:flex;justify-content:space-around;padding:10px 16px;border-bottom:1px solid var(--border);}
@@ -687,8 +687,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
           </div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">ACCUMULATED</div>
-          <div style="font-size:13px;font-weight:700;color:#FFD700;" id="passiveAccum">0</div>
+          <div style="font-size:10px;color:#FFD700;font-family:Orbitron,monospace;letter-spacing:1px;opacity:0.7;">ACCUMULATED</div>
+          <div style="font-size:18px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;" id="passiveAccum">0</div>
         </div>
         <button onclick="collectPassive()" id="collectBtn" style="display:none;padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:12px;font-family:Rajdhani,sans-serif;margin-left:8px;">COLLECT</button>
       </div>
@@ -3555,7 +3555,10 @@ function handleClick(e){
   rings[1].style.animationDuration=(speed*0.7)+'s';
   setTimeout(()=>{rings[0].style.animationDuration='12s';rings[1].style.animationDuration='8s';},2000);
 
-  checkLevelUp(); checkAchievements(); updateUI(); // Init quest with retry
+  checkLevelUp(); checkAchievements(); updateUI();
+  // Ensure quest never stuck on Loading
+  setTimeout(renderQuest, 800);
+  setTimeout(renderQuest, 2000);
 (function initQuest() {
   renderQuest();
   // Retry if still loading after 1s
@@ -4074,7 +4077,20 @@ function updateUI(){
   const progLabel = nextPlanet ? `→ ${nextPlanet.emoji} ${nextPlanet.name} (Lv${nextPlanet.minLevel})` : '☀️ SUN GOD!';
   document.getElementById('progressLabel').textContent = `Lv${lv} ` + progLabel;
   const ePct=g.energy/g.maxEnergy*100;
-  document.getElementById('energyFill').style.width=ePct+'%';
+  const eFill = document.getElementById('energyFill');
+  if(eFill) {
+    eFill.style.width = ePct+'%';
+    if(ePct <= 20) {
+      eFill.style.background = 'linear-gradient(90deg,#ff3366,#ff6600)';
+      eFill.style.boxShadow = '0 0 8px rgba(255,50,50,0.7)';
+    } else if(ePct <= 50) {
+      eFill.style.background = 'linear-gradient(90deg,#ff9500,#FFD700)';
+      eFill.style.boxShadow = '0 0 6px rgba(255,149,0,0.5)';
+    } else {
+      eFill.style.background = '';
+      eFill.style.boxShadow = '';
+    }
+  }
   document.getElementById('energyText').textContent=`${Math.floor(g.energy)}/${g.maxEnergy}`;
 
 }
@@ -4600,6 +4616,7 @@ function getQuestValue(quest) {
 
 function renderQuest() {
   try {
+  if(!g || !g.level) { setTimeout(renderQuest, 600); return; }
   const quest = getCurrentQuest();
   const nameEl = document.getElementById('questName');
   const progressEl = document.getElementById('questProgress');
