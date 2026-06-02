@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "8789040101:AAFRdV6mBjQykZteIVzOO5LKkYLJtnHgtoo")
@@ -19,7 +19,6 @@ dp  = Dispatcher()
 
 users = set()
 
-# ═══ Daily promo rotation ═══
 DAILY_PROMOS = ["XSPACE2026", "LAUNCH", "SPACE100", "WELCOMEGIFT",
                 "XSPC_TG", "MINEHARD", "GALAXY2026", "ASTEROID"]
 
@@ -65,8 +64,8 @@ async def cmd_start(message: types.Message):
         f"⛏️ Mine planets · 🔑 Earn XKEY · 🏆 Reach the Sun\n"
         f"💰 XSPC token launches Q1 2027 on TON!\n\n"
         f"<b>📋 Commands:</b>\n"
-        f"/promo — activate promo code 🎁\n"
-        f"/daily — today's free promo code\n"
+        f"/promo CODE — activate promo code 🎁\n"
+        f"/daily — today's free promo code 📅\n"
         f"/notify — enable reminders 🔔\n"
         f"/stats — game statistics 📊\n\n"
         f"👇 Tap to start your space journey!",
@@ -83,7 +82,7 @@ async def cmd_play(message: types.Message):
     builder.row(InlineKeyboardButton(text="🚀 Open XSPACECOIN", web_app=WebAppInfo(url=webapp_url)))
     await message.answer("🪐 Let's mine some XSPC!", reply_markup=builder.as_markup())
 
-# ═══ /daily — показать сегодняшний промокод ═══
+# ═══ /daily ═══
 @dp.message(Command("daily"))
 async def cmd_daily(message: types.Message):
     code = get_daily_promo()
@@ -101,12 +100,11 @@ async def cmd_daily(message: types.Message):
         parse_mode="HTML"
     )
 
-# ═══ /promo — активация промокода через бота ═══
+# ═══ /promo ═══
 @dp.message(Command("promo"))
 async def cmd_promo(message: types.Message):
     args = message.text.split(maxsplit=1)
 
-    # No code provided — show daily code
     if len(args) < 2 or not args[1].strip():
         code = get_daily_promo()
         await message.answer(
@@ -123,7 +121,6 @@ async def cmd_promo(message: types.Message):
     code = args[1].strip().upper()
     user_id = message.from_user.id
 
-    # Activate via API
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -135,8 +132,7 @@ async def cmd_promo(message: types.Message):
     except Exception as e:
         logging.error(f"Promo API error: {e}")
         await message.answer(
-            f"⚠️ Could not connect to server. Try activating in the game directly.\n"
-            f"Earn → Promo Code → enter <code>{code}</code>",
+            f"⚠️ Could not connect. Try in game: Earn → Promo Code → <code>{code}</code>",
             parse_mode="HTML"
         )
         return
@@ -154,21 +150,13 @@ async def cmd_promo(message: types.Message):
         )
     elif data.get("error") == "already_used":
         await message.answer(
-            f"⚠️ <b>Code already used!</b>\n\n"
-            f"You already activated <code>{code}</code>.\n"
-            f"Each code can only be used once per account.",
-            parse_mode="HTML"
-        )
-    elif data.get("error") == "invalid_code":
-        await message.answer(
-            f"❌ <b>Invalid Code</b>\n\n"
-            f"<code>{code}</code> is not a valid promo code.\n\n"
-            f"Get today's free code with /daily",
+            f"⚠️ <b>Already used!</b>\n\n"
+            f"Code <code>{code}</code> was already activated.",
             parse_mode="HTML"
         )
     else:
         await message.answer(
-            f"❌ Error: {data.get('msg', 'Something went wrong')}",
+            f"❌ Invalid code: <code>{code}</code>\n\nGet today's free code with /daily",
             parse_mode="HTML"
         )
 
@@ -178,11 +166,13 @@ async def cmd_notify(message: types.Message):
     users.add(message.from_user.id)
     await message.answer(
         "🔔 <b>Notifications enabled!</b>\n\n"
-        "You'll receive daily reminders to:\n"
-        "📦 Open your daily chest\n"
-        "🎰 Spin the fortune wheel\n"
-        "⚡ Claim daily combo\n"
-        "🔥 Keep your streak alive!",
+        "You will receive:\n"
+        "⚡ Energy full reminder\n"
+        "📦 Daily chest reminder\n"
+        "🔥 Streak reminder\n"
+        "🎰 Fortune wheel reminder\n"
+        "🪐 Passive income ready\n\n"
+        "Notifications sent daily at 10:00 AM",
         parse_mode="HTML"
     )
 
@@ -194,21 +184,123 @@ async def cmd_stats(message: types.Message):
             async with session.get(f"{API_URL}/stats", timeout=aiohttp.ClientTimeout(total=5)) as resp:
                 data = await resp.json()
                 total_players = data.get("total_players", len(users))
+                total_coins = data.get("total_coins", 0)
     except:
         total_players = len(users)
+        total_coins = 0
 
     await message.answer(
         f"📊 <b>XSPACECOIN Stats</b>\n\n"
         f"👥 Total players: {total_players:,}\n"
         f"🤖 Bot users: {len(users):,}\n"
+        f"💰 Total XSPC mined: {total_coins:,}\n"
         f"🚀 Token launch: Q1 2027\n"
-        f"💰 Total supply: 21,000,000,000 XSPC\n"
         f"🌌 Goal: Conquer the Galaxy!\n\n"
         f"Keep mining! 🪐",
         parse_mode="HTML"
     )
 
-# ═══ Daily notifications ═══
+# ═══ Telegram Push Notifications ═══
+# These are real Telegram messages sent when player is offline
+PUSH_MESSAGES = [
+    {
+        "type": "energy",
+        "title": "⚡ Energy Full!",
+        "text": "Your energy is fully restored! Come mine XSPC now before it goes to waste!",
+        "hours_offline": 0.5,  # Send after 30 min offline
+    },
+    {
+        "type": "passive",
+        "title": "🪐 Passive Income Ready!",
+        "text": "Your mines have been working! Come collect your passive XSPC income!",
+        "hours_offline": 2,
+    },
+    {
+        "type": "daily",
+        "title": "📦 Daily Rewards Waiting!",
+        "text": "Your daily chest, combo and streak are ready! Don't break your streak!",
+        "hours_offline": 20,
+    },
+    {
+        "type": "expedition",
+        "title": "🛸 Expedition Ready!",
+        "text": "A new cosmic expedition is available! Explore and earn rare rewards!",
+        "hours_offline": 4,
+    },
+]
+
+async def send_push_to_user(user_id: int, msg_type: str):
+    """Send a specific push notification to a user"""
+    msg = next((m for m in PUSH_MESSAGES if m["type"] == msg_type), PUSH_MESSAGES[0])
+    try:
+        builder = InlineKeyboardBuilder()
+        builder.row(make_play_button(user_id))
+        await bot.send_message(
+            user_id,
+            f"🪐 <b>XSPACECOIN</b>\n\n"
+            f"<b>{msg['title']}</b>\n"
+            f"{msg['text']}",
+            reply_markup=builder.as_markup(),
+            parse_mode="HTML"
+        )
+        return True
+    except Exception as e:
+        logging.warning(f"Push failed for {user_id}: {e}")
+        users.discard(user_id)
+        return False
+
+# ═══ Smart push notification system ═══
+async def run_smart_notifications():
+    """Check player activity and send relevant push notifications"""
+    while True:
+        await asyncio.sleep(1800)  # Check every 30 minutes
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                # Get all users from API
+                async with session.get(f"{API_URL}/top", timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                    top_players = await resp.json()
+        except:
+            top_players = []
+
+        now = datetime.now()
+        sent = 0
+
+        for user_id in list(users):
+            try:
+                # Find player data
+                player = next((p for p in top_players if p.get("user_id") == user_id), None)
+
+                # Check last save time
+                last_save = player.get("last_save", 0) if player else 0
+                if last_save == 0:
+                    continue
+
+                hours_offline = (now.timestamp() * 1000 - last_save) / 3600000
+
+                # Send appropriate notification based on offline time
+                msg_type = None
+                if 0.4 <= hours_offline <= 0.6:
+                    msg_type = "energy"
+                elif 1.8 <= hours_offline <= 2.2:
+                    msg_type = "passive"
+                elif 3.8 <= hours_offline <= 4.2:
+                    msg_type = "expedition"
+                elif 19 <= hours_offline <= 21:
+                    msg_type = "daily"
+
+                if msg_type:
+                    if await send_push_to_user(user_id, msg_type):
+                        sent += 1
+                        await asyncio.sleep(0.1)
+
+            except Exception as e:
+                logging.error(f"Smart push error for {user_id}: {e}")
+
+        if sent > 0:
+            logging.info(f"Smart push: sent {sent} notifications")
+
+# ═══ Daily notifications at 10:00 AM ═══
 DAILY_MESSAGES = [
     "⚡ Daily combo is waiting! Can you guess the 3 correct cards? 🎯",
     "📦 Your daily chest is ready! Open it for XKEY rewards! 🔑",
@@ -226,7 +318,6 @@ async def send_daily_notifications():
         now = datetime.now()
         target = now.replace(hour=10, minute=0, second=0, microsecond=0)
         if now >= target:
-            from datetime import timedelta
             target = target + timedelta(days=1)
         await asyncio.sleep((target - now).total_seconds())
 
@@ -246,7 +337,7 @@ async def send_daily_notifications():
                 await asyncio.sleep(0.05)
             except:
                 users.discard(user_id)
-        logging.info(f"Sent daily notifications to {sent} users")
+        logging.info(f"Daily notifications sent to {sent} users")
 
 async def main():
     logging.info("🚀 XSPACECOIN Bot started!")
@@ -259,6 +350,7 @@ async def main():
         types.BotCommand(command="stats",  description="📊 Game statistics"),
     ])
     asyncio.create_task(send_daily_notifications())
+    asyncio.create_task(run_smart_notifications())
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
