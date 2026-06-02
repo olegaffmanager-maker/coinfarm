@@ -486,10 +486,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 .energy-fill{height:100%;background:linear-gradient(90deg,#00cc66,var(--energy));border-radius:10px;transition:width 0.3s ease;box-shadow:0 0 8px var(--energy);}
 
 /* FLOAT COIN */
-.float-coin{position:fixed;font-size:18px;font-weight:700;pointer-events:none;z-index:1000;will-change:transform,opacity;animation:floatUp 0.8s ease-out forwards;display:none;}
+.float-coin{position:fixed;font-size:20px;font-weight:800;pointer-events:none;z-index:9999;will-change:transform,opacity;display:none;text-shadow:0 2px 4px rgba(0,0,0,0.8);}
 .tap-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;border:2px solid #FFD700;pointer-events:none;display:none;will-change:transform,opacity;}
 @keyframes tapRingExpand{0%{transform:translate(-50%,-50%) scale(0.5);opacity:0.8}100%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
-@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-60px)}}100%{opacity:0;transform:translateY(-110px) scale(1.4)}}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1.2)}70%{opacity:1;transform:translateY(-50px) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(0.8)}}100%{opacity:0;transform:translateY(-110px) scale(1.4)}}
 
 /* BOTTOM MENU */
 .back-btn{display:none;position:sticky;top:4px;left:0;z-index:200;background:rgba(2,5,16,0.9);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:5px 12px;color:var(--accent);font-family:Orbitron,monospace;font-size:11px;cursor:pointer;backdrop-filter:blur(10px);margin-bottom:8px;width:fit-content;}
@@ -3648,8 +3648,10 @@ function handleClick(e){
     const ring = _ringPool.pop() || (() => { const r=document.createElement('div'); r.className='tap-ring'; orbit.appendChild(r); return r; })();
     ring.style.borderColor = color;
     ring.style.display = 'block';
-    ring.style.animation = 'tapRingExpand 0.4s ease-out forwards';
-    setTimeout(() => { ring.style.display='none'; _ringPool.push(ring); }, 400);
+    requestAnimationFrame(()=>{
+      ring.style.animation = 'tapRingExpand 0.4s ease-out forwards';
+    });
+    setTimeout(() => { ring.style.display='none'; _ringPool.push(ring); }, 420);
   }
 
   // Combo display
@@ -3760,8 +3762,7 @@ function spawnShockwave(){
   setTimeout(()=>sw.remove(),400);
 }
 
-// Float element pool — максимально лёгкий
-
+// Float + ring pools
 const _ringPool = [];
 const _floatPool = [];
 function showFloat(text,x,y,color){
@@ -3775,8 +3776,17 @@ function showFloat(text,x,y,color){
   el.style.left = (x-20)+'px';
   el.style.top = (y-20)+'px';
   el.style.color = color;
+  el.style.opacity = '1';
+  el.style.transform = 'translateY(0) scale(1.2)';
   el.style.display = 'block';
-  setTimeout(()=>{ el.style.display='none'; _floatPool.push(el); }, 800);
+  el.style.transition = 'none';
+  // Анимация через transition — надёжнее чем animation на мобильном
+  requestAnimationFrame(()=>{
+    el.style.transition = 'transform 0.7s ease-out, opacity 0.7s ease-out';
+    el.style.transform = 'translateY(-70px) scale(1)';
+    el.style.opacity = '0';
+  });
+  setTimeout(()=>{ el.style.display='none'; el.style.transition='none'; _floatPool.push(el); }, 750);
 }
 
 // ═══ PLANET SYSTEM ═══
