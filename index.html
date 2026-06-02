@@ -2925,6 +2925,70 @@ function renderBattleHistoryHub() {
   }).join('');
 }
 
+
+// ═══ VIRAL SHARE POPUP ═══
+let _lastViralLevel = 0;
+function checkViralShare(level) {
+  // Show share popup at milestone levels
+  const milestones = [5, 10, 25, 50, 100];
+  if(!milestones.includes(level)) return;
+  if(_lastViralLevel === level) return;
+  _lastViralLevel = level;
+  const planet = getPlanetForLevel(level);
+  setTimeout(() => {
+    const popup = document.createElement('div');
+    popup.style.cssText = 'position:fixed;inset:0;z-index:9985;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:auto;';
+    const text = '🌌 Level '+level+' in XSPACECOIN! '+planet.emoji+' Mining on '+planet.name+'! 🪐 Join me!';
+    const inner = document.createElement('div');
+    inner.style.cssText = 'background:linear-gradient(135deg,#0a0020,#050a1a);border:2px solid rgba(255,215,0,0.4);border-radius:24px;padding:24px;max-width:340px;width:100%;text-align:center;';
+    inner.innerHTML = '<div style="font-size:48px;margin-bottom:8px;">'+planet.emoji+'</div>'
+      +'<div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;margin-bottom:6px;">🎉 LEVEL '+level+'!</div>'
+      +'<div style="font-size:13px;color:#4a6080;margin-bottom:16px;">You reached '+planet.name+'! Share your achievement!</div>'
+      +'<div style="display:flex;flex-direction:column;gap:8px;">'
+        +'<button id="viralShareBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#00f5ff,#7b2fff);border:none;border-radius:14px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;touch-action:manipulation;">📤 Share Achievement</button>'
+        +'<button onclick="this.parentElement.parentElement.parentElement.remove()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#4a6080;font-size:13px;cursor:pointer;touch-action:manipulation;">Continue playing</button>'
+      +'</div>';
+    popup.appendChild(inner);
+    document.body.appendChild(popup);
+    popup.querySelector('#viralShareBtn').onclick = () => {
+      shareResult(text);
+      popup.remove();
+    };
+    popup.onclick = (e) => { if(e.target === popup) popup.remove(); };
+  }, 1500);
+}
+
+
+// ═══ INVITE BONUS — показываем когда количество рефералов растёт ═══
+let _lastFriendsCount = 0;
+function checkInviteBonus(newCount) {
+  if(newCount <= _lastFriendsCount) return;
+  const gained = newCount - _lastFriendsCount;
+  _lastFriendsCount = newCount;
+  if(_lastFriendsCount === 0) return; // первая загрузка
+
+  // Бонус за нового друга
+  const bonus = gained * 2000;
+  g.coins += bonus;
+  g.totalEarned = (g.totalEarned||0) + bonus;
+  updateUI(); saveGame();
+
+  // Показываем popup
+  const popup = document.createElement('div');
+  popup.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9985;background:linear-gradient(135deg,#0a0020,#050a1a);border:2px solid rgba(0,255,136,0.4);border-radius:20px;padding:20px;max-width:320px;width:90%;text-align:center;pointer-events:auto;box-shadow:0 8px 32px rgba(0,255,136,0.2);';
+  popup.innerHTML = '<div style="font-size:36px;margin-bottom:8px;">👥</div>'
+    +'<div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#00ff88;margin-bottom:6px;">Friend Joined!</div>'
+    +'<div style="font-size:12px;color:#4a6080;margin-bottom:12px;">+'+bonus.toLocaleString()+' XSPC bonus for you both! 🎉</div>'
+    +'<div style="display:flex;gap:8px;">'
+      +'<button id="inviteMoreBtn" style="flex:1;padding:10px;background:linear-gradient(135deg,#00f5ff,#7b2fff);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:12px;cursor:pointer;touch-action:manipulation;">📤 Invite More</button>'
+      +'<button onclick="this.parentElement.parentElement.remove()" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:12px;cursor:pointer;touch-action:manipulation;">OK</button>'
+    +'</div>';
+  document.body.appendChild(popup);
+  const _invBtn = popup.querySelector('#inviteMoreBtn');
+  if(_invBtn) _invBtn.onclick = () => { shareResult('👥 Join me in XSPACECOIN! We both get bonus XSPC! 🪐'); popup.remove(); };
+  setTimeout(() => { if(popup.parentElement) popup.remove(); }, 8000);
+}
+
 // ═══ EXPEDITIONS ═══
 const EXPEDITION_EVENTS = [
   {id:'signal',  title:'Alien Signal Detected!',    icon:'🛸', desc:'A mysterious signal from a nearby planet.',
@@ -4116,13 +4180,36 @@ async function renderTop(){
     else if(total > 0) topFriendsEl.textContent = total+' friend'+(total!==1?'s':'')+' invited · invite more to compete!';
     else topFriendsEl.textContent = 'Invite friends to compete together!';
   }
-  const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
-  document.getElementById('topList').innerHTML=display.map((p,i)=>`
-    <div class="top-item">
-      <div class="top-rank">${medals[i]||(i+1)}</div>
-      <div class="top-name">${p.full_name||'Player'}</div>
-      <div class="top-coins">${Math.floor(p.coins).toLocaleString()} <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:14px;height:14px;vertical-align:middle;border-radius:50%;"></div>
-    </div>`).join('');
+  const medals=['🥇','🥈','🥉'];
+  // Find current player position
+  const myId = g.telegramId;
+  const myPos = display.findIndex(p => p.user_id == myId);
+
+  document.getElementById('topList').innerHTML = display.map((p, i) => {
+    const isMe = p.user_id == myId;
+    const isFriend = friendIds.includes(p.user_id);
+    const medal = medals[i] || ('#'+(i+1));
+    const name = p.full_name || 'Player';
+    const initials = name.slice(0,2).toUpperCase();
+    const planet = getPlanetForLevel(p.level||1);
+    const coins = Math.floor(p.coins);
+    const coinsStr = coins>=1000000?(coins/1000000).toFixed(1)+'M':coins>=1000?(coins/1000).toFixed(1)+'K':coins;
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:'+(isMe?'rgba(0,245,255,0.08)':'var(--card)')+';border:1px solid '+(isMe?'rgba(0,245,255,0.3)':isFriend?'rgba(123,47,255,0.3)':'var(--border)')+';border-radius:14px;margin-bottom:6px;">'
+      +'<div style="font-size:18px;min-width:28px;text-align:center;">'+medal+'</div>'
+      +'<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7b2fff,#00f5ff);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">'+initials+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:13px;font-weight:700;color:'+(isMe?'#00f5ff':isFriend?'#c084fc':'var(--text)')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+name+(isMe?' (You)':isFriend?' 👥':'')+'</div>'
+        +'<div style="font-size:10px;color:#4a6080;">'+planet.emoji+' Lv'+p.level+'</div>'
+      +'</div>'
+      +'<div style="font-size:13px;font-family:Orbitron,monospace;color:#FFD700;font-weight:700;">'+coinsStr+'</div>'
+      +'</div>';
+  }).join('');
+
+  // Show player's own position if not in top 50
+  if(myPos === -1 && myId) {
+    const myRank = '<div style="margin-top:8px;padding:10px 12px;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.2);border-radius:12px;text-align:center;font-size:12px;color:#4a6080;">Your position: not in top 50 yet. Keep mining! 🪐</div>';
+    document.getElementById('topList').insertAdjacentHTML('beforeend', myRank);
+  }
 }
 
 function getRefLink(){
@@ -4155,7 +4242,7 @@ async function loadFriends(userId){
     const d = await r.json();
     const refs = d.referrals || d.total || 0;
     // Never decrease friends count (network glitches can return 0)
-    if(refs > 0) g.friends = Math.max(refs, g.friends || 0);
+    if(refs > 0) { const oldFriends = g.friends||0; g.friends = Math.max(refs, oldFriends); checkInviteBonus(g.friends); }
     else g.friends = g.friends || 0; // keep cached value if API returns 0
     g.friendsData = d.friends || d.list || [];
     // Cache friends count in localStorage as backup
