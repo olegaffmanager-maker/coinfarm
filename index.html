@@ -2453,12 +2453,22 @@ function showDailyEventBanner() {
   const banner = document.getElementById('dailyEventBanner');
   if(!banner) return;
   const minsLeft = Math.floor((dailyEventEnd - Date.now()) / 60000);
-  banner.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:linear-gradient(135deg,rgba(255,149,0,0.15),rgba(255,50,50,0.08));border:1px solid rgba(255,149,0,0.4);border-radius:12px;cursor:pointer;" onclick="showPage(\'earn\')">'
+  banner.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:linear-gradient(135deg,rgba(255,149,0,0.15),rgba(255,50,50,0.08));border:1px solid rgba(255,149,0,0.4);border-radius:12px;cursor:pointer;" onclick="showDailyEventInfo()">'
     + '<span style="font-size:18px;">'+activeDailyEvent.icon+'</span>'
     + '<div style="flex:1;"><div style="font-size:11px;font-weight:700;color:#ff9500;font-family:Orbitron,monospace;">'+activeDailyEvent.name+'</div>'
     + '<div style="font-size:10px;color:#4a6080;">'+activeDailyEvent.bonus+' · '+minsLeft+'m left</div></div>'
     + '<span style="font-size:14px;color:#ff9500;">→</span></div>';
   banner.style.display = 'block';
+}
+
+function showDailyEventInfo() {
+  if(!activeDailyEvent) return;
+  const minsLeft = Math.max(0, Math.floor((dailyEventEnd - Date.now()) / 60000));
+  const h = Math.floor(minsLeft / 60);
+  const m = minsLeft % 60;
+  const timeStr = h > 0 ? h+'h '+m+'m' : m+'m';
+  showToast(activeDailyEvent.icon+' '+activeDailyEvent.name+' — '+activeDailyEvent.bonus+' for '+timeStr+'!');
+  showFloat(activeDailyEvent.bonus+'!', window.innerWidth/2, 300, '#ff9500');
 }
 
 function hideDailyEventBanner() {
@@ -2554,54 +2564,64 @@ function renderCosmosMap() {
   const container = document.getElementById('cosmosMapContainer');
   if(!container) return;
 
-  const planets = PLANETS.slice(0, 12); // Show first 12
-  let html = '<div style="display:flex;flex-direction:column;gap:0;">';
+  const planets = PLANETS.slice(0, 12);
+  let html = '<div style="display:flex;flex-direction:column;gap:0;width:100%;">';
 
   planets.forEach((p, i) => {
     const unlocked = g.level >= p.minLevel;
     const current = getPlanetForLevel(g.level).name === p.name;
     const nextP = PLANETS[i+1];
-    const maxLv = nextP ? nextP.minLevel - 1 : 200;
-    const hasBoss = (i+1) % 5 === 0 && i > 0;
-    const bossDefeated = (g.bossesDefeated || {})[p.name];
+    const hasBoss = PLANET_BOSSES.hasOwnProperty(p.name);
+    const bossDefeated = (g.bossesDefeated||{})[p.name];
 
-    html += '<div style="display:flex;align-items:center;gap:0;">';
+    // Planet row
+    html += '<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:'+(current?'rgba(0,245,255,0.06)':'transparent')+';border-radius:12px;border:1px solid '+(current?'rgba(0,245,255,0.3)':'transparent')+';">';
 
-    // Planet node
-    html += '<div style="display:flex;flex-direction:column;align-items:center;width:80px;flex-shrink:0;">';
-    html += '<div onclick="'+(unlocked?'showPage(\'mine\')':'')+'" style="width:60px;height:60px;border-radius:50%;background:'+(unlocked?'linear-gradient(135deg,'+p.color+','+p.glowColor+')':'rgba(50,50,80,0.5)')+';border:2px solid '+(current?'#00f5ff':unlocked?p.color+'88':'rgba(255,255,255,0.1)')+';display:flex;align-items:center;justify-content:center;font-size:24px;cursor:'+(unlocked?'pointer':'default')+';box-shadow:'+(current?'0 0 20px #00f5ff':'none')+'">'+(unlocked?p.emoji:'🔒')+'</div>';
-    html += '<div style="font-size:9px;font-family:Orbitron,monospace;color:'+(current?'#00f5ff':unlocked?'#aaa':'#444')+';margin-top:4px;text-align:center;max-width:70px;">'+p.name.toUpperCase()+'</div>';
-    html += '<div style="font-size:8px;color:#4a6080;">Lv'+p.minLevel+'</div>';
+    // Planet icon
+    html += '<div style="position:relative;width:52px;height:52px;flex-shrink:0;">';
+    html += '<div style="width:52px;height:52px;border-radius:50%;background:'+(unlocked?'linear-gradient(135deg,'+p.color+','+p.glowColor+')':'rgba(30,30,50,0.8)')+';border:2px solid '+(current?'#00f5ff':unlocked?p.color+'66':'rgba(255,255,255,0.08)')+';display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:'+(current?'0 0 16px #00f5ff':'none')+';cursor:'+(unlocked?'pointer':'default')+'" onclick="'+(unlocked?'showPage(\'mine\')':'')+'">'+(unlocked?p.emoji:'🔒')+'</div>';
+    if(current) html += '<div style="position:absolute;top:-3px;right:-3px;width:14px;height:14px;background:#00f5ff;border-radius:50%;border:2px solid #020510;"></div>';
     html += '</div>';
 
-    // Route line + boss
-    if(i < planets.length - 1) {
-      html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">';
-      if(hasBoss) {
-        html += '<div style="font-size:8px;color:#ff3366;font-family:Orbitron,monospace;">BOSS</div>';
-        html += '<div onclick="'+(unlocked && !bossDefeated?'fightBoss(\''+p.name+'\')':'')+'" style="font-size:20px;cursor:'+(unlocked && !bossDefeated?'pointer':'default')+';opacity:'+(unlocked?'1':'0.3')+'">'+(bossDefeated?'✅':'💀')+'</div>';
-        html += '<div style="width:100%;height:2px;background:linear-gradient(90deg,#ff3366,#ff9500);margin-top:2px;"></div>';
-      } else {
-        html += '<div style="width:100%;height:2px;background:'+(unlocked?'linear-gradient(90deg,'+p.color+','+( nextP?nextP.color:'#fff')+')':'rgba(255,255,255,0.1)')+';"></div>';
-        html += '<div style="font-size:9px;color:#4a6080;">→</div>';
-      }
-      html += '</div>';
+    // Info
+    html += '<div style="flex:1;">';
+    html += '<div style="font-size:13px;font-weight:700;color:'+(current?'#00f5ff':unlocked?'#fff':'#444')+';">'+p.name+'</div>';
+    html += '<div style="font-size:10px;color:#4a6080;margin-top:1px;">Lv '+p.minLevel+(nextP?' — '+(nextP.minLevel-1):'+')+'</div>';
+    if(current) html += '<div style="font-size:9px;color:#00f5ff;font-family:Orbitron,monospace;margin-top:2px;">◄ YOU ARE HERE</div>';
+    html += '</div>';
+
+    // Status
+    if(!unlocked) {
+      html += '<div style="font-size:10px;font-family:Orbitron,monospace;color:#4a6080;">🔒 Lv'+p.minLevel+'</div>';
+    } else if(current) {
+      html += '<div style="font-size:10px;font-family:Orbitron,monospace;color:#00f5ff;border:1px solid #00f5ff;padding:2px 6px;border-radius:6px;">NOW</div>';
+    } else {
+      html += '<div style="font-size:16px;">✅</div>';
     }
     html += '</div>';
+
+    // Boss separator after this planet
+    if(hasBoss) {
+      html += '<div onclick="'+(unlocked && !bossDefeated?'fightBoss(\''+p.name+'\')':'')+'" style="display:flex;align-items:center;gap:10px;padding:10px 14px;margin:4px 0;background:linear-gradient(135deg,rgba(255,50,50,'+(unlocked?'0.12':'0.04')+'),rgba(255,100,0,0.05));border:1px solid rgba(255,50,50,'+(unlocked?'0.5':'0.15')+');border-radius:12px;cursor:'+(unlocked && !bossDefeated?'pointer':'default')+'">';
+      html += '<div style="font-size:24px;">'+(bossDefeated?'✅':'💀')+'</div>';
+      html += '<div style="flex:1;">';
+      html += '<div style="font-size:12px;font-weight:700;color:'+(bossDefeated?'#00ff88':'#ff3366')+';">'+(bossDefeated?'BOSS DEFEATED':'⚔️ BOSS — FIGHT TO CONTINUE')+'</div>';
+      html += '<div style="font-size:10px;color:#4a6080;">'+(bossDefeated?'Path to next world is clear!':'Defeat boss to unlock next planet')+'</div>';
+      html += '</div>';
+      if(!bossDefeated && unlocked) html += '<div style="font-size:11px;font-family:Orbitron,monospace;color:#ff3366;border:1px solid #ff3366;padding:4px 8px;border-radius:8px;">FIGHT</div>';
+      html += '</div>';
+    }
+
+    // Vertical route line
+    if(i < planets.length - 1) {
+      html += '<div style="display:flex;justify-content:start;padding:0 0 0 37px;">';
+      html += '<div style="width:2px;height:12px;background:'+(unlocked?p.color:'rgba(255,255,255,0.08)')+';border-radius:2px;opacity:0.6;"></div>';
+      html += '</div>';
+    }
   });
 
   html += '</div>';
-
-  // Legend
-  html += '<div style="margin-top:16px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">';
-  html += '<div style="font-size:10px;font-family:Orbitron,monospace;color:#4a6080;margin-bottom:8px;">LEGEND</div>';
-  html += '<div style="display:flex;gap:16px;flex-wrap:wrap;">';
-  html += '<div style="display:flex;align-items:center;gap:6px;font-size:11px;">📍<span style="color:#aaa;">Current</span></div>';
-  html += '<div style="display:flex;align-items:center;gap:6px;font-size:11px;">💀<span style="color:#ff3366;">Boss (fight to pass)</span></div>';
-  html += '<div style="display:flex;align-items:center;gap:6px;font-size:11px;">✅<span style="color:#00ff88;">Boss defeated</span></div>';
-  html += '<div style="display:flex;align-items:center;gap:6px;font-size:11px;">🔒<span style="color:#4a6080;">Locked</span></div>';
-  html += '</div></div>';
-
+  html += '<div style="margin-top:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:10px;color:#4a6080;text-align:center;">💀 Fight bosses to unlock new worlds · Tap planet to mine</div>';
   container.innerHTML = html;
 }
 
@@ -3249,6 +3269,7 @@ function checkLevelUp(){
   const nl=Math.min(getLevel(g.totalEarned || g.coins), 200);
   if(nl>g.level){
     const gained = nl - g.level;
+    const oldLevel = g.level;
     g.level = nl;
     g.perClick = nl + ((g.multitapLevel||1) - 1);
     // +100 max energy every 5 levels
@@ -3276,6 +3297,9 @@ function checkLevelUp(){
     renderBoostCards();
 updateKeysUI();
 renderPartnerTasks(); // tasks page
+// Show player count immediately without waiting for async
+const _pcEl = document.getElementById('playerCounter');
+if(_pcEl) _pcEl.textContent = getGrowingPlayerCount().toLocaleString();
 updatePlayerCounter();
 updateCountdown();
     updatePassive();
@@ -3570,6 +3594,11 @@ function updateUI(){
       updateKeysUI();
       showToast('🔑 Level '+realLv+'! +1 XKEY bonus!');
     }
+    // Boss block notification
+    const curPlanet = getPlanetForLevel(realLv);
+    if(PLANET_BOSSES[curPlanet.name] && !(g.bossesDefeated||{})[curPlanet.name]) {
+      setTimeout(() => showToast('💀 BOSS on '+curPlanet.name+'! Fight it in Galaxy → Cosmos Map!'), 2500);
+    }
   }
   const coins=Math.floor(g.coins),lv=g.level;
   const league=getLeague(coins);
@@ -3628,7 +3657,7 @@ function showPage(page){
   if(menuEl) menuEl.classList.add('active');
 
   // Hub-specific logic
-  if(page==='mine'){initMinePageEffects();}
+  if(page==='mine'){initMinePageEffects();if(activeDailyEvent)showDailyEventBanner();}
   if(page==='earn'){updateEarnHub();}
   if(page==='staking'){updateStakingUI();}
   if(page==='upgrade'){updateUpgradeHub();}
@@ -4780,8 +4809,9 @@ async function updatePlayerCounter() {
   const el = document.getElementById('playerCounter');
   if(!el) return;
 
-  // Show growing fallback immediately
-  el.textContent = getGrowingPlayerCount().toLocaleString();
+  // Show growing fallback immediately — never empty
+  if(el.textContent === '...' || el.textContent === '') el.textContent = getGrowingPlayerCount().toLocaleString();
+  else el.textContent = getGrowingPlayerCount().toLocaleString();
 
   // Try real API
   try {
