@@ -266,11 +266,8 @@ async def poll_energy_notifications():
                             builder.row(make_play_button(user_id))
                             await bot.send_message(
                                 user_id,
-                                "⚡ <b>Energy is FULL!</b>
-
-"
-                                "Your mining energy has fully restored!
-"
+                                "⚡ <b>Energy is FULL!</b>\n\n"
+                                "Your mining energy has fully restored!\n"
                                 "Come tap now before it goes to waste! 🪐",
                                 reply_markup=builder.as_markup(),
                                 parse_mode="HTML"
