@@ -4230,16 +4230,20 @@ function goBack(){
 function showFeatureTip(key, title, text) {
   if(localStorage.getItem('tip_'+key)) return;
   localStorage.setItem('tip_'+key, '1');
-  const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,0.7);display:flex;align-items:flex-end;justify-content:center;padding:20px;;pointer-events:none';
-  overlay.setAttribute('data-tip','1');
-  overlay.innerHTML = '<div style="background:linear-gradient(135deg,#0a0020,#050a1a);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:20px;max-width:360px;width:100%;text-align:center;">'
-    +'<div style="font-size:11px;font-family:Orbitron,monospace;color:#00f5ff;letter-spacing:2px;margin-bottom:8px;">NEW FEATURE</div>'
-    +'<div style="font-size:16px;font-weight:700;margin-bottom:8px;">'+title+'</div>'
-    +'<div style="font-size:12px;color:#4a6080;margin-bottom:16px;">'+text+'</div>'
-    +'<button onclick="this.parentElement.parentElement.remove()" style="width:100%;padding:12px;background:linear-gradient(135deg,#00f5ff,#7b2fff);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;">Got it! ✔</button>'
-    +'</div>';
-  overlay.dataset.tempOverlay = '1'; document.body.appendChild(overlay);
+  const tip = document.createElement('div');
+  tip.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9980;background:linear-gradient(135deg,#0a0020,#050a1a);border:1px solid rgba(0,245,255,0.3);border-radius:16px;padding:14px 18px;max-width:320px;width:90%;text-align:center;pointer-events:auto;box-shadow:0 4px 20px rgba(0,0,0,0.5);';
+  const btn = document.createElement('button');
+  btn.textContent = 'Got it! ✔';
+  btn.style.cssText = 'width:100%;padding:10px;background:linear-gradient(135deg,#00f5ff,#7b2fff);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;touch-action:manipulation;margin-top:10px;';
+  btn.onclick = () => tip.remove();
+  const inner = document.createElement('div');
+  inner.innerHTML = '<div style="font-size:10px;font-family:Orbitron,monospace;color:#00f5ff;letter-spacing:2px;margin-bottom:6px;">NEW FEATURE</div>'
+    + '<div style="font-size:14px;font-weight:700;margin-bottom:6px;">'+title+'</div>'
+    + '<div style="font-size:11px;color:#4a6080;">'+text+'</div>';
+  tip.appendChild(inner);
+  tip.appendChild(btn);
+  document.body.appendChild(tip);
+  setTimeout(() => { if(tip.parentElement) tip.remove(); }, 8000);
 }
 
 function showPage(page){
