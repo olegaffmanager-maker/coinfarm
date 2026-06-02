@@ -521,7 +521,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 .ref-link-box{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:12px;color:var(--accent);word-break:break-all;cursor:pointer;margin-bottom:10px;font-family:'Orbitron',monospace;}
 .btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent2),#6600cc);border:none;border-radius:14px;color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:1px;box-shadow:0 4px 20px rgba(123,47,255,0.4);}
-.btn-accent{width:100%;padding:14px;background:linear-gradient(135deg,#007acc,var(--accent));border:none;border-radius:14px;color:#000;font-size:15px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:1px;margin-bottom:8px;box-shadow:0 4px 20px rgba(0,245,255,0.3);}
+.btn-accent{width:100%;padding:14px;background:linear-gradient(135deg,#007acc,var(--accent));border:none;border-radius:14px;color:#000;font-size:15px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:1px;margin-bottom:8px;box-shadow:0 4px 20px rgba(0,245,255,0.3);;touch-action:manipulation;}
 
 .overlay{position:fixed;inset:0;z-index:200;background:rgba(2,5,16,0.92);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .overlay.show{opacity:1;pointer-events:all;}
@@ -646,7 +646,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <!-- MINE PAGE -->
 
 <!-- EXPEDITION OVERLAY -->
-<div id="expeditionOverlay" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+<div id="expeditionOverlay" style="display:none;pointer-events:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
   <div style="background:linear-gradient(135deg,#0a0020,#050a1a);border:1px solid rgba(0,245,255,0.4);border-radius:24px;padding:24px;max-width:380px;width:100%;text-align:center;">
     <div style="font-size:56px;margin-bottom:10px;" id="expIcon">🛸</div>
     <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#00f5ff;margin-bottom:8px;" id="expTitle">Expedition!</div>
@@ -2314,7 +2314,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 </div>
 
 <!-- ONBOARDING OVERLAY -->
-<div id="onboardingOverlay" style="display:none;position:fixed;inset:0;z-index:9998;background:linear-gradient(180deg,#020510 0%,#050a1a 100%);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+<div id="onboardingOverlay" style="display:none;position:fixed;inset:0;z-index:9990;pointer-events:none;background:linear-gradient(180deg,#020510 0%,#050a1a 100%);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
   <div style="max-width:360px;width:100%;text-align:center;" id="onboardingContent">
   </div>
 </div>
@@ -2530,8 +2530,8 @@ function checkRarePlanetDrop() {
         g.rarePlanets[rp.id] = true;
         // Flash effect
         const flash = document.createElement('div');
-        flash.style.cssText = 'position:fixed;inset:0;background:'+rp.color+';opacity:0.25;z-index:9997;pointer-events:none;transition:opacity 1s;';
-        document.body.appendChild(flash);
+        flash.style.cssText = 'position:fixed;inset:0;background:;pointer-events:none'+rp.color+';opacity:0.25;z-index:9997;pointer-events:none;transition:opacity 1s;';
+        flash.dataset.tempOverlay = '1'; document.body.appendChild(flash);
         setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),1000); },300);
         showToast('🌟 RARE PLANET! '+rp.emoji+' '+rp.name+' discovered! '+rp.bonus);
         showFloat('🌟 '+rp.name+'!', window.innerWidth/2, 150, rp.color);
@@ -2695,7 +2695,7 @@ function attackBoss(type) {
     }
     const flash = document.createElement('div');
     flash.style.cssText = 'position:fixed;inset:0;background:#7b2fff;opacity:0.2;z-index:9997;pointer-events:none;transition:opacity 0.4s;';
-    document.body.appendChild(flash);
+    flash.dataset.tempOverlay = '1'; document.body.appendChild(flash);
     setTimeout(() => { flash.style.opacity='0'; setTimeout(() => flash.remove(), 400); }, 100);
     playSound('win');
     showFloat('💥 -'+dmg.toLocaleString()+' HP', window.innerWidth/2, 300, '#7b2fff');
@@ -2715,7 +2715,7 @@ function attackBoss(type) {
 
     const flash = document.createElement('div');
     flash.style.cssText = 'position:fixed;inset:0;background:#ff3366;opacity:0.3;z-index:9998;pointer-events:none;transition:opacity 0.8s;';
-    document.body.appendChild(flash);
+    flash.dataset.tempOverlay = '1'; document.body.appendChild(flash);
     setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),800); },200);
 
     showToast('🏆 BOSS DEFEATED! +'+currentBoss.reward.toLocaleString()+' XSPC!');
@@ -2903,7 +2903,7 @@ function renderClansList() {
 
 function renderBattleHistoryHub() {
   const el = document.getElementById('battleHistoryHub');
-  if(!el) { setTimeout(renderBattleHistoryHub, 300); return; }
+  if(!el) return; // element only exists in pageBattle, silently skip if not found
   const history = (g.battleHistory || []).slice(0, 5); // Show last 5
   if(history.length === 0) {
     el.innerHTML = '<div style="text-align:center;color:#4a6080;padding:12px;font-size:12px;">No battles yet</div>';
@@ -3100,7 +3100,7 @@ function checkRareDrop() {
         // Big flash
         const flash = document.createElement('div');
         flash.style.cssText = 'position:fixed;inset:0;background:#7b2fff;opacity:0.3;z-index:9994;pointer-events:none;transition:opacity 1s;';
-        document.body.appendChild(flash);
+        flash.dataset.tempOverlay = '1'; document.body.appendChild(flash);
         setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),1000); },200);
         showToast('💥 RARE DROP! '+ra.icon+' '+ra.name+' ('+ra.rarity+')!');
         showFloat('💥 '+ra.name+'!', window.innerWidth/2, 200, '#ff3366');
@@ -3582,6 +3582,18 @@ function saveGame(){
   apiSave();
 }
 
+
+// ═══ PERFORMANCE CACHE ═══
+let _cachedDailyMult = 1;
+let _cachedArtTap = 1;
+let _cachedPassiveRate = 0;
+function updatePerfCache() {
+  _cachedDailyMult = (activeDailyEvent && activeDailyEvent.id==='meteor') ? getDailyEventMultiplier() : 1;
+  _cachedArtTap = (g && g.artifacts) ? getArtifactBonus().tap : 1;
+  _cachedPassiveRate = getPassiveRate();
+}
+setInterval(updatePerfCache, 5000);
+
 // ═══ CLICK HANDLER ═══
 function handleClick(e){
   if(g.energy<=0){playSound('error');showFloat("❌ No energy!",e.clientX,e.clientY,"#ff3366");return;}
@@ -3593,9 +3605,9 @@ function handleClick(e){
   g.maxCombo=Math.max(g.maxCombo,g.combo);
   g.hitCount++;
 
-  const dailyMult = (activeDailyEvent && activeDailyEvent.id==='meteor') ? getDailyEventMultiplier() : 1;
-  const artBonus = getArtifactBonus();
-  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier()*dailyMult*artBonus.tap);
+  const dailyMult = _cachedDailyMult || 1;
+  const artTap = _cachedArtTap || 1;
+  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier()*dailyMult*artTap);
   checkRareDrop();
   if(Math.random() < 0.005) checkRarePlanetDrop();
   const comboMult = 1 + (g.comboMultLevel||0) * 2;
@@ -3724,11 +3736,28 @@ function spawnShockwave(){
   setTimeout(()=>sw.remove(),400);
 }
 
+// Float element pool for performance
+const _floatPool = [];
 function showFloat(text,x,y,color){
-  const el=document.createElement('div');
-  el.className='float-coin';el.textContent=text;
-  el.style.left=(x-20)+'px';el.style.top=(y-20)+'px';el.style.color=color;
-  document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
+  let el = _floatPool.pop();
+  if(!el){
+    el = document.createElement('div');
+    el.className = 'float-coin';
+    document.body.appendChild(el);
+  }
+  el.textContent = text;
+  el.style.cssText = 'left:'+(x-20)+'px;top:'+(y-20)+'px;color:'+color+';opacity:1;display:block;';
+  el.style.left = (x-20)+'px';
+  el.style.top = (y-20)+'px';
+  el.style.color = color;
+  el.style.display = 'block';
+  el.style.opacity = '1';
+  // Return to pool after animation
+  setTimeout(()=>{
+    el.style.display='none';
+    if(_floatPool.length < 20) _floatPool.push(el);
+    else el.remove();
+  }, 900);
 }
 
 // ═══ PLANET SYSTEM ═══
@@ -3970,8 +3999,8 @@ function spinWheel(){
       if(navigator.vibrate) navigator.vibrate([50,30,80,30,100]);
       // Flash effect
       const flash = document.createElement('div');
-      flash.style.cssText = 'position:fixed;inset:0;background:'+prize.color+';opacity:0.25;z-index:9993;pointer-events:none;transition:opacity 0.8s;';
-      document.body.appendChild(flash);
+      flash.style.cssText = 'position:fixed;inset:0;background:;pointer-events:none'+prize.color+';opacity:0.25;z-index:9993;pointer-events:none !important;transition:opacity 0.8s;';
+      flash.dataset.tempOverlay = '1'; document.body.appendChild(flash);
       setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),800); },200);
       // Coin rain effect
       for(let i=0;i<8;i++){
@@ -4231,7 +4260,7 @@ function showFeatureTip(key, title, text) {
   if(localStorage.getItem('tip_'+key)) return;
   localStorage.setItem('tip_'+key, '1');
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,0.7);display:flex;align-items:flex-end;justify-content:center;padding:20px;';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,0.7);display:flex;align-items:flex-end;justify-content:center;padding:20px;;pointer-events:none';
   overlay.setAttribute('data-tip','1');
   overlay.innerHTML = '<div style="background:linear-gradient(135deg,#0a0020,#050a1a);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:20px;max-width:360px;width:100%;text-align:center;">'
     +'<div style="font-size:11px;font-family:Orbitron,monospace;color:#00f5ff;letter-spacing:2px;margin-bottom:8px;">NEW FEATURE</div>'
@@ -4239,7 +4268,7 @@ function showFeatureTip(key, title, text) {
     +'<div style="font-size:12px;color:#4a6080;margin-bottom:16px;">'+text+'</div>'
     +'<button onclick="this.parentElement.parentElement.remove()" style="width:100%;padding:12px;background:linear-gradient(135deg,#00f5ff,#7b2fff);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;">Got it! ✔</button>'
     +'</div>';
-  document.body.appendChild(overlay);
+  overlay.dataset.tempOverlay = '1'; document.body.appendChild(overlay);
 }
 
 function showPage(page){
@@ -4545,7 +4574,11 @@ function getPassiveRate() {
   // +1 per player level as base passive
   rate += g.level;
   // Clan bonus
-  return Math.floor(rate * getClanBonus() * getArtifactBonus().passive);
+  const artMult = (typeof g !== 'undefined' && g) ? getArtifactBonus().passive : 1;
+  // Apply daily event multiplier to passive income
+  const dailyPassiveMult = (activeDailyEvent && (activeDailyEvent.id === 'solar' || activeDailyEvent.id === 'darkzone'))
+    ? getDailyEventMultiplier() : 1;
+  return Math.floor(rate * getClanBonus() * artMult * dailyPassiveMult);
 }
 
 function renderBoostCards() {
@@ -4638,9 +4671,11 @@ function updatePassive() {
   const rate = getPassiveRate();
 
   // Update all rate displays
+  const eventSuffix = (activeDailyEvent && (activeDailyEvent.id==='solar'||activeDailyEvent.id==='darkzone'))
+    ? ' ⚡x'+getDailyEventMultiplier() : '';
   ['passiveRate','passiveRate2','passiveRate3'].forEach(id => {
     const el = document.getElementById(id);
-    if(el) el.textContent = '+' + rate + ' XSPC/hr';
+    if(el) el.textContent = '+' + rate + ' XSPC/hr' + eventSuffix;
   });
 
   const now = Date.now();
@@ -6398,7 +6433,7 @@ function showOnboarding() {
   if(g.onboardingDone) return;
   onboardStep = 0;
   renderOnboardStep();
-  document.getElementById('onboardingOverlay').classList.add('show');
+  const onEl = document.getElementById('onboardingOverlay'); onEl.style.pointerEvents='auto'; onEl.classList.add('show');
 }
 
 function renderOnboardStep() {
@@ -6433,7 +6468,7 @@ function closeOnboarding() {
   g.onboardingDone = true;
   localStorage.setItem('xspc_onboarding_done', '1');
   saveGame();
-  document.getElementById('onboardingOverlay').classList.remove('show');
+  const onEl2 = document.getElementById('onboardingOverlay'); onEl2.style.pointerEvents='none'; onEl2.classList.remove('show');
   // Give welcome bonus
   g.coins += 1000;
   g.keys = (g.keys||0) + 1;
@@ -6837,8 +6872,8 @@ function buyArtifact(id) {
   showToast('🔮 '+art.name+' unlocked! '+art.desc);
   // Screen flash effect
   const flash = document.createElement('div');
-  flash.style.cssText = 'position:fixed;inset:0;background:'+RARITY_COLORS[art.rarity]+';opacity:0.15;z-index:9998;pointer-events:none;transition:opacity 0.5s;';
-  document.body.appendChild(flash);
+  flash.style.cssText = 'position:fixed;inset:0;background:;pointer-events:none'+RARITY_COLORS[art.rarity]+';opacity:0.15;z-index:9998;pointer-events:none;transition:opacity 0.5s;';
+  flash.dataset.tempOverlay = '1'; document.body.appendChild(flash);
   setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),500); },100);
   updateUI(); updateKeysUI(); saveGame(); renderArtifacts(); checkAchievements();
 }
@@ -6846,4 +6881,4 @@ function buyArtifact(id) {
 
 </script>
 </body>
-</html>
+</html
