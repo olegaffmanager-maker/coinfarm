@@ -487,6 +487,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 /* FLOAT COIN */
 .float-coin{position:fixed;font-size:18px;font-weight:700;pointer-events:none;z-index:1000;will-change:transform,opacity;animation:floatUp 0.8s ease-out forwards;display:none;}
+.tap-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;border:2px solid #FFD700;pointer-events:none;display:none;will-change:transform,opacity;}
+@keyframes tapRingExpand{0%{transform:translate(-50%,-50%) scale(0.5);opacity:0.8}100%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-60px)}}100%{opacity:0;transform:translateY(-110px) scale(1.4)}}
 
 /* BOTTOM MENU */
@@ -3292,11 +3294,36 @@ function getAudioCtx() {
   return audioCtx;
 }
 
-// Sound: tap звук полностью отключён (слишком тяжёлый на мобильном)
-// Остальные звуки через setTimeout чтобы не блокировать тап
+// Sound system — tap через предсозданный буфер, остальные асинхронно
+let _tapBuffer = null;
+function _initTapSound() {
+  const ctx = getAudioCtx();
+  if(!ctx || _tapBuffer) return;
+  try {
+    _tapBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+    const data = _tapBuffer.getChannelData(0);
+    for(let i = 0; i < data.length; i++) {
+      data[i] = Math.sin(2*Math.PI*800*(i/ctx.sampleRate)) * Math.pow(1 - i/data.length, 2) * 0.3;
+    }
+  } catch(e) {}
+}
+
 function playSound(type) {
   if(g.soundMuted) return;
-  if(type === 'tap') return; // tap звук убран — не блокируем UI
+  if(type === 'tap') {
+    // Лёгкий tap через предсозданный буфер
+    const ctx = getAudioCtx();
+    if(!ctx) return;
+    if(!_tapBuffer) _initTapSound();
+    if(!_tapBuffer) return;
+    try {
+      const src = ctx.createBufferSource();
+      src.buffer = _tapBuffer;
+      src.connect(ctx.destination);
+      src.start();
+    } catch(e) {}
+    return;
+  }
   // Остальные звуки асинхронно
   setTimeout(() => {
     const ctx = getAudioCtx();
@@ -3600,7 +3627,16 @@ function handleClick(e){
   // Lucky / crit (редко)
   const rnd=Math.random();
   if(rnd<0.05){ reward+=50; }
-  else if(rnd<0.05+(g.critLevel||0)*0.05){ reward*=3; }
+  else if(rnd<0.05+(g.critLevel||0)*0.05){
+    reward*=3;
+    // Красная вспышка на крите
+    setTimeout(()=>{
+      const f=document.createElement('div');
+      f.style.cssText='position:fixed;inset:0;background:#ff3366;opacity:0.15;pointer-events:none;z-index:999;transition:opacity 0.3s;';
+      document.body.appendChild(f);
+      setTimeout(()=>{f.style.opacity='0';setTimeout(()=>f.remove(),300);},50);
+    },0);
+  }
 
   // Обновляем данные
   g.coins+=reward;
@@ -3610,16 +3646,34 @@ function handleClick(e){
   const unlimitedEnergy=g.vip&&g.vip.energyUntil>now;
   g.energy=Math.max(0,g.energy-(unlimitedEnergy?0:1));
 
-  // Float текст — только это при каждом тапе
+  // Float текст
   const color=g.combo>=10?'#ff3366':g.combo>=5?'#ff9500':'#FFD700';
   const txt=g.combo>=3?'+'+reward+' 🔥×'+g.combo:'+'+reward;
   showFloat(txt,e.clientX,e.clientY,color);
 
-  // Combo display — прямой DOM без classList
+  // Кольцо расширяется от центра планеты — CSS анимация (GPU)
+  const orbit = document.getElementById('coinOrbit');
+  if(orbit) {
+    const ring = _ringPool.pop() || (() => { const r=document.createElement('div'); r.className='tap-ring'; orbit.appendChild(r); return r; })();
+    ring.style.borderColor = color;
+    ring.style.display = 'block';
+    ring.style.animation = 'none';
+    ring.offsetWidth; // force reflow once
+    ring.style.animation = 'tapRingExpand 0.4s ease-out forwards';
+    setTimeout(() => { ring.style.display='none'; _ringPool.push(ring); }, 400);
+  }
+
+  // Combo display
   if(!_comboDisplayEl) _comboDisplayEl=document.getElementById('comboDisplay');
   if(_comboDisplayEl){
-    if(g.combo>=3){ _comboDisplayEl.textContent='🔥 COMBO ×'+g.combo; _comboDisplayEl.style.color=color; }
-    else _comboDisplayEl.textContent='';
+    if(g.combo>=3){
+      _comboDisplayEl.textContent='🔥 COMBO ×'+g.combo;
+      _comboDisplayEl.style.color=color;
+      _comboDisplayEl.style.transform='scale(1.2)';
+      setTimeout(()=>{ if(_comboDisplayEl) _comboDisplayEl.style.transform='scale(1)'; },150);
+    } else {
+      _comboDisplayEl.textContent='';
+    }
   }
 
   // Обновляем только монеты и энергию (не весь UI)
@@ -3634,6 +3688,9 @@ function handleClick(e){
     else _energyFillEl.style.background='';
   }
 
+
+  // Лёгкая вибрация
+  if(navigator.vibrate && g.clicks%3===0) navigator.vibrate(8);
 
   // Тяжёлые операции — через requestAnimationFrame или с throttle
   if(g.clicks%5===0) {
@@ -3715,6 +3772,8 @@ function spawnShockwave(){
 }
 
 // Float element pool — максимально лёгкий
+
+const _ringPool = [];
 const _floatPool = [];
 function showFloat(text,x,y,color){
   let el = _floatPool.pop();
