@@ -412,6 +412,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 }
 @keyframes sunPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.3)}}
 @keyframes sunRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes arrowPulse{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(3px)}}
 @keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 .planet-andromeda{background:radial-gradient(circle at 35% 35%,#c8e8ff,#4a90d9,#1a3a6a);box-shadow:0 0 60px rgba(100,180,255,0.8),0 0 120px rgba(100,180,255,0.4);}
@@ -547,7 +548,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 .wheel-container{display:flex;flex-direction:column;align-items:center;padding:10px 0;}
 .wheel-wrap{position:relative;width:260px;height:260px;margin:0 auto 16px;}
 .wheel-canvas{border-radius:50%;box-shadow:0 0 40px rgba(0,245,255,0.3);}
-.wheel-arrow{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:28px;filter:drop-shadow(0 0 8px var(--accent));}
+.wheel-arrow{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:28px;color:#FFD700;z-index:10;text-shadow:0 0 12px rgba(255,215,0,0.9),0 2px 4px rgba(0,0,0,0.8);filter:drop-shadow(0 0 6px #FFD700);animation:arrowPulse 1s ease-in-out infinite;}
 .wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:var(--bg);border:3px solid var(--accent);box-shadow:0 0 15px var(--accent);}
 .wheel-info{font-family:'Orbitron',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:14px;text-align:center;}
 .spin-cost{color:var(--gold);}
@@ -3593,7 +3594,8 @@ function handleClick(e){
   g.hitCount++;
 
   const dailyMult = (activeDailyEvent && activeDailyEvent.id==='meteor') ? getDailyEventMultiplier() : 1;
-  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier()*dailyMult);
+  const artBonus = getArtifactBonus();
+  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier()*dailyMult*artBonus.tap);
   checkRareDrop();
   if(Math.random() < 0.005) checkRarePlanetDrop();
   const comboMult = 1 + (g.comboMultLevel||0) * 2;
@@ -3930,6 +3932,8 @@ function spinWheel(){
   if(g.lastSpinDate===today){showToast("Come back tomorrow!");return;}
   if(wheelSpinning)return;
   wheelSpinning=true;document.getElementById('spinBtn').disabled=true;
+  const arrowEl = document.querySelector('.wheel-arrow');
+  if(arrowEl) arrowEl.style.animation = 'none';
   const freshPrizes = getWheelPrizes();
   const winIdx=Math.floor(Math.random()*freshPrizes.length);
   const sa=(2*Math.PI)/freshPrizes.length;
@@ -3943,6 +3947,7 @@ function spinWheel(){
     if(progress<1){requestAnimationFrame(animate);}
     else{
       wheelSpinning=false;g.lastSpinDate=today;g.totalSpins++;g.todaySpins++;
+      if(arrowEl) { arrowEl.style.animation = ''; arrowEl.style.color = '#00ff88'; arrowEl.style.transform = 'translateX(-50%) scale(1.3)'; setTimeout(()=>{ if(arrowEl) { arrowEl.style.color='#FFD700'; arrowEl.style.transform=''; } }, 600); }
       const prize=freshPrizes[winIdx];
       if(prize.type==='coins'){
         g.coins+=prize.value;
@@ -4540,7 +4545,7 @@ function getPassiveRate() {
   // +1 per player level as base passive
   rate += g.level;
   // Clan bonus
-  return Math.floor(rate * getClanBonus());
+  return Math.floor(rate * getClanBonus() * getArtifactBonus().passive);
 }
 
 function renderBoostCards() {
@@ -4693,6 +4698,7 @@ const QUESTS = [
   {id:'q_earn1k',   name:'Earn 1,000 XSPC',         field:'totalEarned',goal:1000,   reward:300,    rewardType:'energy',icon:'🪐'},
   {id:'q_earn10k',  name:'Earn 10,000 XSPC',        field:'totalEarned',goal:10000,  reward:1000,   rewardType:'energy',icon:'🪐'},
   {id:'q_earn100k', name:'Earn 100,000 XSPC',       field:'totalEarned',goal:100000, reward:3000,   rewardType:'energy',icon:'🪐'},
+  {id:'q_earn500k', name:'Earn 500,000 XSPC',        field:'totalEarned',goal:500000, reward:5000,   rewardType:'key',   icon:'🌟'},
   {id:'q_earn1m',   name:'Earn 1,000,000 XSPC',     field:'totalEarned',goal:1000000,reward:10000,  rewardType:'key',   icon:'🌟'},
   {id:'q_earn10m',  name:'Earn 10,000,000 XSPC',    field:'totalEarned',goal:10000000,reward:50000, rewardType:'key',   icon:'🌟'},
   // Level quests
@@ -4987,15 +4993,28 @@ function claimCombo() {
     renderComboGrid(getDailyComboCards(), false);
     if(left <= 0) {
       g.lastComboDate = today; // block further attempts
+      // Show correct answers as hint
+      const answers = getDailyComboCards();
+      const cardNames = answers.map(i => BOOST_CARDS[i]?.name || 'Card '+(i+1)).join(', ');
       saveGame();
       renderCombo();
-      showToast("No attempts left! Come back tomorrow 😢");
+      showToast('❌ No attempts left! Correct: '+cardNames+'. Come back tomorrow!');
+      // Briefly highlight correct cards
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.combo-card');
+        answers.forEach(i => {
+          if(cards[i]) {
+            cards[i].style.border = '2px solid #00ff88';
+            cards[i].style.boxShadow = '0 0 12px rgba(0,255,136,0.5)';
+          }
+        });
+      }, 300);
     } else {
       saveGame();
       renderComboClaimBtn();
       const statusEl = document.getElementById('comboStatus');
       if(statusEl) { statusEl.textContent = '0/3'; statusEl.style.color = '#aaa'; }
-      showToast(`❌ Wrong! ${left} attempt${left===1?'':'s'} left`);
+      showToast('❌ Wrong! '+left+' attempt'+(left===1?'':'s')+' left. Try again!');
     }
     return;
   }
@@ -6698,6 +6717,41 @@ initUser();
 setTimeout(showStreakOverlay, 1500);
 setTimeout(checkExpedition, 3000);
 // ═══ ARTIFACTS ═══
+
+// ═══ ARTIFACT BONUSES ═══
+function getArtifactBonus() {
+  const owned = g.artifacts || {};
+  let tapBonus = 1.0;
+  let passiveBonus = 1.0;
+  let allBonus = 1.0;
+
+  // Regular artifacts
+  if(owned['space_crystal'])  tapBonus     += 0.05;
+  if(owned['moon_dust'])      passiveBonus += 0.05;
+  if(owned['solar_fragment']) passiveBonus += 0.10;
+  if(owned['alien_core'])     tapBonus     += 0.10;
+  if(owned['dark_matter'])    passiveBonus += 0.20;
+  if(owned['nebula_core'])    { tapBonus += 0.075; passiveBonus += 0.075; }
+  if(owned['ancient_relic'])  tapBonus     += 0.25;
+  if(owned['void_crystal'])   passiveBonus += 0.25;
+  if(owned['star_heart'])     passiveBonus += 0.50;
+  if(owned['quantum_shard'])  allBonus     += 0.30;
+  if(owned['cosmos_gem'])     passiveBonus += 1.00;
+  if(owned['solar_crown'])    allBonus     += 1.00;
+
+  // Rare artifacts from drops
+  if(owned['ancient_reactor']) passiveBonus += 2.00;
+  if(owned['alien_crystal'])   tapBonus     += 1.50;
+  if(owned['nibiru_core'])     allBonus     += 3.00;
+  if(owned['void_shard'])      passiveBonus += 5.00;
+
+  return {
+    tap:     tapBonus * allBonus,
+    passive: passiveBonus * allBonus,
+    all:     allBonus
+  };
+}
+
 const ARTIFACTS_LIST = [
   {id:'space_crystal',  name:'Space Crystal',   icon:'💎', rarity:'Common',    desc:'+5% tap power',        unlockLevel:5,  keysCost:3},
   {id:'moon_dust',      name:'Moon Dust',        icon:'🌙', rarity:'Common',    desc:'+5% energy regen',     unlockLevel:8,  keysCost:5},
