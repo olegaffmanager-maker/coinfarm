@@ -4091,8 +4091,12 @@ async function loadFriends(userId){
     clearTimeout(timer);
     const d = await r.json();
     const refs = d.referrals || d.total || 0;
-    g.friends = Math.max(refs, g.friends || 0); // keep highest known count
+    // Never decrease friends count (network glitches can return 0)
+    if(refs > 0) g.friends = Math.max(refs, g.friends || 0);
+    else g.friends = g.friends || 0; // keep cached value if API returns 0
     g.friendsData = d.friends || d.list || [];
+    // Cache friends count in localStorage as backup
+    if(refs > 0) localStorage.setItem('xspc_friends_cache', refs);
 
     // Update all counters
     ['friendCount','friendCount2','friendCountLabel'].forEach(id => {
@@ -4658,8 +4662,11 @@ function collectPassive() {
   const amount = Math.floor(passiveAccumulated);
   if(amount < 1) return;
   g.coins += amount;
+  g.totalEarned = (g.totalEarned || 0) + amount; // fix: update totalEarned
   passiveAccumulated = 0;
-  showFloat(`+${amount} XSPC`, window.innerWidth/2, 300, '#00ff88');
+  playSound('coin');
+  showFloat('+'+amount.toLocaleString()+' XSPC ⏰', window.innerWidth/2, 300, '#00ff88');
+  if(navigator.vibrate) navigator.vibrate([20, 10, 20]);
   updateUI();
   updatePassive();
   updateBoostsUI();
@@ -5068,8 +5075,9 @@ function renderStats() {
   const lastClaim = g.lastStreakDate || '';
   let streakDay = g.streakDay || 1;
   if(lastClaim !== today && lastClaim !== yesterday && lastClaim !== '') streakDay = 1;
-  const currentDay = Math.min(streakDay - 1, 7);
-  document.getElementById('statStreak').textContent = `${currentDay}/7`;
+  // Show actual streak day (days since first login)
+  const realStreak = g.streak || Math.max(0, streakDay - 1);
+  document.getElementById('statStreak').textContent = realStreak + (realStreak === 1 ? ' day' : ' days');
 
   // Records
   document.getElementById('statMaxCombo').textContent = g.maxCombo || 0;
@@ -6606,6 +6614,12 @@ loadGame();
 
 // Force planet recalculation — reset saved name so it always updates visually
 g.currentPlanetName = '';
+// Restore friends count from localStorage cache
+const cachedFriends = parseInt(localStorage.getItem('xspc_friends_cache') || '0');
+if(cachedFriends > 0 && (!g.friends || g.friends < cachedFriends)) {
+  g.friends = cachedFriends;
+}
+
 // Restore sound setting from localStorage
 if(localStorage.getItem('xspc_sound_muted') === '1') {
   g.soundMuted = true;
