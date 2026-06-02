@@ -3068,6 +3068,7 @@ function loadGame(){
 }
 function saveGame(){
   g.lastSaveTime = Date.now();
+  g.lastSaveTime = Date.now();
   localStorage.setItem('xspacecoin_v2',JSON.stringify(g));
   apiSave();
 }
@@ -3527,11 +3528,14 @@ async function loadFriends(userId){
   if(listEl) listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;font-family:Orbitron,monospace;font-size:11px;">LOADING...</div>';
 
   try{
-    const r = await fetch(`${API_URL}/user/${userId}/friends`);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6000);
+    const r = await fetch(`${API_URL}/user/${userId}/friends`, {signal: controller.signal});
+    clearTimeout(timer);
     const d = await r.json();
-    const refs = d.referrals || 0;
-    g.friends = refs;
-    g.friendsData = d.friends || [];
+    const refs = d.referrals || d.total || 0;
+    g.friends = Math.max(refs, g.friends || 0); // keep highest known count
+    g.friendsData = d.friends || d.list || [];
 
     // Update all counters
     ['friendCount','friendCount2','friendCountLabel'].forEach(id => {
@@ -4007,6 +4011,26 @@ function buyCard(id) {
 let passiveAccumulated = 0;
 let lastPassiveTime = Date.now();
 
+// Restore offline passive income on load
+function initPassiveIncome() {
+  const savedTime = g.lastSaveTime || Date.now();
+  const offlineHrs = Math.min((Date.now() - savedTime) / 3600000, 8); // max 8 hours offline
+  if(offlineHrs > 0.1) {
+    const rate = getPassiveRate();
+    const offlineEarned = Math.floor(rate * offlineHrs);
+    if(offlineEarned > 0) {
+      passiveAccumulated = offlineEarned;
+      const hrs = Math.floor(offlineHrs);
+      const mins = Math.floor((offlineHrs % 1) * 60);
+      const timeStr = hrs > 0 ? hrs+'h '+mins+'m' : mins+'m';
+      setTimeout(() => {
+        showToast('\u23f0 Welcome back! +'+offlineEarned.toLocaleString()+' XSPC earned offline ('+timeStr+')!');
+        showFloat('+'+offlineEarned.toLocaleString()+' XSPC \u23f0', window.innerWidth/2, 200, '#00ff88');
+      }, 3000);
+    }
+  }
+}
+
 function updatePassive() {
   const rate = getPassiveRate();
 
@@ -4052,6 +4076,8 @@ function collectPassive() {
 
 // Run passive every 10 seconds
 setInterval(updatePassive, 10000);
+// Also update UI every 30s visually
+setInterval(() => { const el=document.getElementById('passiveAccum'); if(el) el.textContent=Math.floor(passiveAccumulated).toLocaleString(); }, 30000);
 
 // ═══ MINI QUESTS ═══
 const QUESTS = [
@@ -4146,25 +4172,30 @@ function claimQuest() {
 // Generate deterministic daily combo based on date seed
 function getDailyComboSeed() {
   const d = new Date();
-  return d.getFullYear() * 10000 + (d.getMonth()+1) * 100 + d.getDate();
+  const dateNum = d.getFullYear() * 10000 + (d.getMonth()+1) * 100 + d.getDate();
+  // Combine date with userId so each player gets different combo
+  const userId = g.telegramId || 99999;
+  return dateNum * 1000 + (userId % 1000);
 }
 
 function seededRandom(seed) {
-  let x = Math.sin(seed) * 10000;
-  return x - Math.floor(x);
+  // Better LCG random for more variety
+  const a = 1664525, c = 1013904223, m = 4294967296;
+  return ((a * seed + c) % m) / m;
 }
 
 function getDailyComboCards() {
   const seed = getDailyComboSeed();
   const allCards = BOOST_CARDS.slice();
-  // Pick 3 answer cards deterministically
   const answers = [];
   let s = seed;
+  // Use multiple rounds to avoid patterns
+  for(let i = 0; i < 20; i++) s = Math.floor(seededRandom(s) * 99991 + 7);
   while(answers.length < 3) {
-    s = Math.floor(seededRandom(s) * allCards.length);
+    s = Math.floor(seededRandom(s) * allCards.length * 999) % allCards.length;
     if(!answers.includes(s)) answers.push(s);
   }
-  return answers; // indices of correct cards
+  return answers;
 }
 
 function getDailyComboReward() {
@@ -4403,13 +4434,19 @@ function renderStats() {
 
 // ═══ DAILY STREAK ═══
 const STREAK_REWARDS = [
-  {day:1, icon:'🪐', label:'1,000 XSPC',    type:'coins',  value:1000},
-  {day:2, icon:'🪐', label:'2,500 XSPC',    type:'coins',  value:2500},
-  {day:3, icon:'⚡', label:'Full Energy',    type:'energy', value:9999},
-  {day:4, icon:'🪐', label:'5,000 XSPC',    type:'coins',  value:5000},
-  {day:5, icon:'🔑', label:'1 XKEY',         type:'key',    value:1},
-  {day:6, icon:'🪐', label:'10,000 XSPC',   type:'coins',  value:10000},
-  {day:7, icon:'🔑', label:'3 XKEY + 25K',  type:'both',   value:3, value2:25000},
+  {day:1,  icon:'🪐', label:'5,000 XSPC',          type:'coins', value:5000},
+  {day:2,  icon:'🪐', label:'15,000 XSPC',         type:'coins', value:15000},
+  {day:3,  icon:'⚡',     label:'Full Energy + 20K',   type:'both',  value:20000, value2:9999},
+  {day:4,  icon:'🔑', label:'1 XKEY',              type:'key',   value:1},
+  {day:5,  icon:'🪐', label:'50,000 XSPC',         type:'coins', value:50000},
+  {day:6,  icon:'🔑', label:'2 XKEY + 30K',        type:'both',  value:2, value2:30000},
+  {day:7,  icon:'👑', label:'5 XKEY + 100K XSPC',  type:'both',  value:5, value2:100000},
+  {day:8,  icon:'🪐', label:'200,000 XSPC',        type:'coins', value:200000},
+  {day:9,  icon:'🔑', label:'3 XKEY',              type:'key',   value:3},
+  {day:10, icon:'🔥', label:'10 XKEY + 500K XSPC', type:'both',  value:10, value2:500000},
+  {day:14, icon:'🌌', label:'1M XSPC + 15 XKEY',   type:'both',  value:15, value2:1000000},
+  {day:21, icon:'👑', label:'3M XSPC + 30 XKEY',   type:'both',  value:30, value2:3000000},
+  {day:30, icon:'🥇', label:'10M XSPC + 50 XKEY',  type:'both',  value:50, value2:10000000},
 ];
 
 function renderStreakGrid(currentDay) {
@@ -4417,7 +4454,7 @@ function renderStreakGrid(currentDay) {
   if(!grid) return;
   grid.innerHTML = STREAK_REWARDS.map(r => {
     const done = currentDay > r.day;
-    const isToday = currentDay === r.day;
+    const isToday = currentDay >= r.day && (STREAK_REWARDS[STREAK_REWARDS.indexOf(r)+1]?.day > currentDay || STREAK_REWARDS.indexOf(r) === STREAK_REWARDS.length-1);
     return `<div style="
       border-radius:10px;padding:6px 4px;text-align:center;
       background:${done?'rgba(0,255,136,0.1)':isToday?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.04)'};
@@ -4468,27 +4505,42 @@ function claimStreak() {
   const lastClaim = g.lastStreakDate || '';
 
   let currentDay = g.streakDay || 1;
-  if(lastClaim !== yesterday && lastClaim !== '') currentDay = 1;
-  if(currentDay > 7) currentDay = 1;
+  if(lastClaim !== yesterday && lastClaim !== '') { currentDay = 1; g.streak = 1; }
+  if(currentDay > 30) currentDay = 30;
 
-  const reward = STREAK_REWARDS[currentDay - 1];
+  // Find best reward for current day
+  let reward = STREAK_REWARDS[0];
+  for(const r of STREAK_REWARDS) { if(r.day <= currentDay) reward = r; else break; }
 
   // Apply reward
-  if(reward.type === 'coins') { g.coins += reward.value; }
-  else if(reward.type === 'energy') { g.energy = g.maxEnergy; }
-  else if(reward.type === 'key') { g.keys = (g.keys||0) + reward.value; }
-  else if(reward.type === 'both') { g.keys = (g.keys||0) + reward.value; g.coins += reward.value2; }
+  if(reward.type === 'coins') {
+    g.coins += reward.value; g.totalEarned = (g.totalEarned||0) + reward.value;
+  } else if(reward.type === 'energy') {
+    g.energy = g.maxEnergy;
+  } else if(reward.type === 'key') {
+    g.keys = (g.keys||0) + reward.value; g.totalKeys = (g.totalKeys||0) + reward.value; updateKeysUI();
+  } else if(reward.type === 'both') {
+    if(reward.value > 100) {
+      // value=coins, value2=energy
+      g.coins += reward.value; g.totalEarned = (g.totalEarned||0) + reward.value;
+      if(reward.value2 === 9999) g.energy = g.maxEnergy;
+    } else {
+      // value=keys, value2=coins
+      g.keys = (g.keys||0) + reward.value; g.totalKeys = (g.totalKeys||0) + reward.value; updateKeysUI();
+      g.coins += (reward.value2||0); g.totalEarned = (g.totalEarned||0) + (reward.value2||0);
+    }
+  }
 
   g.lastStreakDate = today;
-  g.streakDay = currentDay >= 7 ? 1 : currentDay + 1;
+  g.streakDay = currentDay + 1;
+  g.streak = (g.streak||0) + 1;
 
   const overlay = document.getElementById('streakOverlay');
   if(overlay) overlay.classList.remove('show');
 
-  showFloat(`🎁 Day ${currentDay} reward!`, window.innerWidth/2, 200, '#FFD700');
-  updateUI();
-  updateKeysUI();
-  saveGame();
+  showToast('🎁 Day '+currentDay+' reward: '+reward.label+'!');
+  showFloat('🎁 Day '+currentDay+'!', window.innerWidth/2, 200, '#FFD700');
+  updateUI(); updateKeysUI(); saveGame();
 }
 
 // ═══ KEYS SYSTEM ═══
@@ -5852,6 +5904,7 @@ loadGame();
 
 // Force planet recalculation — reset saved name so it always updates visually
 g.currentPlanetName = '';
+initPassiveIncome();
 
 // Init passive income from offline time
 (function(){
