@@ -485,7 +485,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-110px) scale(1.4)}}
 
 /* BOTTOM MENU */
-.back-btn{display:none;position:fixed;top:60px;left:12px;z-index:500;background:rgba(0,245,255,0.12);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:6px 14px;color:var(--accent);font-family:Orbitron,monospace;font-size:11px;cursor:pointer;backdrop-filter:blur(10px);}
+.back-btn{display:none;position:sticky;top:4px;left:0;z-index:200;background:rgba(2,5,16,0.9);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:5px 12px;color:var(--accent);font-family:Orbitron,monospace;font-size:11px;cursor:pointer;backdrop-filter:blur(10px);margin-bottom:8px;width:fit-content;}
 .back-btn.visible{display:flex;align-items:center;gap:6px;}
 .bottom-menu{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(2,5,16,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 20px;}
 .menu-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 10px;border-radius:12px;transition:all 0.2s;min-width:52px;}
@@ -620,6 +620,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <span class="c-num" id="headerCoins">0</span>
   </div>
   <div style="display:flex;align-items:center;gap:6px;">
+    <div id="soundBtn" onclick="toggleSound()" style="width:32px;height:32px;border-radius:50%;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;">🔊</div>
     <div style="width:32px;height:32px;border-radius:50%;background:rgba(0,136,204,0.15);border:1px solid rgba(0,136,204,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;" onclick="openTon()" title="TON Wallet" id="tonBtn">🌐</div>
     <div class="league-badge" id="leagueBadge">⚪ IRON</div>
   </div>
@@ -2552,6 +2553,7 @@ function attackBoss(type) {
     setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),800); },200);
 
     showToast('🏆 BOSS DEFEATED! +'+currentBoss.reward.toLocaleString()+' XSPC!');
+    playSound('win');
     showFloat('🏆 VICTORY!', window.innerWidth/2, 200, '#FFD700');
     currentBoss = null;
     updateUI(); saveGame();
@@ -2663,6 +2665,16 @@ let expeditionAvailable = false;
 let currentExpedition = null;
 
 function forceExpedition() {
+  const now = Date.now();
+  const lastExp = g.lastExpedition || 0;
+  const diff = 4 * 3600000 - (now - lastExp);
+  if(diff > 0) {
+    const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+    const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+    showToast('⏰ Expedition on cooldown: '+h+':'+m+':'+s);
+    return;
+  }
   currentExpedition = EXPEDITION_EVENTS[Math.floor(Math.random() * EXPEDITION_EVENTS.length)];
   showExpeditionAlert();
 }
@@ -2675,15 +2687,18 @@ function updateExpeditionStatus() {
   const interval = 4 * 3600000;
   const diff = interval - (now - lastExp);
   if(diff <= 0) {
-    el.textContent = '🟢 Ready to explore!';
+    el.textContent = '🟢 Ready! Tap to explore';
     el.style.color = '#00ff88';
   } else {
-    const h = Math.floor(diff/3600000);
-    const m = Math.floor((diff%3600000)/60000);
-    el.textContent = '⏰ Next in '+h+'h '+m+'m';
-    el.style.color = '#4a6080';
+    const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+    const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+    el.textContent = '⏰ Cooldown: '+h+':'+m+':'+s;
+    el.style.color = '#ff9500';
   }
 }
+// Update expedition timer every second
+setInterval(updateExpeditionStatus, 1000);
 
 function checkExpedition() {
   const now = Date.now();
@@ -2942,6 +2957,79 @@ function updateStakingUI() {
   if(ub) ub.style.display = staked > 0 ? 'block' : 'none';
 }
 
+
+// ═══ SOUND SYSTEM ═══
+let audioCtx = null;
+function getAudioCtx() {
+  if(!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e) { return null; }
+  }
+  return audioCtx;
+}
+
+function playSound(type) {
+  if(g.soundMuted) return;
+  const ctx = getAudioCtx();
+  if(!ctx) return;
+  try {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if(type === 'tap') {
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.05);
+    } else if(type === 'levelup') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523, ctx.currentTime);
+      osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+      osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    } else if(type === 'win') {
+      osc.type = 'sine';
+      [523,659,784,1047].forEach((f, i) => {
+        osc.frequency.setValueAtTime(f, ctx.currentTime + i*0.1);
+      });
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.5);
+    } else if(type === 'coin') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1200, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.1);
+    } else if(type === 'error') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.15);
+    }
+  } catch(e) {}
+}
+
+// Sound mute toggle
+function toggleSound() {
+  g.soundMuted = !g.soundMuted;
+  const btn = document.getElementById('soundBtn');
+  if(btn) btn.textContent = g.soundMuted ? '🔇' : '🔊';
+  saveGame();
+}
+
 const ACHIEVEMENTS=[
   // Taps
   {id:"first",   name:"🎯 First Tap",       desc:"Tap for the first time",      req:()=>g.clicks>=1,           reward:10},
@@ -3075,7 +3163,8 @@ function saveGame(){
 
 // ═══ CLICK HANDLER ═══
 function handleClick(e){
-  if(g.energy<=0){showFloat("❌ No energy!",e.clientX,e.clientY,"#ff3366");return;}
+  if(g.energy<=0){playSound('error');showFloat("❌ No energy!",e.clientX,e.clientY,"#ff3366");return;}
+  playSound('tap');
   const now=Date.now();
   g.combo=(now-g.lastClick<1500)?g.combo+1:1;
   g.lastClick=now;
@@ -3111,6 +3200,8 @@ function handleClick(e){
   const unlimitedEnergy = g.vip && g.vip.energyUntil && g.vip.energyUntil > Date.now();
   const saveChance = (g.energySaveLevel||0) * 0.10;
   const energyCost = unlimitedEnergy ? 0 : (Math.random() < saveChance ? 0 : 1);
+  // Vibration on mobile
+  if(navigator.vibrate) navigator.vibrate(g.combo >= 10 ? [30,10,30] : 15);
   g.coins+=reward; g.clicks++;
   g.totalEarned = (g.totalEarned||0) + reward;
   if(g.clicks===1||g.lastFirstTapDate!==new Date().toDateString()) checkFirstTapBonus(); g.energy=Math.max(0,g.energy-energyCost);
@@ -3597,6 +3688,8 @@ function updateUI(){
       g.totalKeys = (g.totalKeys||0) + 1;
       updateKeysUI();
       showToast('🔑 Level '+realLv+'! +1 XKEY bonus!');
+    playSound('levelup');
+    if(navigator.vibrate) navigator.vibrate([50,30,50,30,100]);
     }
     // Boss block notification
     const curPlanet = getPlanetForLevel(realLv);
@@ -3644,6 +3737,23 @@ function goBack(){
   showPage(parent);
 }
 
+
+// ═══ FEATURE TOOLTIPS (show once) ═══
+function showFeatureTip(key, title, text) {
+  if(localStorage.getItem('tip_'+key)) return;
+  localStorage.setItem('tip_'+key, '1');
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,0.7);display:flex;align-items:flex-end;justify-content:center;padding:20px;';
+  overlay.setAttribute('data-tip','1');
+  overlay.innerHTML = '<div style="background:linear-gradient(135deg,#0a0020,#050a1a);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:20px;max-width:360px;width:100%;text-align:center;">'
+    +'<div style="font-size:11px;font-family:Orbitron,monospace;color:#00f5ff;letter-spacing:2px;margin-bottom:8px;">NEW FEATURE</div>'
+    +'<div style="font-size:16px;font-weight:700;margin-bottom:8px;">'+title+'</div>'
+    +'<div style="font-size:12px;color:#4a6080;margin-bottom:16px;">'+text+'</div>'
+    +'<button onclick="this.parentElement.parentElement.remove()" style="width:100%;padding:12px;background:linear-gradient(135deg,#00f5ff,#7b2fff);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;">Got it! ✔</button>'
+    +'</div>';
+  document.body.appendChild(overlay);
+}
+
 function showPage(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
@@ -3671,6 +3781,9 @@ function showPage(page){
   if(page==='rareplanets'){renderRarePlanets();const rc=document.getElementById('rarePlanetsCount');if(rc)rc.textContent=Object.keys(g.rarePlanets||{}).length+'/5 discovered';}
   if(page==='battle'){updateBattleHub();}
   if(page==='pvp'){renderAttackBots();updatePvpBattlesUI();}
+  if(page==='staking') showFeatureTip('staking','💰 Staking','Stake your XSPC tokens to earn daily passive rewards. More staked = more earned!');
+  if(page==='boss') showFeatureTip('boss','💀 Boss Battle','Attack the boss using tap attacks or power blasts. Defeat it to unlock the next planet!');
+  if(page==='cosmosmap') showFeatureTip('cosmos','🗺 Cosmos Map','Your journey through space. Fight 💀 bosses to continue. Tap planets to mine there!');
   if(page==='tournament'){
     const td=document.getElementById('tournamentRefs'); if(td) td.textContent=(g.friends||0);
     const tr=document.getElementById('tournamentRank'); if(tr) tr.textContent='#'+Math.max(1,Math.floor(Math.random()*50+1));
@@ -5611,35 +5724,15 @@ function spawnTapEffects(x, y, reward) {
 
 // ═══ ONBOARDING ═══
 const ONBOARDING_STEPS = [
-  {
-    emoji: '🪐',
-    title: 'Welcome to XSPACECOIN!',
-    subtitle: 'CONQUER THE GALAXY',
-    text: 'Mine planets, earn XSPC tokens and reach the Sun!',
-    btn: "Let's Go! 🚀"
-  },
-  {
-    emoji: '👆',
-    title: 'Tap to Mine',
-    subtitle: 'TAP MECHANICS',
-    text: 'Tap the planet to earn XSPC coins. Buy upgrades to tap faster and earn more!',
-    btn: 'Got it! ⚡'
-  },
-  {
-    emoji: '🌍→☀️',
-    title: 'Conquer 11 Planets',
-    subtitle: 'YOUR GOAL',
-    text: 'Start on Mercury and work your way to the Sun. Each planet gives unique bonuses!',
-    btn: 'Amazing! 🌌'
-  },
-  {
-    emoji: '💰',
-    title: 'XSPC Token Launch',
-    subtitle: 'Q4 2026',
-    text: 'XSPC launches on TON blockchain. Minimum 100,000 XSPC needed for withdrawal. Start mining now!',
-    btn: 'Start Mining! ⛏️'
-  },
+  {icon:'🪐', title:'Welcome to XSPACECOIN!', text:'Tap the planet to mine XSPC tokens. The faster you tap, the more you earn!', btn:'Start Mining!'},
+  {icon:'⛏️', title:'Upgrade Your Mining', text:'Go to UPGRADE to buy boost cards. More cards = more passive income every hour!', btn:'Got it!'},
+  {icon:'🔑', title:'XKEY System', text:'Collect XKEY keys to unlock rare artifacts. You get +1 XKEY every 5 levels and from Daily Combo!', btn:'Nice!'},
+  {icon:'💀', title:'Planet Bosses!', text:'Every few planets there is a BOSS. Go to Galaxy → Cosmos Map to find and fight them. Defeat bosses to unlock new worlds!', btn:'Fight!'},
+  {icon:'🛸', title:'Expeditions', text:'Every 4 hours a cosmic event appears on your screen. Tap it to choose your action and get rewards!', btn:'Explore!'},
+  {icon:'💰', title:'Staking System', text:'Go to Earn → Staking to stake your XSPC and earn daily rewards automatically!', btn:'Stake!'},
+  {icon:'🌌', title:'Conquer the Galaxy!', text:'200 levels, 20 planets, 5 galaxies await. From Mercury to the Omniverse — the journey begins!', btn:'Go! 🚀'},
 ];
+
 
 let onboardStep = 0;
 
