@@ -646,13 +646,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <!-- MINE PAGE -->
 
 <!-- EXPEDITION OVERLAY -->
-<div id="expeditionOverlay" style="display:none;pointer-events:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+<div id="expeditionOverlay" style="display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;padding:20px;-webkit-overflow-scrolling:touch;">
   <div style="background:linear-gradient(135deg,#0a0020,#050a1a);border:1px solid rgba(0,245,255,0.4);border-radius:24px;padding:24px;max-width:380px;width:100%;text-align:center;">
     <div style="font-size:56px;margin-bottom:10px;" id="expIcon">🛸</div>
     <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#00f5ff;margin-bottom:8px;" id="expTitle">Expedition!</div>
     <div style="font-size:13px;color:#4a6080;margin-bottom:20px;" id="expDesc">A mysterious event...</div>
     <div id="expButtons"></div>
-    <button onclick="skipExpedition()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:12px;cursor:pointer;margin-top:4px;">Skip for now</button>
+    <button onclick="skipExpedition()" style="width:100%;padding:14px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:14px;cursor:pointer;margin-top:8px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;">Skip for now</button>
   </div>
 </div>
 
@@ -2959,8 +2959,8 @@ let expeditionAvailable = false;
 let currentExpedition = null;
 
 function skipExpedition() {
-  // Skip without starting cooldown — expedition stays available for 30 min
-  document.getElementById('expeditionOverlay').style.display = 'none';
+  const expOv = document.getElementById('expeditionOverlay');
+  expOv.style.display = 'none';
   expeditionAvailable = false;
   currentExpedition = null;
   // Set lastExpedition to 3.5 hours ago so it respawns in 30 min
@@ -3024,9 +3024,10 @@ function showExpeditionAlert() {
   document.getElementById('expDesc').textContent = currentExpedition.desc;
   const btns = document.getElementById('expButtons');
   btns.innerHTML = currentExpedition.options.map((o,i) =>
-    '<button onclick="chooseExpedition('+i+')" style="width:100%;padding:12px;margin-bottom:8px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:12px;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;font-family:Rajdhani,sans-serif;">'+o.label+'</button>'
+    '<button onclick="chooseExpedition('+i+')" style="width:100%;padding:16px;margin-bottom:10px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:12px;color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;font-family:Rajdhani,sans-serif;touch-action:manipulation;-webkit-tap-highlight-color:transparent;">'+o.label+'</button>'
   ).join('');
   overlay.style.display = 'flex';
+  overlay.style.pointerEvents = 'auto';
 }
 
 function chooseExpedition(idx) {
