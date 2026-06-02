@@ -412,6 +412,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 }
 @keyframes sunPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.3)}}
 @keyframes sunRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.onboard-highlight{animation:onboardPulse 1s ease-in-out 3!important;border-radius:12px;}
+@keyframes onboardPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,245,255,0.4)}50%{box-shadow:0 0 0 8px rgba(0,245,255,0)}}
 @keyframes arrowPulse{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(3px)}}
 @keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
@@ -6403,13 +6405,40 @@ function spawnTapEffects(x, y, reward) {
 
 // ═══ ONBOARDING ═══
 const ONBOARDING_STEPS = [
-  {icon:'🪐', title:'Welcome to XSPACECOIN!', text:'Tap the planet to mine XSPC tokens. The faster you tap, the more you earn!', btn:'Start Mining!'},
-  {icon:'⛏️', title:'Upgrade Your Mining', text:'Go to UPGRADE to buy boost cards. More cards = more passive income every hour!', btn:'Got it!'},
-  {icon:'🔑', title:'XKEY System', text:'Collect XKEY keys to unlock rare artifacts. You get +1 XKEY every 5 levels and from Daily Combo!', btn:'Nice!'},
-  {icon:'💀', title:'Planet Bosses!', text:'Every few planets there is a BOSS. Go to Galaxy → Cosmos Map to find and fight them. Defeat bosses to unlock new worlds!', btn:'Fight!'},
-  {icon:'🛸', title:'Expeditions', text:'Every 4 hours a cosmic event appears on your screen. Tap it to choose your action and get rewards!', btn:'Explore!'},
-  {icon:'💰', title:'Staking System', text:'Go to Earn → Staking to stake your XSPC and earn daily rewards automatically!', btn:'Stake!'},
-  {icon:'🌌', title:'Conquer the Galaxy!', text:'200 levels, 20 planets, 5 galaxies await. From Mercury to the Omniverse — the journey begins!', btn:'Go! 🚀'},
+  {
+    icon:'🪐',
+    title:'Welcome to XSPACECOIN!',
+    text:'Tap the planet below to mine XSPC tokens. The more you tap — the more you earn!',
+    btn:'⛏️ Tap the planet!',
+    action: () => { closeOnboarding(); document.getElementById('coinBtn')?.click(); }
+  },
+  {
+    icon:'⚡',
+    title:'Watch your Energy!',
+    text:'Each tap uses 1 energy. When it runs out — wait for it to recharge, or buy Energy cards in UPGRADE.',
+    btn:'Understood!',
+    highlight: 'energyBar'
+  },
+  {
+    icon:'💰',
+    title:'Passive Income',
+    text:'Buy Boost Cards in UPGRADE → they earn XSPC automatically every hour even when you’re offline!',
+    btn:'Show me →',
+    action: () => { closeOnboarding(); showPage('upgrade'); }
+  },
+  {
+    icon:'🔑',
+    title:'Earn XKEY Keys',
+    text:'Keys unlock rare artifacts with powerful bonuses. Get them from Daily Combo and leveling up!',
+    btn:'Got it!',
+    highlight: 'keysDisplay'
+  },
+  {
+    icon:'🌌',
+    title:'Explore the Galaxy!',
+    text:'200 levels, 20 planets, bosses, expeditions every 4 hours, PvP battles and much more await you!',
+    btn:'🚀 Start playing!'
+  },
 ];
 
 
@@ -6428,6 +6457,12 @@ function renderOnboardStep() {
   const step = ONBOARDING_STEPS[onboardStep];
   const content = document.getElementById('onboardingContent');
   if(!content) return;
+  // Highlight element if specified
+  document.querySelectorAll('.onboard-highlight').forEach(el => el.classList.remove('onboard-highlight'));
+  if(step.highlight) {
+    const el = document.getElementById(step.highlight);
+    if(el) el.classList.add('onboard-highlight');
+  }
   const isLast = onboardStep === ONBOARDING_STEPS.length - 1;
 
   content.innerHTML = `
@@ -6444,6 +6479,7 @@ function renderOnboardStep() {
 }
 
 function nextOnboardStep() {
+  const currentStep = ONBOARDING_STEPS[onboardStep];
   onboardStep++;
   if(onboardStep >= ONBOARDING_STEPS.length) {
     closeOnboarding();
@@ -6666,12 +6702,35 @@ async function initUser(){
 }
 
 // ═══ TIMERS ═══
-setInterval(()=>{if(g.energy<g.maxEnergy){
-    const wasFull = g.energy >= g.maxEnergy;
-    g.energy=Math.min(g.maxEnergy,g.energy+g.rechargeRate);
-    if(!wasFull && g.energy >= g.maxEnergy) showToast('⚡ Energy full! Tap now!');
-    updateUI();
-  }},5000);
+setInterval(()=>{
+  if(g.energy<g.maxEnergy){
+    const wasEmpty = g.energy <= 0;
+    // Faster regen: base 1/3sec, +bonus from recharge upgrades
+    g.energy=Math.min(g.maxEnergy, g.energy + (g.rechargeRate||1));
+    if(wasEmpty && g.energy > 0) showToast('⚡ Energy restored! Keep mining!');
+    if(g.energy >= g.maxEnergy) {
+      showToast('⚡ Energy FULL! Tap now!');
+      // Trigger Telegram push via API ping
+      if(g.telegramId) {
+        fetch(API_URL+'/notify/energy', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({user_id:g.telegramId})
+        }).catch(()=>{});
+      }
+    }
+    // Update only energy bar for performance
+    if(_energyFillEl) {
+      const pct=Math.round(g.energy/g.maxEnergy*100);
+      _energyFillEl.style.width=pct+'%';
+      if(pct<=20) _energyFillEl.style.background='linear-gradient(90deg,#ff3366,#ff6600)';
+      else if(pct<=50) _energyFillEl.style.background='linear-gradient(90deg,#ff9500,#FFD700)';
+      else _energyFillEl.style.background='';
+    }
+    const energyText = document.getElementById('energyText');
+    if(energyText) energyText.textContent=Math.floor(g.energy)+'/'+g.maxEnergy;
+  }
+},3000); // every 3 seconds instead of 5
 setInterval(()=>{checkLevelUp();updatePlanet(g.level,false);saveGame();},5000);
 // Sync with server every 30 seconds
 setInterval(()=>{ if(g.telegramId) apiSave(); }, 30000);

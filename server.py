@@ -314,6 +314,27 @@ async def redeem_promo(request: dict):
 
     return {"status": "ok", "msg": msg, "coins": coins_reward, "keys": keys_reward}
 
+# ═══ PUSH NOTIFICATIONS ═══
+# Store pending energy notifications
+energy_notify_users = set()
+
+@app.post("/notify/energy")
+async def notify_energy(request: dict):
+    """Called by game when player's energy is full"""
+    user_id = request.get("user_id")
+    if not user_id:
+        return {"error": "no user_id"}
+    # Store for bot to pick up
+    energy_notify_users.add(int(user_id))
+    return {"status": "queued"}
+
+@app.get("/notify/pending")
+def get_pending_notifications():
+    """Bot polls this to get users who need energy notification"""
+    users = list(energy_notify_users)
+    energy_notify_users.clear()
+    return {"users": users}
+
 # ═══ STARS PAYMENT INVOICES ═══
 @app.get("/invoice/{package_type}")
 def create_invoice(package_type: str):

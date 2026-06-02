@@ -250,6 +250,37 @@ async def send_push_to_user(user_id: int, msg_type: str):
         return False
 
 # ═══ Smart push notification system ═══
+async def poll_energy_notifications():
+    """Poll server for energy-full notifications every 2 minutes"""
+    while True:
+        await asyncio.sleep(120)
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"{API_URL}/notify/pending",
+                    timeout=aiohttp.ClientTimeout(total=5)) as resp:
+                    data = await resp.json()
+                    pending = data.get("users", [])
+                    for user_id in pending:
+                        try:
+                            builder = InlineKeyboardBuilder()
+                            builder.row(make_play_button(user_id))
+                            await bot.send_message(
+                                user_id,
+                                "⚡ <b>Energy is FULL!</b>
+
+"
+                                "Your mining energy has fully restored!
+"
+                                "Come tap now before it goes to waste! 🪐",
+                                reply_markup=builder.as_markup(),
+                                parse_mode="HTML"
+                            )
+                            await asyncio.sleep(0.05)
+                        except Exception as e:
+                            logging.warning(f"Energy push failed for {user_id}: {e}")
+        except Exception as e:
+            logging.error(f"Poll energy notifications error: {e}")
+
 async def run_smart_notifications():
     """Check player activity and send relevant push notifications"""
     while True:
@@ -351,6 +382,7 @@ async def main():
     ])
     asyncio.create_task(send_daily_notifications())
     asyncio.create_task(run_smart_notifications())
+    asyncio.create_task(poll_energy_notifications())
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
