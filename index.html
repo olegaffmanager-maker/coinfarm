@@ -3193,24 +3193,9 @@ function renderAttackBots() {
 
 
 // ═══ CLAN COLLABORATION ═══
-function getClanBonus() {
-  if(!g.clan) return 1;
-  const clanLevel = g.clan.level || 1;
-  return 1 + (clanLevel * 0.05); // +5% per clan level
-}
 
-function contributeToСlan() {
-  if(!g.clan) { showToast('Join a clan first!'); return; }
-  const contribution = Math.floor(g.coins * 0.01); // 1% of coins
-  if(contribution < 100) { showToast('Need at least 10,000 XSPC to contribute!'); return; }
-  g.coins -= contribution;
-  if(!g.clan.treasury) g.clan.treasury = 0;
-  g.clan.treasury += contribution;
-  g.clan.level = Math.floor((g.clan.treasury || 0) / 1000000) + 1;
-  showToast('🤝 Contributed '+contribution.toLocaleString()+' XSPC to clan!');
-  showFloat('+'+contribution.toLocaleString()+' to clan 🛸', window.innerWidth/2, 300, '#7b2fff');
-  updateUI(); saveGame();
-}
+
+
 
 
 // ═══ STAKING ═══
@@ -3662,18 +3647,10 @@ function handleClick(e){
   rings[1].style.animationDuration=(speed*0.7)+'s';
   setTimeout(()=>{rings[0].style.animationDuration='12s';rings[1].style.animationDuration='8s';},2000);
 
-  checkLevelUp(); checkAchievements(); updateUI();
-  // Ensure quest never stuck on Loading
-  setTimeout(renderQuest, 800);
-  setTimeout(renderQuest, 2000);
-(function initQuest() {
-  renderQuest();
-  // Retry if still loading after 1s
-  setTimeout(() => {
-    const nameEl = document.getElementById('questName');
-    if(nameEl && nameEl.textContent === 'Loading...') renderQuest();
-  }, 1000);
-})(); saveGame();
+  // Throttle heavy operations - not every tap
+  updateUI();
+  if(g.clicks % 5 === 0) checkLevelUp();
+  if(g.clicks % 20 === 0) { checkAchievements(); saveGame(); }
 }
 
 function spawnHitEffects(e){
