@@ -412,6 +412,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 }
 @keyframes sunPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.3)}}
 @keyframes sunRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 .planet-andromeda{background:radial-gradient(circle at 35% 35%,#c8e8ff,#4a90d9,#1a3a6a);box-shadow:0 0 60px rgba(100,180,255,0.8),0 0 120px rgba(100,180,255,0.4);}
 .planet-darkstar{background:radial-gradient(circle at 35% 35%,#6666aa,#222244,#050510);box-shadow:0 0 60px rgba(50,50,120,0.9),0 0 120px rgba(50,50,120,0.5);}
 .planet-blackhole{background:radial-gradient(circle at 40% 40%,#440066,#1a0033,#000000);box-shadow:0 0 80px rgba(80,0,120,0.95),0 0 160px rgba(80,0,120,0.5);}
@@ -1400,7 +1401,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         </div>
       </div>
     </div>
-    <div class="section-title">🤖 Fight a Bot</div>
+    <!-- Battle History -->
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;margin-top:16px;">📊 BATTLE HISTORY</div>
+    <div id="battleHistoryList"></div>
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;margin-top:16px;">🤖 TAP BATTLE VS BOT</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
       <div onclick="selectPvpMode('bot','easy')" id="pvpBotEasy" style="background:rgba(0,255,136,0.08);border:2px solid rgba(0,255,136,0.3);border-radius:14px;padding:12px;text-align:center;cursor:pointer;">
         <div style="font-size:24px;">🟢</div>
@@ -2888,6 +2892,7 @@ function attackBot(idx) {
     g.coins = Math.max(0, (g.coins||0) - loss);
     showToast('💥 Defeated! Lost '+loss.toLocaleString()+' XSPC');
     showFloat('⚔️ DEFEAT -'+loss.toLocaleString(), window.innerWidth/2, 300, '#ff3366');
+    addBattleRecord(bot.name, 'loss', -loss);
   }
 
   updateUI(); saveGame(); checkAchievements();
@@ -3119,17 +3124,23 @@ const DAILY_TASKS=[
   {id:"spin1",   name:"🎰 Spin the wheel",goal:1,   field:"todaySpins", reward:150,label:"spins"},
   {id:"login",   name:"📅 Daily login",   goal:1,   field:"loggedIn",   reward:100,label:""},
 ];
-const WHEEL_PRIZES=[
-  {label:"+100 XSPC", type:"coins", value:100,  color:"#7b2fff",emoji:"🪐"},
-  {label:"+300 NRG",  type:"energy",value:300,  color:"#00ff88",emoji:"⚡"},
-  {label:"+500 XSPC", type:"coins", value:500,  color:"#00f5ff",emoji:"🪐"},
-  {label:"+1000 XSPC",type:"coins", value:1000, color:"#ffd700",emoji:"🪐"},
-  {label:"FULL NRG",  type:"energy",value:9999, color:"#00cc66",emoji:"⚡"},
-  {label:"+200 XSPC", type:"coins", value:200,  color:"#ff9500",emoji:"🪐"},
-  {label:"+2000 XSPC",type:"coins", value:2000, color:"#ff3366",emoji:"🪐"},
-  {label:"+500 NRG",  type:"energy",value:500,  color:"#00f5ff",emoji:"⚡"},
-  {label:"+1 KEY",    type:"key",   value:1,    color:"#ffd700",emoji:"🔑"},
-];
+function getWheelPrizes() {
+  const lv = g.level || 1;
+  const mult = Math.max(1, Math.floor(lv / 5) + 1);
+  const base = Math.floor(1000 * mult);
+  const keyBonus = lv >= 50 ? 3 : lv >= 25 ? 2 : 1;
+  return [
+    {label:'+'+Math.floor(base*0.5).toLocaleString()+' XSPC', type:'coins', value:Math.floor(base*0.5),  color:'#7b2fff', emoji:'🪐'},
+    {label:'FULL ENERGY',                                       type:'energy',value:9999,                  color:'#00ff88', emoji:'⚡'},
+    {label:'+'+base.toLocaleString()+' XSPC',                  type:'coins', value:base,                  color:'#00f5ff', emoji:'🪐'},
+    {label:'+'+Math.floor(base*2).toLocaleString()+' XSPC',    type:'coins', value:Math.floor(base*2),    color:'#ffd700', emoji:'🪐'},
+    {label:'+'+Math.floor(base*0.2).toLocaleString()+' XSPC',  type:'coins', value:Math.floor(base*0.2),  color:'#ff9500', emoji:'🪐'},
+    {label:'+'+Math.floor(base*5).toLocaleString()+' XSPC',    type:'coins', value:Math.floor(base*5),    color:'#ff3366', emoji:'🪐'},
+    {label:'+'+keyBonus+' XKEY',                                type:'key',   value:keyBonus,              color:'#FFD700', emoji:'🔑'},
+    {label:'+'+Math.floor(base*0.3).toLocaleString()+' XSPC',  type:'coins', value:Math.floor(base*0.3),  color:'#00f5ff', emoji:'🪐'},
+    {label:'+'+Math.floor(base*10).toLocaleString()+' XSPC',   type:'coins', value:Math.floor(base*10),   color:'#ff3366', emoji:'🪐'},
+  ];
+}
 
 let g={
   coins:0,clicks:0,level:1,perClick:1,
@@ -3499,9 +3510,10 @@ let wheelAngle=0,wheelSpinning=false;
 function drawWheel(angle){
   const canvas=document.getElementById('wheelCanvas');
   const ctx=canvas.getContext('2d');
-  const cx=130,cy=130,r=120,sa=(2*Math.PI)/WHEEL_PRIZES.length;
+  const _prizes = getWheelPrizes();
+  const cx=130,cy=130,r=120,sa=(2*Math.PI)/_prizes.length;
   ctx.clearRect(0,0,260,260);
-  WHEEL_PRIZES.forEach((p,i)=>{
+  _prizes.forEach((p,i)=>{
     const start=angle+i*sa,end=start+sa;
     ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath();
     ctx.fillStyle=p.color;ctx.fill();
@@ -3516,15 +3528,17 @@ function drawWheel(angle){
   ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.strokeStyle='rgba(0,245,255,0.5)';ctx.lineWidth=4;ctx.stroke();
 }
 function renderWheelLegend(){
-  document.getElementById('wheelLegend').innerHTML=WHEEL_PRIZES.map(p=>`<div class="legend-item"><div class="legend-dot" style="background:${p.color}"></div><span style="color:${p.color}">${p.label}</span></div>`).join('');
+  const _lp = (typeof g !== 'undefined') ? getWheelPrizes() : [];
+  document.getElementById('wheelLegend').innerHTML=_lp.map(p=>`<div class="legend-item"><div class="legend-dot" style="background:${p.color}"></div><span style="color:${p.color}">${p.label}</span></div>`).join('');
 }
 function spinWheel(){
   const today=new Date().toDateString();
   if(g.lastSpinDate===today){showToast("Come back tomorrow!");return;}
   if(wheelSpinning)return;
   wheelSpinning=true;document.getElementById('spinBtn').disabled=true;
-  const winIdx=Math.floor(Math.random()*WHEEL_PRIZES.length);
-  const sa=(2*Math.PI)/WHEEL_PRIZES.length;
+  const freshPrizes = getWheelPrizes();
+  const winIdx=Math.floor(Math.random()*freshPrizes.length);
+  const sa=(2*Math.PI)/_prizes.length;
   const targetAngle=(2*Math.PI*5)+(Math.PI*2-winIdx*sa-sa/2)-Math.PI/2;
   let start=null;const duration=4000;const startAngle=wheelAngle;
   function animate(ts){
@@ -3535,7 +3549,7 @@ function spinWheel(){
     if(progress<1){requestAnimationFrame(animate);}
     else{
       wheelSpinning=false;g.lastSpinDate=today;g.totalSpins++;g.todaySpins++;
-      const prize=WHEEL_PRIZES[winIdx];
+      const prize=freshPrizes[winIdx];
       if(prize.type==='coins'){
         g.coins+=prize.value;
         document.getElementById('wheelWinEmoji').textContent='🪐';
@@ -3808,7 +3822,7 @@ function showPage(page){
   if(page==='boss'){updateBossUI();}
   if(page==='rareplanets'){renderRarePlanets();const rc=document.getElementById('rarePlanetsCount');if(rc)rc.textContent=Object.keys(g.rarePlanets||{}).length+'/5 discovered';}
   if(page==='battle'){updateBattleHub();}
-  if(page==='pvp'){renderAttackBots();updatePvpBattlesUI();}
+  if(page==='pvp'){renderAttackBots();updatePvpBattlesUI();renderBattleHistory();}
   if(page==='staking') showFeatureTip('staking','💰 Staking','Stake your XSPC tokens to earn daily passive rewards. More staked = more earned!');
   if(page==='boss') showFeatureTip('boss','💀 Boss Battle','Attack the boss using tap attacks or power blasts. Defeat it to unlock the next planet!');
   if(page==='cosmosmap') showFeatureTip('cosmos','🗺 Cosmos Map','Your journey through space. Fight 💀 bosses to continue. Tap planets to mine there!');
@@ -4222,18 +4236,34 @@ setInterval(() => { const el=document.getElementById('passiveAccum'); if(el) el.
 
 // ═══ MINI QUESTS ═══
 const QUESTS = [
-  {id:'q_tap100',  name:'Tap 100 times',        field:'clicks', goal:100,   reward:500,   rewardType:'coins'},
-  {id:'q_tap500',  name:'Tap 500 times',         field:'clicks', goal:500,   reward:2000,  rewardType:'coins'},
-  {id:'q_tap2k',   name:'Tap 2,000 times',       field:'clicks', goal:2000,  reward:8000,  rewardType:'coins'},
-  {id:'q_tap10k',  name:'Tap 10,000 times',      field:'clicks', goal:10000, reward:30000, rewardType:'coins'},
-  {id:'q_earn1k',  name:'Earn 1,000 XSPC',       field:'coins',  goal:1000,  reward:300,   rewardType:'energy'},
-  {id:'q_earn10k', name:'Earn 10,000 XSPC',      field:'coins',  goal:10000, reward:1000,  rewardType:'energy'},
-  {id:'q_earn100k',name:'Earn 100,000 XSPC',     field:'coins',  goal:100000,reward:3000,  rewardType:'energy'},
-  {id:'q_lv5',     name:'Reach Level 5',          field:'level',  goal:5,     reward:1000,  rewardType:'coins'},
-  {id:'q_lv10',    name:'Reach Level 10',         field:'level',  goal:10,    reward:5000,  rewardType:'coins'},
-  {id:'q_lv25',    name:'Reach Level 25',         field:'level',  goal:25,    reward:20000, rewardType:'coins'},
-  {id:'q_card1',   name:'Buy any Boost Card',     field:'cards',  goal:1,     reward:500,   rewardType:'coins'},
-  {id:'q_combo15', name:'Get Combo x15',          field:'maxCombo',goal:15,   reward:2000,  rewardType:'coins'},
+  // Tap quests
+  {id:'q_tap100',   name:'Tap 100 times',          field:'clicks',    goal:100,      reward:500,    rewardType:'coins', icon:'⛏️'},
+  {id:'q_tap500',   name:'Tap 500 times',           field:'clicks',    goal:500,      reward:2000,   rewardType:'coins', icon:'⛏️'},
+  {id:'q_tap2k',    name:'Tap 2,000 times',         field:'clicks',    goal:2000,     reward:8000,   rewardType:'coins', icon:'⛏️'},
+  {id:'q_tap10k',   name:'Tap 10,000 times',        field:'clicks',    goal:10000,    reward:30000,  rewardType:'coins', icon:'🔥'},
+  {id:'q_tap50k',   name:'Tap 50,000 times',        field:'clicks',    goal:50000,    reward:200000, rewardType:'coins', icon:'🔥'},
+  {id:'q_tap100k',  name:'Tap 100,000 times',       field:'clicks',    goal:100000,   reward:500000, rewardType:'coins', icon:'🔥'},
+  // Earn quests
+  {id:'q_earn1k',   name:'Earn 1,000 XSPC',         field:'totalEarned',goal:1000,   reward:300,    rewardType:'energy',icon:'🪐'},
+  {id:'q_earn10k',  name:'Earn 10,000 XSPC',        field:'totalEarned',goal:10000,  reward:1000,   rewardType:'energy',icon:'🪐'},
+  {id:'q_earn100k', name:'Earn 100,000 XSPC',       field:'totalEarned',goal:100000, reward:3000,   rewardType:'energy',icon:'🪐'},
+  {id:'q_earn1m',   name:'Earn 1,000,000 XSPC',     field:'totalEarned',goal:1000000,reward:10000,  rewardType:'key',   icon:'🌟'},
+  {id:'q_earn10m',  name:'Earn 10,000,000 XSPC',    field:'totalEarned',goal:10000000,reward:50000, rewardType:'key',   icon:'🌟'},
+  // Level quests
+  {id:'q_lv5',      name:'Reach Level 5',            field:'level',     goal:5,        reward:1000,   rewardType:'coins', icon:'🥇'},
+  {id:'q_lv10',     name:'Reach Level 10',           field:'level',     goal:10,       reward:5000,   rewardType:'coins', icon:'🥇'},
+  {id:'q_lv25',     name:'Reach Level 25',           field:'level',     goal:25,       reward:20000,  rewardType:'coins', icon:'🥇'},
+  {id:'q_lv50',     name:'Reach Level 50',           field:'level',     goal:50,       reward:100000, rewardType:'key',   icon:'🌌'},
+  {id:'q_lv100',    name:'Reach Level 100',          field:'level',     goal:100,      reward:500000, rewardType:'key',   icon:'👑'},
+  // Special quests
+  {id:'q_card1',    name:'Buy any Boost Card',       field:'cards',     goal:1,        reward:500,    rewardType:'coins', icon:'💳'},
+  {id:'q_card5',    name:'Buy 5 Boost Cards',        field:'cards',     goal:5,        reward:5000,   rewardType:'coins', icon:'💳'},
+  {id:'q_combo15',  name:'Get Combo x15',            field:'maxCombo',  goal:15,       reward:2000,   rewardType:'coins', icon:'🔥'},
+  {id:'q_combo50',  name:'Get Combo x50',            field:'maxCombo',  goal:50,       reward:20000,  rewardType:'key',   icon:'🔥'},
+  {id:'q_friends3', name:'Invite 3 Friends',         field:'friends',   goal:3,        reward:10000,  rewardType:'key',   icon:'👥'},
+  {id:'q_pvp5',     name:'Win 5 PvP Battles',        field:'pvpWins',   goal:5,        reward:15000,  rewardType:'coins', icon:'⚔️'},
+  {id:'q_artifact1',name:'Buy an Artifact',          field:'artifacts', goal:1,        reward:5000,   rewardType:'coins', icon:'🔮'},
+  {id:'q_streak7',  name:'7-Day Login Streak',       field:'streak',    goal:7,        reward:30000,  rewardType:'key',   icon:'🔥'},
 ];
 
 function getCurrentQuest() {
@@ -4242,11 +4272,12 @@ function getCurrentQuest() {
 }
 
 function getQuestValue(quest) {
-  if(quest.field === 'cards') {
-    return Object.values(g.boostCards||{}).reduce((a,b)=>a+b, 0);
-  }
+  if(quest.field === 'cards') return Object.values(g.boostCards||{}).reduce((a,b)=>a+b, 0);
   if(quest.field === 'totalEarned') return g.totalEarned || g.coins || 0;
   if(quest.field === 'friends') return g.friends || 0;
+  if(quest.field === 'pvpWins') return g.pvpWins || 0;
+  if(quest.field === 'artifacts') return Object.keys(g.artifacts||{}).length;
+  if(quest.field === 'streak') return g.streak || 0;
   return g[quest.field] || 0;
 }
 
@@ -4415,7 +4446,7 @@ function renderComboGrid(answers, done) {
     else if(isSelected && !isDone) { bg='rgba(0,245,255,0.1)'; border='rgba(0,245,255,0.5)'; overlay='<div style="position:absolute;top:4px;right:4px;font-size:12px;">🔵</div>'; }
     else if(isWrong) { bg='rgba(255,50,50,0.1)'; border='rgba(255,50,50,0.4)'; overlay='<div style="position:absolute;top:4px;right:4px;font-size:12px;">❌</div>'; }
 
-    return `<div style="position:relative;padding:12px 8px;background:${bg};border:1px solid ${border};border-radius:14px;text-align:center;cursor:${isDone?'default':'pointer'};transition:all 0.2s;" onclick="selectComboCard(${idx})">
+    return `<div class="combo-card" style="position:relative;padding:12px 8px;background:${bg};border:1px solid ${border};border-radius:14px;text-align:center;cursor:${isDone?'default':'pointer'};transition:all 0.2s;" onclick="selectComboCard(${idx})">
       ${overlay}
       <div style="font-size:26px;margin-bottom:4px;">${c.icon}</div>
       <div style="font-size:10px;font-weight:700;line-height:1.2;">${c.name}</div>
@@ -4429,12 +4460,41 @@ function selectComboCard(idx) {
   if(g.lastComboDate === today) return;
   if(comboSelected.includes(idx)) {
     comboSelected = comboSelected.filter(i => i !== idx);
+    playSound('tap');
   } else {
-    if(comboSelected.length >= 3) { showToast("Deselect a card first!"); return; }
+    if(comboSelected.length >= 3) { showToast('Deselect a card first!'); return; }
     comboSelected.push(idx);
+    playSound('coin');
+    // Animate the selected card
+    const cards = document.querySelectorAll('.combo-card');
+    if(cards[idx]) {
+      cards[idx].style.transform = 'scale(1.15)';
+      cards[idx].style.transition = 'transform 0.15s';
+      setTimeout(() => { if(cards[idx]) cards[idx].style.transform = 'scale(1)'; }, 150);
+    }
+    // If 3 selected — show instant feedback
+    if(comboSelected.length === 3) {
+      const isWin = checkComboWin();
+      if(isWin) {
+        playSound('win');
+        if(navigator.vibrate) navigator.vibrate([50,30,80]);
+        showFloat('🎉 JACKPOT!', window.innerWidth/2, 300, '#00ff88');
+      } else {
+        playSound('error');
+        if(navigator.vibrate) navigator.vibrate([100,50,100]);
+        // Shake wrong cards
+        const answers = getDailyComboCards();
+        comboSelected.forEach(i => {
+          if(!answers.includes(i) && cards[i]) {
+            cards[i].style.animation = 'shake 0.4s';
+            setTimeout(() => { if(cards[i]) cards[i].style.animation = ''; }, 400);
+          }
+        });
+      }
+    }
   }
   const statusEl = document.getElementById('comboStatus');
-  if(statusEl) { statusEl.textContent = `${comboSelected.length}/3`; statusEl.style.color = comboSelected.length===3?'#FFD700':'#aaa'; }
+  if(statusEl) { statusEl.textContent = comboSelected.length+'/3'; statusEl.style.color = comboSelected.length===3?'#FFD700':'#aaa'; }
   renderComboClaimBtn();
   renderComboGrid(getDailyComboCards(), false);
 }
@@ -5512,6 +5572,42 @@ function getCurrentSeason() {
            progress: Math.floor((g.level - season.minLv) / (season.maxLv - season.minLv) * 100) };
 }
 
+
+
+// ═══ BATTLE HISTORY ═══
+function addBattleRecord(opponent, result, reward) {
+  if(!g.battleHistory) g.battleHistory = [];
+  g.battleHistory.unshift({
+    opponent, result, reward,
+    time: Date.now(),
+    level: g.level
+  });
+  if(g.battleHistory.length > 20) g.battleHistory = g.battleHistory.slice(0, 20);
+  renderBattleHistory();
+  saveGame();
+}
+
+function renderBattleHistory() {
+  const el = document.getElementById('battleHistoryList');
+  if(!el) return;
+  const history = g.battleHistory || [];
+  if(history.length === 0) {
+    el.innerHTML = '<div style="text-align:center;color:#4a6080;padding:16px;font-size:12px;">No battles yet. Start fighting!</div>';
+    return;
+  }
+  el.innerHTML = history.map(h => {
+    const win = h.result === 'win';
+    const time = new Date(h.time).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border:1px solid '+(win?'rgba(0,255,136,0.2)':'rgba(255,50,50,0.2)')+';border-radius:10px;margin-bottom:6px;">'
+      +'<div style="font-size:20px;">'+(win?'🏆':'💥')+'</div>'
+      +'<div style="flex:1;">'
+        +'<div style="font-size:12px;font-weight:700;color:'+(win?'#00ff88':'#ff3366')+'">'+(win?'VICTORY':'DEFEAT')+' vs '+h.opponent+'</div>'
+        +'<div style="font-size:10px;color:#4a6080;">'+time+' · Lv'+h.level+'</div>'
+      +'</div>'
+      +'<div style="font-size:11px;font-family:Orbitron,monospace;color:'+(win?'#00ff88':'#ff3366')+'">'+(win?'+':'-')+Math.abs(h.reward).toLocaleString()+' XSPC</div>'
+      +'</div>';
+  }).join('');
+}
 
 // ═══ PvP TAPPING ═══
 let pvpActive=false, pvpScore=0, pvpOpponentScore=0, pvpTimer=0, pvpInterval=null;
