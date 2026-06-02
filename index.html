@@ -412,6 +412,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 }
 @keyframes sunPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.3)}}
 @keyframes sunRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 .planet-andromeda{background:radial-gradient(circle at 35% 35%,#c8e8ff,#4a90d9,#1a3a6a);box-shadow:0 0 60px rgba(100,180,255,0.8),0 0 120px rgba(100,180,255,0.4);}
 .planet-darkstar{background:radial-gradient(circle at 35% 35%,#6666aa,#222244,#050510);box-shadow:0 0 60px rgba(50,50,120,0.9),0 0 120px rgba(50,50,120,0.5);}
@@ -3361,6 +3362,7 @@ function toggleSound() {
   g.soundMuted = !g.soundMuted;
   const btn = document.getElementById('soundBtn');
   if(btn) btn.textContent = g.soundMuted ? '🔇' : '🔊';
+  localStorage.setItem('xspc_sound_muted', g.soundMuted ? '1' : '0');
   saveGame();
 }
 
@@ -3409,6 +3411,18 @@ setInterval(checkNotifications, 30000);
 
 
 // ═══ SHARE ACHIEVEMENT ═══
+function shareResult(text) {
+  const url = 'https://t.me/play1xfarmbot';
+  if(window.Telegram?.WebApp) {
+    window.Telegram.WebApp.openTelegramLink(
+      'https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text)
+    );
+  } else {
+    navigator.clipboard?.writeText(text+'\n'+url);
+    showToast('📋 Copied to clipboard!');
+  }
+}
+
 function shareAchievement(achName) {
   const planet = getPlanetForLevel(g.level);
   const text = '🏆 Achievement: '+achName+' in XSPACECOIN!'
@@ -4022,7 +4036,10 @@ function renderLeagues(){
 
 // ═══ TOP & FRIENDS ═══
 async function renderTop(){
-  document.getElementById('topList').innerHTML='<div style="text-align:center;color:var(--muted);padding:30px;font-family:Orbitron,monospace;font-size:11px;letter-spacing:2px">LOADING...</div>';
+  const topList = document.getElementById('topList');
+  if(topList) topList.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px;padding:16px;">'
+    + [1,2,3,4,5].map(()=>'<div style="height:44px;background:rgba(255,255,255,0.04);border-radius:12px;animation:pulse 1.5s ease-in-out infinite;"></div>').join('')
+    + '</div>';
   const top=await apiGetTop();
   const display=top.length?top:[{full_name:'You',coins:g.coins,level:g.level}];
 
@@ -6206,8 +6223,12 @@ function endPvP() {
   const resultEl = document.getElementById('pvpResult');
   if(resultEl) {
     resultEl.style.display = 'block';
+    const shareText = won
+      ? '🏆 I won a PvP battle in XSPACECOIN! +'+reward.toLocaleString()+' XSPC! Come fight me!'
+      : '⚔️ Playing PvP battles in XSPACECOIN! Join me!';
     resultEl.innerHTML = won
       ? '<div style="font-size:40px;margin-bottom:8px;">🏆</div><div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#00ff88;">VICTORY!</div><div style="font-size:13px;color:#00ff88;margin-top:4px;">+'+reward.toLocaleString()+' XSPC captured!</div>'
+        + '<button onclick="shareResult(this.dataset.t)" data-t="'+shareText+'" style="margin-top:12px;padding:8px 20px;background:linear-gradient(135deg,#00f5ff,#7b2fff);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:12px;cursor:pointer;">📤 Share Victory</button>'
       : '<div style="font-size:40px;margin-bottom:8px;">😔</div><div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff3366;">DEFEAT</div><div style="font-size:13px;color:#ff3366;margin-top:4px;">Better luck next time!</div>'
   }
 
@@ -6320,6 +6341,8 @@ const ONBOARDING_STEPS = [
 let onboardStep = 0;
 
 function showOnboarding() {
+  // Check localStorage first (survives game data reset)
+  if(localStorage.getItem('xspc_onboarding_done')) return;
   if(g.onboardingDone) return;
   onboardStep = 0;
   renderOnboardStep();
@@ -6356,6 +6379,7 @@ function nextOnboardStep() {
 
 function closeOnboarding() {
   g.onboardingDone = true;
+  localStorage.setItem('xspc_onboarding_done', '1');
   saveGame();
   document.getElementById('onboardingOverlay').classList.remove('show');
   // Give welcome bonus
@@ -6582,6 +6606,12 @@ loadGame();
 
 // Force planet recalculation — reset saved name so it always updates visually
 g.currentPlanetName = '';
+// Restore sound setting from localStorage
+if(localStorage.getItem('xspc_sound_muted') === '1') {
+  g.soundMuted = true;
+  const btn = document.getElementById('soundBtn');
+  if(btn) btn.textContent = '🔇';
+}
 // Delay passive income init until after boost cards are loaded
 setTimeout(initPassiveIncome, 100);
 
