@@ -3627,16 +3627,7 @@ function handleClick(e){
   // Lucky / crit (редко)
   const rnd=Math.random();
   if(rnd<0.05){ reward+=50; }
-  else if(rnd<0.05+(g.critLevel||0)*0.05){
-    reward*=3;
-    // Красная вспышка на крите
-    setTimeout(()=>{
-      const f=document.createElement('div');
-      f.style.cssText='position:fixed;inset:0;background:#ff3366;opacity:0.15;pointer-events:none;z-index:999;transition:opacity 0.3s;';
-      document.body.appendChild(f);
-      setTimeout(()=>{f.style.opacity='0';setTimeout(()=>f.remove(),300);},50);
-    },0);
-  }
+  else if(rnd<0.05+(g.critLevel||0)*0.05){ reward*=3; }
 
   // Обновляем данные
   g.coins+=reward;
@@ -3657,8 +3648,6 @@ function handleClick(e){
     const ring = _ringPool.pop() || (() => { const r=document.createElement('div'); r.className='tap-ring'; orbit.appendChild(r); return r; })();
     ring.style.borderColor = color;
     ring.style.display = 'block';
-    ring.style.animation = 'none';
-    ring.offsetWidth; // force reflow once
     ring.style.animation = 'tapRingExpand 0.4s ease-out forwards';
     setTimeout(() => { ring.style.display='none'; _ringPool.push(ring); }, 400);
   }
