@@ -2410,6 +2410,11 @@ async function apiRegister(u,un,fn,r){
   } catch(e) { console.log('[XSPC] Register failed:', e); }
 }
 async function apiSave(){
+  // Берём ID из всех источников
+  if(!g.telegramId) {
+    const _cached = parseInt(localStorage.getItem('xspc_telegram_id')||'0');
+    if(_cached) g.telegramId = _cached;
+  }
   if(!g.telegramId) return;
   try {
     await fetch(API_URL+'/user/save', {
@@ -3074,6 +3079,19 @@ function renderChest() {
 function renderFriends() {
   // Friends страница — запрашиваем список
   if(g.telegramId) loadFriends(g.telegramId);
+}
+
+
+function forceSyncNow() {
+  const uid = g.telegramId || parseInt(localStorage.getItem('xspc_telegram_id')||'0');
+  if(!uid) {
+    showToast('❌ Open game via Telegram bot first!');
+    return;
+  }
+  g.telegramId = uid;
+  apiSave();
+  showToast('☁️ Syncing with server...');
+  setTimeout(() => loadFriends(uid), 1000);
 }
 
 // ═══ EXPEDITIONS ═══
@@ -6929,15 +6947,39 @@ function renderFullCards() {
 async function initUser(){
   let userId,username='',fullName='',referrerId=null;
   const tg=window.Telegram?.WebApp;
+  
+  // Способ 1: Telegram WebApp initData
   if(tg&&tg.initDataUnsafe?.user){
-    const u=tg.initDataUnsafe.user;userId=u.id;username=u.username||'';fullName=u.first_name||'';
+    const u=tg.initDataUnsafe.user;
+    userId=u.id; username=u.username||''; fullName=u.first_name||'';
     const sp=tg.initDataUnsafe?.start_param;
     if(sp?.startsWith('ref_')){referrerId=parseInt(sp.replace('ref_',''));if(referrerId===userId)referrerId=null;}
-  }else{
-    const p=new URLSearchParams(window.location.search);
-    userId=parseInt(p.get('user_id'));username=p.get('username')||'';fullName=p.get('full_name')||'';
-    const ref=p.get('ref');if(ref)referrerId=parseInt(ref);
   }
+  
+  // Способ 2: URL параметры (?user_id=...)
+  if(!userId) {
+    const p=new URLSearchParams(window.location.search);
+    const uid=parseInt(p.get('user_id')||'0');
+    if(uid && !isNaN(uid)) {
+      userId=uid; username=p.get('username')||''; fullName=p.get('full_name')||'';
+      const ref=p.get('ref'); if(ref) referrerId=parseInt(ref);
+    }
+  }
+  
+  // Способ 3: hash параметры (#user_id=...)
+  if(!userId) {
+    const h=new URLSearchParams(window.location.hash.slice(1));
+    const uid=parseInt(h.get('user_id')||'0');
+    if(uid && !isNaN(uid)) userId=uid;
+  }
+  
+  // Способ 4: localStorage кэш (предыдущая сессия)
+  if(!userId) {
+    userId=parseInt(localStorage.getItem('xspc_telegram_id')||'0')||null;
+    if(userId) console.log('[XSPC] userId from localStorage cache:', userId);
+  }
+  
+  console.log('[XSPC] initUser sources - tg:', tg?.initDataUnsafe?.user?.id, 'url:', new URLSearchParams(window.location.search).get('user_id'), 'cache:', localStorage.getItem('xspc_telegram_id'));
   if(!userId||isNaN(userId)){document.getElementById('refLink').textContent='Open in Telegram to get your link';return;}
   g.telegramId=userId;
   // Сохраняем telegramId отдельно — не теряется при сбросе данных
