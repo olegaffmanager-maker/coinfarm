@@ -3580,77 +3580,87 @@ function updatePerfCache() {
 }
 setInterval(updatePerfCache, 5000);
 
-// ═══ CLICK HANDLER ═══
+// ═══ CLICK HANDLER — оптимизирован для мобильного ═══
+// Кэшируем DOM элементы один раз
+let _coinCountEl=null, _energyFillEl=null, _comboDisplayEl=null;
+let _ring0=null, _ring1=null;
+let _lastUIUpdate=0;
+
 function handleClick(e){
-  if(g.energy<=0){playSound('error');showFloat("❌ No energy!",e.clientX,e.clientY,"#ff3366");return;}
-  playSound('tap');
-  if(g.clicks === 1) initNotifications();
+  if(g.energy<=0){
+    showFloat('❌ No energy!',e.clientX,e.clientY,'#ff3366');
+    return;
+  }
+
   const now=Date.now();
   g.combo=(now-g.lastClick<1500)?g.combo+1:1;
   g.lastClick=now;
-  g.maxCombo=Math.max(g.maxCombo,g.combo);
   g.hitCount++;
 
-  const dailyMult = _cachedDailyMult || 1;
-  const artTap = _cachedArtTap || 1;
-  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*getVipMultiplier()*dailyMult*artTap);
-  checkRareDrop();
-  if(Math.random() < 0.005) checkRarePlanetDrop();
-  const comboMult = 1 + (g.comboMultLevel||0) * 2;
+  // Reward calculation (всё из кэша)
+  const mult=(_cachedDailyMult||1)*(_cachedArtTap||1)*getVipMultiplier();
+  let reward=Math.floor(g.perClick*(g.turboActive?5:1)*(asteroidActive?5:1)*mult);
+  const comboMult=1+(g.comboMultLevel||0)*2;
   if(g.combo>=10)reward+=20*comboMult;
   else if(g.combo>=5)reward+=10*comboMult;
   else if(g.combo>=3)reward+=5*comboMult;
 
-  const lucky=Math.random()<0.05;
-  if(lucky){
-    reward+=50;
-    const t=document.getElementById('luckyToast');
-    t.classList.remove('show');void t.offsetWidth;t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),2200);
+  // Lucky / crit (редко)
+  const rnd=Math.random();
+  if(rnd<0.05){ reward+=50; }
+  else if(rnd<0.05+(g.critLevel||0)*0.05){ reward*=3; }
+
+  // Обновляем данные
+  g.coins+=reward;
+  g.clicks++;
+  g.totalEarned=(g.totalEarned||0)+reward;
+  g.maxCombo=Math.max(g.maxCombo||0,g.combo);
+  const unlimitedEnergy=g.vip&&g.vip.energyUntil>now;
+  g.energy=Math.max(0,g.energy-(unlimitedEnergy?0:1));
+
+  // Float текст — только это при каждом тапе
+  const color=g.combo>=10?'#ff3366':g.combo>=5?'#ff9500':'#FFD700';
+  const txt=g.combo>=3?'+'+reward+' 🔥×'+g.combo:'+'+reward;
+  showFloat(txt,e.clientX,e.clientY,color);
+
+  // Combo display — прямой DOM без classList
+  if(!_comboDisplayEl) _comboDisplayEl=document.getElementById('comboDisplay');
+  if(_comboDisplayEl){
+    if(g.combo>=3){ _comboDisplayEl.textContent='🔥 COMBO ×'+g.combo; _comboDisplayEl.style.color=color; }
+    else _comboDisplayEl.textContent='';
   }
 
-  // Critical hit chance
-  const critChance = (g.critLevel||0) * 0.05;
-  if(Math.random() < critChance) {
-    reward *= 3;
-    spawnCoinBurst(e.clientX, e.clientY, reward);
-  showFloat('💥 CRIT!', e.clientX, e.clientY-40, '#ff3366');
+  // Обновляем только монеты и энергию (не весь UI)
+  if(!_coinCountEl) _coinCountEl=document.getElementById('coinCount');
+  if(_coinCountEl) _coinCountEl.textContent=formatCoins(g.coins);
+  if(!_energyFillEl) _energyFillEl=document.getElementById('energyFill');
+  if(_energyFillEl) {
+    const pct=Math.round(g.energy/g.maxEnergy*100);
+    _energyFillEl.style.width=pct+'%';
+    if(pct<=20) _energyFillEl.style.background='linear-gradient(90deg,#ff3366,#ff6600)';
+    else if(pct<=50) _energyFillEl.style.background='linear-gradient(90deg,#ff9500,#FFD700)';
+    else _energyFillEl.style.background='';
   }
-  // Energy saver
-  // Unlimited energy from VIP
-  const unlimitedEnergy = g.vip && g.vip.energyUntil && g.vip.energyUntil > Date.now();
-  const saveChance = (g.energySaveLevel||0) * 0.10;
-  const energyCost = unlimitedEnergy ? 0 : (Math.random() < saveChance ? 0 : 1);
-  // Vibration on mobile
-  if(navigator.vibrate) navigator.vibrate(g.combo >= 10 ? [30,10,30] : 15);
-  g.coins+=reward; g.clicks++;
-  g.totalEarned = (g.totalEarned||0) + reward;
-  if(g.clicks===1||g.lastFirstTapDate!==new Date().toDateString()) checkFirstTapBonus(); g.energy=Math.max(0,g.energy-energyCost);
 
-  // Visual effects
-  spawnHitEffects(e);
-  spawnParticles(e.clientX, e.clientY);
-  if(g.combo>=5) spawnShockwave();
+  // Вибрация
+  if(navigator.vibrate) navigator.vibrate(15);
 
-  let txt=`+${reward}`;
-  if(g.combo>=3)txt=`+${reward} 🔥×${g.combo}`;
-  showFloat(txt,e.clientX,e.clientY,g.combo>=10?"#ff3366":g.combo>=5?"#ff9500":"#FFD700");
+  // Тяжёлые операции — через requestAnimationFrame или с throttle
+  if(g.clicks%5===0) {
+    requestAnimationFrame(()=>{
+      checkLevelUp();
+      updateUI();
+    });
+  }
+  if(g.clicks%50===0) {
+    checkAchievements();
+    saveGame();
+    checkRareDrop();
+  }
+  if(g.clicks%100===0) checkRarePlanetDrop();
 
-  const cd=document.getElementById('comboDisplay');
-  if(g.combo>=3){cd.textContent=`🔥 COMBO ×${g.combo}`;cd.style.color=g.combo>=10?"#ff3366":g.combo>=5?"#ff9500":"#FFD700";cd.classList.add('active');setTimeout(()=>cd.classList.remove('active'),300);}
-  else cd.textContent='';
-
-  // Speed up orbit on combo
-  const rings=document.querySelectorAll('.orbit-ring');
-  const speed=g.combo>=10?1:g.combo>=5?3:g.combo>=3?6:12;
-  rings[0].style.animationDuration=speed+'s';
-  rings[1].style.animationDuration=(speed*0.7)+'s';
-  setTimeout(()=>{rings[0].style.animationDuration='12s';rings[1].style.animationDuration='8s';},2000);
-
-  // Throttle heavy operations - not every tap
-  updateUI();
-  if(g.clicks % 5 === 0) checkLevelUp();
-  if(g.clicks % 20 === 0) { checkAchievements(); saveGame(); }
+  // Звук (лёгкий)
+  playSound('tap');
 }
 
 function spawnHitEffects(e){
