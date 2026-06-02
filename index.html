@@ -2045,8 +2045,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="page" id="pageCosmosmap">
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;letter-spacing:2px;">🌌 COSMOS MAP</div>
 
-  <div style="overflow-x:auto;padding-bottom:10px;">
-    <div id="cosmosMapContainer" style="min-width:320px;"></div>
+  <div style="overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;max-height:calc(100vh - 200px);padding-bottom:20px;">
+    <div id="cosmosMapContainer" style="width:100%;"></div>
   </div>
 </div>
 
@@ -3897,7 +3897,7 @@ function updateBoostsUI(){
   const tpr = document.getElementById('totalPassiveRate'); if(tpr) tpr.textContent=`+${rate} XSPC/hr`;
   const bpa = document.getElementById('boostPageAccum'); if(bpa) bpa.textContent=Math.floor(passiveAccumulated).toLocaleString();
   const cb2 = document.getElementById('collectBtn2');
-  if(cb2) cb2.style.display = passiveAccumulated>=1?'block':'none';
+  if(cb2) cb2.style.display = passiveAccumulated>=50?'block':'none';
   renderBoostCards();
 }
 
@@ -4667,14 +4667,29 @@ function collectPassive() {
   const amount = Math.floor(passiveAccumulated);
   if(amount < 1) return;
   g.coins += amount;
-  g.totalEarned = (g.totalEarned || 0) + amount; // fix: update totalEarned
+  g.totalEarned = (g.totalEarned || 0) + amount;
   passiveAccumulated = 0;
   playSound('coin');
-  showFloat('+'+amount.toLocaleString()+' XSPC ⏰', window.innerWidth/2, 300, '#00ff88');
   if(navigator.vibrate) navigator.vibrate([20, 10, 20]);
-  updateUI();
-  updatePassive();
-  updateBoostsUI();
+
+  // Coin burst animation
+  for(let i = 0; i < 6; i++) {
+    setTimeout(() => {
+      const x = window.innerWidth * 0.2 + Math.random() * window.innerWidth * 0.6;
+      const y = 250 + Math.random() * 100;
+      showFloat('🪐 +'+Math.floor(amount/6).toLocaleString(), x, y, '#00ff88');
+    }, i * 80);
+  }
+
+  // Flash the passive income block
+  const block = document.querySelector('[id="passiveAccum"]')?.closest('div[style*="border"]');
+  if(block) {
+    block.style.transition = 'box-shadow 0.3s';
+    block.style.boxShadow = '0 0 20px rgba(0,255,136,0.6)';
+    setTimeout(() => { if(block) block.style.boxShadow = ''; }, 600);
+  }
+
+  updateUI(); updatePassive(); updateBoostsUI();
   const fc = document.getElementById('fullCardsGrid');
   if(fc && fc.innerHTML) renderFullCards();
   saveGame();
@@ -5546,25 +5561,35 @@ async function updatePlayerCounter() {
   const el = document.getElementById('playerCounter');
   if(!el) return;
 
-  // Show growing fallback immediately — never empty
-  if(el.textContent === '...' || el.textContent === '') el.textContent = getGrowingPlayerCount().toLocaleString();
-  else el.textContent = getGrowingPlayerCount().toLocaleString();
+  // Show growing estimate immediately
+  const growing = getGrowingPlayerCount();
+  if(el.textContent === '...' || el.textContent === '') el.textContent = growing.toLocaleString();
 
   // Try real API
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5000);
+    const timer = setTimeout(() => controller.abort(), 4000);
     const r = await fetch(`${API_URL}/stats`, {signal: controller.signal});
     clearTimeout(timer);
     const d = await r.json();
     const real = d.total_players || 0;
-    // Use whichever is bigger — real or growing estimate
-    const display = Math.max(real, getGrowingPlayerCount());
-    el.textContent = display.toLocaleString();
+    const display = Math.max(real, growing);
+    // Animate number change
+    if(el.textContent !== display.toLocaleString()) {
+      el.style.transition = 'opacity 0.3s';
+      el.style.opacity = '0.5';
+      setTimeout(() => {
+        el.textContent = display.toLocaleString();
+        el.style.opacity = '1';
+      }, 150);
+    }
   } catch(e) {
-    // Fallback already set above
+    el.textContent = growing.toLocaleString();
   }
 }
+
+// Update player count every 5 minutes with smooth animation
+setInterval(updatePlayerCounter, 300000);
 
 setInterval(updateCountdown, 1000);
 setInterval(updatePlayerCounter, 600000); // update every 10 min
