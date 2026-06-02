@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
 <title>XSPACECOIN — Conquer the Galaxy</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -14,7 +15,7 @@
   --planet-glow: rgba(0,100,255,0.6);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);min-height:100vh;font-family:'Rajdhani',sans-serif;color:var(--text);overflow-x:hidden;user-select:none;}
+body{background:var(--bg);min-height:100vh;font-family:'Rajdhani',sans-serif;color:var(--text);overflow-x:hidden;user-select:none;;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 20%,rgba(123,47,255,0.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(0,245,255,0.1) 0%,transparent 50%);pointer-events:none;}
 body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,245,255,0.01) 2px,rgba(0,245,255,0.01) 4px);pointer-events:none;}
 
@@ -3012,6 +3013,38 @@ function checkInviteBonus(newCount) {
   setTimeout(() => { if(popup.parentElement) popup.remove(); }, 8000);
 }
 
+
+// ═══ STUB FUNCTIONS — предотвращаем краши ═══
+function renderEarnHub() {
+  // Earn hub рендерится через HTML, не через JS
+}
+function updateStats() {
+  // Алиас для совместимости
+  if(typeof renderStats === 'function') renderStats();
+  else {
+    const el = id => document.getElementById(id);
+    if(el('statCoins')) el('statCoins').textContent = formatCoins(g.coins);
+    if(el('statClicks')) el('statClicks').textContent = (g.clicks||0).toLocaleString();
+    if(el('statLevel')) el('statLevel').textContent = g.level||1;
+    if(el('statFriends')) el('statFriends').textContent = g.friends||0;
+    if(el('statPvpWins')) el('statPvpWins').textContent = g.pvpWins||0;
+    if(el('statBosses')) el('statBosses').textContent = Object.keys(g.bossesDefeated||{}).length;
+    if(el('statArtifacts')) el('statArtifacts').textContent = Object.keys(g.artifacts||{}).length;
+    if(el('statArtifactsCount')) el('statArtifactsCount').textContent = Object.keys(g.artifacts||{}).length;
+    if(el('statTotalEarned')) el('statTotalEarned').textContent = formatCoins(g.totalEarned||0);
+    if(el('statStreak')) el('statStreak').textContent = (g.streak||0)+' days';
+  }
+}
+function renderChest() {
+  // Keys & Chest страница — обновляем баланс ключей
+  const el = document.getElementById('keysBalance');
+  if(el) el.textContent = g.keys||0;
+}
+function renderFriends() {
+  // Friends страница — запрашиваем список
+  if(g.telegramId) loadFriends(g.telegramId);
+}
+
 // ═══ EXPEDITIONS ═══
 const EXPEDITION_EVENTS = [
   {id:'signal',  title:'Alien Signal Detected!',    icon:'🛸', desc:'A mysterious signal from a nearby planet.',
@@ -4436,6 +4469,10 @@ function showPage(page){
   if(page==='boss'){updateBossUI();}
   if(page==='rareplanets'){renderRarePlanets();const rc=document.getElementById('rarePlanetsCount');if(rc)rc.textContent=Object.keys(g.rarePlanets||{}).length+'/5 discovered';}
   if(page==='battle'){updateBattleHub();renderBattleHistoryHub();}
+  if(page==='wheel'){drawWheel();}
+  if(page==='chest'){if(typeof renderChest==='function')renderChest();}
+  if(page==='top'){renderTop();}
+  if(page==='tasks'){renderPartnerTasks();}
   if(page==='pvp'){renderAttackBots();updatePvpBattlesUI();renderBattleHistory();}
   if(page==='staking') showFeatureTip('staking','💰 Staking','Stake your XSPC tokens to earn daily passive rewards. More staked = more earned!');
   if(page==='boss') showFeatureTip('boss','💀 Boss Battle','Attack the boss using tap attacks or power blasts. Defeat it to unlock the next planet!');
@@ -7076,4 +7113,4 @@ function buyArtifact(id) {
 
 </script>
 </body>
-</html
+</htm;min-height:-webkit-fill-available;}
