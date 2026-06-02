@@ -6901,6 +6901,27 @@ async function initUser(){
   loadFriends(userId);
 }
 
+// ═══ DAILY STREAK CHECK ═══
+function checkDailyLogin() {
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  if(!g.lastLoginDate) {
+    g.lastLoginDate = today;
+    g.streak = 1;
+    return;
+  }
+  if(g.lastLoginDate === today) return; // already logged today
+  if(g.lastLoginDate === yesterday) {
+    // Consecutive day
+    g.streak = (g.streak || 0) + 1;
+  } else {
+    // Streak broken
+    g.streak = 1;
+  }
+  g.lastLoginDate = today;
+  saveGame();
+}
+
 // ═══ TIMERS ═══
 setInterval(()=>{
   if(g.energy<g.maxEnergy){
@@ -6938,6 +6959,7 @@ setManagedInterval("apiSave", ()=>{ if(g.telegramId) apiSave(); }, 30000);
 // ═══ START ═══
 loadGame();
 
+checkDailyLogin();
 // Force planet recalculation — reset saved name so it always updates visually
 g.currentPlanetName = '';
 // Restore friends count from localStorage cache
