@@ -2380,13 +2380,17 @@ async function apiRegister(u,un,fn,r){
       })
     });
     const d = await res.json();
+    console.log('[XSPC] Register response:', d);
     if(d.referrals !== undefined) {
-      g.friends = d.referrals;
-      const fc = document.getElementById('friendCount'); if(fc) fc.textContent = d.referrals;
-      const fcl = document.getElementById('friendCountLabel'); if(fcl) fcl.textContent = d.referrals;
-      const fe = document.getElementById('friendEarnings'); if(fe) fe.textContent = (d.referrals*500).toLocaleString();
+      g.friends = Math.max(g.friends||0, d.referrals);
+      ['friendCount','friendCount2','friendCountLabel'].forEach(id => {
+        const e = document.getElementById(id); if(e) e.textContent = d.referrals;
+      });
+      const fe = document.getElementById('friendEarnings');
+      if(fe) fe.textContent = (d.referrals * 500).toLocaleString();
+      if(d.referrals > 0) localStorage.setItem('xspc_friends_cache', d.referrals);
     }
-  } catch(e) { console.log('Register failed:', e); }
+  } catch(e) { console.log('[XSPC] Register failed:', e); }
 }
 async function apiSave(){
   if(!g.telegramId) return;
@@ -6887,6 +6891,7 @@ async function initUser(){
   if(!userId||isNaN(userId)){document.getElementById('refLink').textContent='Open in Telegram to get your link';return;}
   g.telegramId=userId;
   saveGame();
+  console.log('[XSPC] initUser:', userId, 'ref:', referrerId);
   await apiRegister(userId,username,fullName,referrerId);
   // Update ref link after we have the ID
   const refEl = document.getElementById('refLink');

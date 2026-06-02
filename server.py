@@ -136,6 +136,15 @@ async def register_user(request: dict):
     if existing:
         c.execute("UPDATE users SET coins=?, clicks=?, level=?, username=?, full_name=? WHERE user_id=?",
                   (max(coins, existing["coins"]), clicks, level, username, full_name, user_id))
+        # If referrer provided but not yet linked — add referral now
+        if referrer_id and referrer_id != user_id:
+            c.execute("SELECT 1 FROM referrals WHERE referrer_id=? AND referred_id=?", (referrer_id, user_id))
+            if not c.fetchone():
+                c.execute("INSERT INTO referrals (referrer_id, referred_id) VALUES (?,?)",
+                          (referrer_id, user_id))
+                c.execute("SELECT user_id FROM users WHERE user_id=?", (referrer_id,))
+                if c.fetchone():
+                    c.execute("UPDATE users SET coins=coins+5000 WHERE user_id=?", (referrer_id,))
         refs = get_referral_count(c, user_id)
         conn.commit()
         conn.close()
@@ -146,13 +155,16 @@ async def register_user(request: dict):
               (user_id, username, full_name, coins, clicks, level, referrer_id))
 
     if referrer_id and referrer_id != user_id:
+        # Always save referral record even if referrer not yet in DB
+        c.execute("SELECT 1 FROM referrals WHERE referrer_id=? AND referred_id=?", (referrer_id, user_id))
+        if not c.fetchone():
+            c.execute("INSERT INTO referrals (referrer_id, referred_id) VALUES (?,?)",
+                      (referrer_id, user_id))
+        # Give bonus if referrer exists
         c.execute("SELECT user_id FROM users WHERE user_id = ?", (referrer_id,))
         if c.fetchone():
-            c.execute("UPDATE users SET coins = coins + 500 WHERE user_id = ?", (referrer_id,))
-            c.execute("SELECT 1 FROM referrals WHERE referrer_id=? AND referred_id=?", (referrer_id, user_id))
-            if not c.fetchone():
-                c.execute("INSERT INTO referrals (referrer_id, referred_id) VALUES (?,?)",
-                          (referrer_id, user_id))
+            c.execute("UPDATE users SET coins = coins + 5000 WHERE user_id = ?", (referrer_id,))
+            logging.info(f"Referral bonus: {referrer_id} got 5000 XSPC for inviting {user_id}")
 
     conn.commit()
     refs = get_referral_count(c, user_id)
@@ -227,6 +239,20 @@ def get_top():
     top = [dict(row) for row in c.fetchall()]
     conn.close()
     return top
+
+@app.get("/debug/referrals/{user_id}")
+def debug_referrals(user_id: int):
+    """Debug: see all referrals for a user"""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT * FROM referrals WHERE referrer_id=?", (user_id,))
+    rows = [dict(r) for r in c.fetchall()]
+    c.execute("SELECT COUNT(*) as cnt FROM referrals WHERE referrer_id=?", (user_id,))
+    count = c.fetchone()["cnt"]
+    c.execute("SELECT coins, level FROM users WHERE user_id=?", (user_id,))
+    user = dict(c.fetchone() or {})
+    conn.close()
+    return {"referrer_id": user_id, "referral_count": count, "referrals": rows, "user": user}
 
 @app.get("/stats")
 def get_stats():
