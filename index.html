@@ -2352,6 +2352,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <script>
 const API_URL='https://coinfarm-production.up.railway.app';
 
+// ═══ UTILITY ═══
+function formatCoins(n) {
+  n = Math.floor(n || 0);
+  if(n >= 1000000000) return (n/1000000000).toFixed(1)+'B';
+  if(n >= 1000000) return (n/1000000).toFixed(1)+'M';
+  if(n >= 1000) return (n/1000).toFixed(1)+'K';
+  return n.toLocaleString();
+}
+
+
 async function apiRegister(u,un,fn,r){
   try{
     const res = await fetch(API_URL+'/user/register',{
@@ -7113,4 +7123,5 @@ function buyArtifact(id) {
 
 </script>
 </body>
-</htm;min-height:-webkit-fill-available;}
+</htm;min-height:-webkit-fill-available;
+}
