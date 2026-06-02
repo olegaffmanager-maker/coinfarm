@@ -1823,6 +1823,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <button onclick="redeemPromo()" style="padding:10px 16px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:10px;color:#000;font-weight:700;font-size:13px;cursor:pointer;">GO</button>
       </div>
       <div id="promoResult" style="margin-top:8px;font-size:12px;text-align:center;"></div>
+      <div style="margin-top:10px;padding:8px;background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.15);border-radius:10px;font-size:11px;color:#4a6080;text-align:center;">Also via bot: <span style="color:var(--accent);font-family:Orbitron,monospace;">/promo CODE</span></div>
     </div>
   <!-- How to earn keys -->
   <div class="section-title">💡 How to Earn XKEY</div>
@@ -2244,7 +2245,34 @@ async function apiRegister(u,un,fn,r){
     }
   } catch(e) { console.log('Register failed:', e); }
 }
-async function apiSave(){if(!g.telegramId)return;try{await fetch(API_URL+'/user/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:g.telegramId,coins:g.coins,clicks:g.clicks,level:g.level})});}catch(e){}}
+async function apiSave(){
+  if(!g.telegramId) return;
+  try {
+    await fetch(API_URL+'/user/save', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        user_id:      g.telegramId,
+        coins:        g.coins,
+        clicks:       g.clicks,
+        level:        g.level,
+        // New fields
+        keys:         g.keys || 0,
+        total_earned: g.totalEarned || 0,
+        streak:       g.streak || 0,
+        streak_day:   g.streakDay || 1,
+        artifacts:    JSON.stringify(g.artifacts || {}),
+        bosses:       JSON.stringify(g.bossesDefeated || {}),
+        rare_planets: JSON.stringify(g.rarePlanets || {}),
+        vip:          JSON.stringify(g.vip || {}),
+        staked:       g.stakedAmount || 0,
+        pvp_wins:     g.pvpWins || 0,
+        clan:         g.clan ? g.clan.tag : null,
+        last_save:    Date.now()
+      })
+    });
+  } catch(e) {}
+}
 async function apiGetTop(){try{return await(await fetch(API_URL+'/top')).json();}catch(e){return[];}}
 
 // PLANETS CONFIG
@@ -5359,8 +5387,8 @@ Price: ${pkg.stars} ⭐ Stars`,
         if(status === 'paid') applyVipPurchase(type);
       });
     } else {
-      // Fallback — apply directly (for testing)
-      applyVipPurchase(type);
+      // No invoice support — show manual payment info
+      showToast('💳 Payment via Telegram Stars requires latest Telegram app');
     }
   });
 }
@@ -5394,6 +5422,17 @@ function applyVipPurchase(type) {
   }
 
   updateUI(); updateKeysUI(); updateVipStatus(); saveGame();
+}
+
+function getVipStatusText() {
+  if(!g.vip) return 'No active VIP';
+  const now = Date.now();
+  const parts = [];
+  if(g.vip.galaxyPass) parts.push('🌌 Galaxy Pass (permanent)');
+  if(g.vip.vipUntil && g.vip.vipUntil > now) parts.push('👑 VIP '+ Math.ceil((g.vip.vipUntil-now)/86400000)+'d left');
+  if(g.vip.boosterUntil && g.vip.boosterUntil > now) parts.push('⚡ Booster '+Math.ceil((g.vip.boosterUntil-now)/86400000)+'d left');
+  if(g.vip.energyUntil && g.vip.energyUntil > now) parts.push('⚡ Energy '+Math.ceil((g.vip.energyUntil-now)/3600000)+'h left');
+  return parts.length ? parts.join(' · ') : 'No active VIP';
 }
 
 function updateVipStatus() {
@@ -5991,6 +6030,8 @@ setInterval(()=>{if(g.energy<g.maxEnergy){
     updateUI();
   }},5000);
 setInterval(()=>{checkLevelUp();updatePlanet(g.level,false);saveGame();},5000);
+// Sync with server every 30 seconds
+setInterval(()=>{ if(g.telegramId) apiSave(); }, 30000);
 
 // ═══ START ═══
 loadGame();
