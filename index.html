@@ -1078,7 +1078,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(123,47,255,0.08));border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:14px;text-align:center;">
     <div style="font-size:48px;margin-bottom:8px;">🪐</div>
     <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:900;color:var(--accent);letter-spacing:2px;">XSPACECOIN</div>
-    <div style="font-size:12px;color:#4a6080;margin-top:4px;font-family:Orbitron,monospace;letter-spacing:3px;">WHITEPAPER v1.0</div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;font-family:Orbitron,monospace;letter-spacing:3px;">WHITEPAPER v2.0</div>
     <div style="margin-top:12px;font-size:13px;color:var(--text);line-height:1.6;">The first tap-to-earn space mining game on Telegram with real token economics on TON blockchain</div>
   </div>
 
@@ -1186,6 +1186,32 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">Q1 2027</div>
       </div>
       <div style="font-size:11px;color:#4a6080;">CEX listings, NFT planets, cross-platform expansion</div>
+    </div>
+  </div>
+
+  <!-- New Mechanics -->
+  <div class="section-title">🎮 Game Features</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:20px;">🌌</div><div><div style="font-size:12px;font-weight:700;">200 Levels · 20+ Planets</div><div style="font-size:10px;color:#4a6080;">From Mercury to Omniverse</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:20px;">💀</div><div><div style="font-size:12px;font-weight:700;">Planet Bosses</div><div style="font-size:10px;color:#4a6080;">Fight bosses to unlock new worlds</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:20px;">🛸</div><div><div style="font-size:12px;font-weight:700;">Cosmic Expeditions</div><div style="font-size:10px;color:#4a6080;">Every 4 hours — random events with rewards</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:20px;">💰</div><div><div style="font-size:12px;font-weight:700;">XSPC Staking</div><div style="font-size:10px;color:#4a6080;">Stake tokens, earn up to 20%/day</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:20px;">🌟</div><div><div style="font-size:12px;font-weight:700;">Rare Planets · Artifacts</div><div style="font-size:10px;color:#4a6080;">Collect ultra-rare items with unique bonuses</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:20px;">⚔️</div><div><div style="font-size:12px;font-weight:700;">PvP Battles · Seasons</div><div style="font-size:10px;color:#4a6080;">Fight players, earn seasonal prizes</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="font-size:20px;">👑</div><div><div style="font-size:12px;font-weight:700;">VIP · Telegram Stars</div><div style="font-size:10px;color:#4a6080;">x2 bonuses, exclusive access</div></div>
     </div>
   </div>
 
@@ -3063,6 +3089,72 @@ function toggleSound() {
   saveGame();
 }
 
+
+// ═══ PUSH NOTIFICATIONS ═══
+function requestNotificationPermission() {
+  if(!('Notification' in window)) return;
+  if(Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+function sendPushNotification(title, body, icon) {
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    new Notification(title, { body, icon: icon || '🪐', tag: 'xspacecoin' });
+  } catch(e) {}
+}
+
+let energyFullNotified = false;
+let passiveReadyNotified = false;
+
+function checkNotifications() {
+  // Energy full notification
+  if(g.energy >= g.maxEnergy && !energyFullNotified) {
+    energyFullNotified = true;
+    sendPushNotification('⚡ XSPACECOIN', 'Energy is full! Come mine XSPC now!', '⚡');
+  }
+  if(g.energy < g.maxEnergy) energyFullNotified = false;
+
+  // Passive income ready (100+ accumulated)
+  const passive = Math.floor(passiveAccumulated);
+  if(passive >= 100 && !passiveReadyNotified) {
+    passiveReadyNotified = true;
+    sendPushNotification('🪐 XSPACECOIN', 'Passive income ready! +'+passive.toLocaleString()+' XSPC waiting!', '🪐');
+  }
+  if(passive < 50) passiveReadyNotified = false;
+}
+
+// Request permission on first tap
+function initNotifications() {
+  requestNotificationPermission();
+}
+
+setInterval(checkNotifications, 30000);
+
+
+// ═══ SHARE ACHIEVEMENT ═══
+function shareAchievement(achName) {
+  const planet = getPlanetForLevel(g.level);
+  const text = '🏆 Achievement: '+achName+' in XSPACECOIN!'
+    + '\n🪐 Level '+g.level+' - '+planet.name
+    + '\n💰 '+Math.floor(g.coins).toLocaleString()+' XSPC earned'
+    + '\n🌌 Join me and conquer the galaxy!';
+  const url = 'https://t.me/play1xfarmbot';
+  if(window.Telegram?.WebApp) {
+    window.Telegram.WebApp.openTelegramLink(
+      'https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text)
+    );
+  } else {
+    if(navigator.share) {
+      navigator.share({title: 'XSPACECOIN Achievement', text, url});
+    } else {
+      navigator.clipboard?.writeText(text+'\n'+url);
+      showToast('📋 Achievement copied to clipboard!');
+    }
+  }
+}
+
 const ACHIEVEMENTS=[
   // Taps
   {id:"first",   name:"🎯 First Tap",       desc:"Tap for the first time",      req:()=>g.clicks>=1,           reward:10},
@@ -3204,6 +3296,7 @@ function saveGame(){
 function handleClick(e){
   if(g.energy<=0){playSound('error');showFloat("❌ No energy!",e.clientX,e.clientY,"#ff3366");return;}
   playSound('tap');
+  if(g.clicks === 1) initNotifications();
   const now=Date.now();
   g.combo=(now-g.lastClick<1500)?g.combo+1:1;
   g.lastClick=now;
@@ -3426,13 +3519,6 @@ function checkLevelUp(){
     }
     updatePlanet(nl, false);
     renderBoostCards();
-updateKeysUI();
-renderPartnerTasks(); // tasks page
-// Show player count immediately without waiting for async
-const _pcEl = document.getElementById('playerCounter');
-if(_pcEl) _pcEl.textContent = getGrowingPlayerCount().toLocaleString();
-updatePlayerCounter();
-updateCountdown();
     updatePassive();
     checkKeyReward(g.level - gained, g.level);
   }
@@ -3441,7 +3527,23 @@ function closeLevelUp(){document.getElementById('levelupOverlay').classList.remo
 
 function checkAchievements(){
   ACHIEVEMENTS.forEach(a=>{
-    if(!g.achievements[a.id]&&a.req()){g.achievements[a.id]=true;g.coins+=a.reward;showFloat(`🏅 +${a.reward}!`,window.innerWidth/2,200,'#FFD700');}
+    if(!g.achievements[a.id]&&a.req()){
+      g.achievements[a.id]=true;
+      g.coins+=a.reward;
+      playSound('win');
+      showFloat('🏅 +'+a.reward+'!', window.innerWidth/2, 200, '#FFD700');
+      showToast('🏅 '+a.name+' unlocked!');
+      const achName = a.name;
+      const achReward = a.reward;
+      setTimeout(function() {
+        const o = document.createElement('div');
+        o.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9990;background:linear-gradient(135deg,#0a0020,#050a1a);border:1px solid rgba(255,215,0,0.4);border-radius:16px;padding:14px 20px;display:flex;align-items:center;gap:12px;max-width:320px;width:90%;box-shadow:0 0 30px rgba(255,215,0,0.2);';
+        o.innerHTML = '<div style="font-size:24px;">🏅</div><div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#FFD700;">'+achName+'</div><div style="font-size:10px;color:#4a6080;">+'+achReward.toLocaleString()+' XSPC</div></div><button onclick="window._shareAch()" style="padding:6px 12px;background:linear-gradient(135deg,#00f5ff,#7b2fff);border:none;border-radius:8px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">📤 Share</button><button onclick="this.parentElement.remove()" style="padding:6px 8px;background:transparent;border:none;color:#4a6080;font-size:16px;cursor:pointer;">×</button>';
+        window._shareAch = function(){ shareAchievement(achName); };
+        document.body.appendChild(o);
+        setTimeout(function(){ o.remove(); }, 6000);
+      }, 500);
+    }
   });
 }
 
@@ -5759,8 +5861,8 @@ function endPvP() {
   if(resultEl) {
     resultEl.style.display = 'block';
     resultEl.innerHTML = won
-      ? `<div style="font-size:40px;margin-bottom:8px;">🏆</div><div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#00ff88;margin-bottom:6px;">YOU WIN!</div><div style="font-size:14px;color:#FFD700;margin-bottom:4px;">+${reward.toLocaleString()} XSPC</div><div style="font-size:12px;color:#4a6080;">${pvpScore.toLocaleString()} vs ${pvpOpponentScore.toLocaleString()} taps</div>`
-      : `<div style="font-size:40px;margin-bottom:8px;">😔</div><div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff3366;margin-bottom:6px;">YOU LOSE!</div><div style="font-size:14px;color:#4a6080;margin-bottom:4px;">+${reward.toLocaleString()} XSPC (consolation)</div><div style="font-size:12px;color:#4a6080;">${pvpScore.toLocaleString()} vs ${pvpOpponentScore.toLocaleString()} taps</div>`;
+      ? '<div style="font-size:40px;margin-bottom:8px;">🏆</div><div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#00ff88;">VICTORY!</div><div style="font-size:13px;color:#00ff88;margin-top:4px;">+'+reward.toLocaleString()+' XSPC captured!</div>'
+      : '<div style="font-size:40px;margin-bottom:8px;">😔</div><div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff3366;">DEFEAT</div><div style="font-size:13px;color:#ff3366;margin-top:4px;">Better luck next time!</div>'
   }
 
   // Show setup again
