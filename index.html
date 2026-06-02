@@ -1176,7 +1176,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="padding:12px 14px;background:rgba(123,47,255,0.06);border:1px solid rgba(123,47,255,0.2);border-radius:12px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
         <div style="font-size:13px;font-weight:700;color:#7b2fff;">⏳ Phase 3 — Token</div>
-        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">Q4 2026</div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">Q1 2027</div>
       </div>
       <div style="font-size:11px;color:#4a6080;">XSPC token launch on TON, DEX listing, withdrawal opens</div>
     </div>
@@ -1655,6 +1655,57 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 </div>
 
 <!-- GALAXY HUB -->
+
+<!-- CLANS PAGE -->
+<div class="page" id="pageClans">
+  <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#7b2fff;margin-bottom:14px;letter-spacing:2px;">🛸 CLANS</div>
+
+  <!-- My clan section -->
+  <div id="myClanSection" style="display:none;">
+    <div style="background:linear-gradient(135deg,rgba(123,47,255,0.12),rgba(0,245,255,0.06));border:1px solid rgba(123,47,255,0.3);border-radius:18px;padding:16px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="font-size:28px;" id="myClanEmoji">🛸</div>
+        <div style="flex:1;"><div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#7b2fff;" id="myClanName">MY CLAN</div>
+        <div style="font-size:10px;color:#4a6080;">Level <span id="myClanLevel">1</span></div></div>
+        <div style="text-align:right;"><div style="font-size:10px;color:#4a6080;">Treasury</div><div style="font-family:Orbitron,monospace;font-size:13px;color:#FFD700;" id="myClanTreasury">0 XSPC</div></div>
+      </div>
+      <!-- Clan bonus -->
+      <div style="padding:8px 12px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);border-radius:10px;margin-bottom:10px;">
+        <div style="font-size:11px;color:#00ff88;">🌟 Clan Bonus: +<span id="myClanBonus">5</span>% to all income</div>
+      </div>
+      <!-- Contribute button -->
+      <button onclick="contributeToСlan()" style="width:100%;padding:10px;background:linear-gradient(135deg,rgba(123,47,255,0.2),rgba(0,245,255,0.1));border:1px solid rgba(123,47,255,0.4);border-radius:12px;color:#7b2fff;font-weight:700;font-size:13px;cursor:pointer;">💰 Contribute 1% XSPC to Clan</div>
+      <button onclick="leaveClan()" style="width:100%;padding:8px;background:transparent;border:1px solid rgba(255,50,50,0.2);border-radius:10px;color:#ff3366;font-size:11px;cursor:pointer;margin-top:6px;">Leave Clan</button>
+    </div>
+  </div>
+
+  <!-- No clan section -->
+  <div id="noClanSection">
+    <!-- Create clan -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:10px;">➕ Create New Clan</div>
+      <input id="newClanName" placeholder="Clan name (3-20 chars)" maxlength="20" style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:8px;">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px;" id="clanEmojiPicker">
+        <div onclick="selectClanEmoji(this,'🚀')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">🚀</div>
+        <div onclick="selectClanEmoji(this,'🌑')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">🌑</div>
+        <div onclick="selectClanEmoji(this,'☀️')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">☀️</div>
+        <div onclick="selectClanEmoji(this,'🌀')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">🌀</div>
+        <div onclick="selectClanEmoji(this,'⚡')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">⚡</div>
+        <div onclick="selectClanEmoji(this,'🔥')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">🔥</div>
+        <div onclick="selectClanEmoji(this,'🧿')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">🧿</div>
+        <div onclick="selectClanEmoji(this,'💫')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">💫</div>
+        <div onclick="selectClanEmoji(this,'👑')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">👑</div>
+        <div onclick="selectClanEmoji(this,'⚔️')" style="text-align:center;font-size:22px;padding:6px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">⚔️</div>
+      </div>
+      <button onclick="createClan()" style="width:100%;padding:12px;background:linear-gradient(135deg,#7b2fff,#00f5ff);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;">🛸 Create Clan</button>
+    </div>
+
+    <!-- Available clans -->
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">🌌 AVAILABLE CLANS</div>
+    <div id="clansList" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+
 <div class="page" id="pageGalaxy">
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;letter-spacing:2px;">🌌 GALAXY</div>
 
@@ -2685,6 +2736,117 @@ function renderCosmosMap() {
   container.innerHTML = html;
 }
 
+
+// ═══ CLANS SYSTEM ═══
+const DEFAULT_CLANS = [
+  {tag:'XSPC_FORCE', name:'XSPC Force',    emoji:'🚀', level:3, treasury:5000000,  members:12, bonus:15},
+  {tag:'DARK_STAR',  name:'Dark Stars',     emoji:'🌑', level:2, treasury:2000000,  members:8,  bonus:10},
+  {tag:'SOLARS',     name:'Solar Miners',   emoji:'☀️', level:1, treasury:500000, members:5,  bonus:5},
+  {tag:'VOIDLORDS',  name:'Void Lords',     emoji:'🧿', level:4, treasury:12000000, members:20, bonus:20},
+  {tag:'NEBULA_X',   name:'Nebula X',       emoji:'🌀', level:2, treasury:1500000,  members:7,  bonus:10},
+];
+
+let selectedClanEmoji = '🚀';
+
+function selectClanEmoji(el, emoji) {
+  selectedClanEmoji = emoji;
+  document.querySelectorAll('#clanEmojiPicker div').forEach(d => d.style.borderColor = 'var(--border)');
+  el.style.borderColor = '#7b2fff';
+}
+
+function createClan() {
+  const nameEl = document.getElementById('newClanName');
+  const name = nameEl ? nameEl.value.trim() : '';
+  if(name.length < 3) { showToast('Clan name must be at least 3 characters!'); return; }
+  if(name.length > 20) { showToast('Clan name too long (max 20 chars)!'); return; }
+  const tag = name.toUpperCase().replace(/[^A-Z0-9]/g,'_').substring(0,8);
+  g.clan = { tag, name, emoji: selectedClanEmoji, level: 1, treasury: 0, members: 1, bonus: 5 };
+  showToast('🛸 Clan '+name+' created!');
+  playSound('win');
+  updateClanUI();
+  saveGame();
+}
+
+function joinClan(tag) {
+  const clan = DEFAULT_CLANS.find(c => c.tag === tag);
+  if(!clan) return;
+  g.clan = { ...clan, members: clan.members + 1 };
+  showToast('🛸 Joined '+clan.name+'! +'+clan.bonus+'% bonus active!');
+  playSound('win');
+  updateClanUI();
+  saveGame();
+}
+
+function leaveClan() {
+  if(!g.clan) return;
+  g.clan = null;
+  showToast('Left clan.');
+  updateClanUI();
+  saveGame();
+}
+
+function contributeToСlan() {
+  if(!g.clan) { showToast('Join a clan first!'); return; }
+  const contrib = Math.floor((g.coins || 0) * 0.01);
+  if(contrib < 100) { showToast('Need at least 10,000 XSPC to contribute!'); return; }
+  g.coins -= contrib;
+  g.clan.treasury = (g.clan.treasury || 0) + contrib;
+  // Level up clan
+  const newLevel = Math.min(10, Math.floor(g.clan.treasury / 1000000) + 1);
+  if(newLevel > g.clan.level) {
+    g.clan.level = newLevel;
+    g.clan.bonus = newLevel * 5;
+    showToast('🏆 Clan leveled up to Lv'+newLevel+'! Bonus: +'+g.clan.bonus+'%');
+    playSound('win');
+  } else {
+    showToast('💰 Contributed '+contrib.toLocaleString()+' XSPC to clan!');
+  }
+  updateClanUI();
+  updateUI();
+  saveGame();
+}
+
+function getClanBonus() {
+  if(!g.clan) return 1;
+  return 1 + (g.clan.bonus || 5) / 100;
+}
+
+function updateClanUI() {
+  const myClan = document.getElementById('myClanSection');
+  const noClan = document.getElementById('noClanSection');
+  if(!myClan || !noClan) return;
+
+  if(g.clan) {
+    myClan.style.display = 'block';
+    noClan.style.display = 'none';
+    const el = id => document.getElementById(id);
+    if(el('myClanEmoji')) el('myClanEmoji').textContent = g.clan.emoji || '🛸';
+    if(el('myClanName')) el('myClanName').textContent = g.clan.name;
+    if(el('myClanLevel')) el('myClanLevel').textContent = g.clan.level || 1;
+    if(el('myClanTreasury')) el('myClanTreasury').textContent = (g.clan.treasury||0).toLocaleString()+' XSPC';
+    if(el('myClanBonus')) el('myClanBonus').textContent = g.clan.bonus || 5;
+  } else {
+    myClan.style.display = 'none';
+    noClan.style.display = 'block';
+    renderClansList();
+  }
+}
+
+function renderClansList() {
+  const list = document.getElementById('clansList');
+  if(!list) return;
+  list.innerHTML = DEFAULT_CLANS.map(c => {
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">'
+      +'<div style="font-size:24px;">'+c.emoji+'</div>'
+      +'<div style="flex:1;">'
+        +'<div style="font-size:13px;font-weight:700;">'+c.name+'</div>'
+        +'<div style="font-size:10px;color:#4a6080;">Lv'+c.level+' · '+c.members+' members · +'+c.bonus+'% bonus</div>'
+      +'</div>'
+      +'<button data-t="'+c.tag+'" onclick="joinClan(this.dataset.t)" style="padding:6px 12px;background:linear-gradient(135deg,#7b2fff,#00f5ff);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer;">JOIN</button>'
+      +'</div>';
+  }).join('');
+}
+
 // ═══ EXPEDITIONS ═══
 const EXPEDITION_EVENTS = [
   {id:'signal',  title:'Alien Signal Detected!',    icon:'🛸', desc:'A mysterious signal from a nearby planet.',
@@ -3668,6 +3830,22 @@ function spinWheel(){
         document.getElementById('wheelWinText').textContent=`+${prize.value} XKEY!`;
         updateKeysUI();
       }
+      // Win animation
+      playSound('win');
+      if(navigator.vibrate) navigator.vibrate([50,30,80,30,100]);
+      // Flash effect
+      const flash = document.createElement('div');
+      flash.style.cssText = 'position:fixed;inset:0;background:'+prize.color+';opacity:0.25;z-index:9993;pointer-events:none;transition:opacity 0.8s;';
+      document.body.appendChild(flash);
+      setTimeout(()=>{ flash.style.opacity='0'; setTimeout(()=>flash.remove(),800); },200);
+      // Coin rain effect
+      for(let i=0;i<8;i++){
+        setTimeout(()=>{
+          showFloat(prize.emoji+(prize.type==='coins'?'+'+prize.value.toLocaleString():prize.label),
+            Math.random()*window.innerWidth*0.6+window.innerWidth*0.2,
+            Math.random()*200+150, prize.color||'#FFD700');
+        }, i*120);
+      }
       document.getElementById('wheelOverlay').classList.add('show');
       document.getElementById('spinStatus').textContent='USED TODAY';
       document.getElementById('spinBtn').textContent='🔒 Come back tomorrow';
@@ -3921,6 +4099,7 @@ function showPage(page){
   if(page==='upgrade'){updateUpgradeHub();}
   if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();updateExpeditionStatus();}
   if(page==='cosmosmap'){renderCosmosMap();}
+  if(page==='clans'){updateClanUI();}
   if(page==='boss'){updateBossUI();}
   if(page==='rareplanets'){renderRarePlanets();const rc=document.getElementById('rarePlanetsCount');if(rc)rc.textContent=Object.keys(g.rarePlanets||{}).length+'/5 discovered';}
   if(page==='battle'){updateBattleHub();}
@@ -4199,7 +4378,8 @@ function getPassiveRate() {
   });
   // +1 per player level as base passive
   rate += g.level;
-  return rate;
+  // Clan bonus
+  return Math.floor(rate * getClanBonus());
 }
 
 function renderBoostCards() {
