@@ -938,6 +938,26 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff9500;" id="statStreak">0</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">DAY STREAK</div>
     </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">⚔️</div>
+      <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff3366;" id="statPvpWins">0</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">PVP WINS</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">💀</div>
+      <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff9500;" id="statBosses">0</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">BOSSES SLAIN</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">🌟</div>
+      <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#FFD700;" id="statRarePlanets">0/5</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">RARE PLANETS</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">🪐</div>
+      <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#7b2fff;" id="statTotalEarned">0</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">TOTAL EARNED</div>
+    </div>
   </div>
 
   <!-- Records -->
@@ -1663,7 +1683,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <!-- GALAXY HUB -->
 
 <!-- CLANS PAGE -->
-<div class="page" id="pageClans">
+<div class="page" id="pageClans" style="display:none;">
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#7b2fff;margin-bottom:14px;letter-spacing:2px;">🛸 CLANS</div>
 
   <!-- My clan section -->
@@ -1686,7 +1706,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   </div>
 
   <!-- No clan section -->
-  <div id="noClanSection">
+  <div id="noClanSection" style="display:none;">
     <!-- Create clan -->
     <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;">
       <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:10px;">➕ Create New Clan</div>
@@ -2777,7 +2797,6 @@ function createClan() {
   g.clan = { tag, name, emoji: selectedClanEmoji, level: 1, treasury: 0, members: 1, bonus: 5 };
   showToast('🛸 Clan '+name+' created!');
   playSound('win');
-  updateClanUI();
   saveGame();
 }
 
@@ -2787,7 +2806,6 @@ function joinClan(tag) {
   g.clan = { ...clan, members: clan.members + 1 };
   showToast('🛸 Joined '+clan.name+'! +'+clan.bonus+'% bonus active!');
   playSound('win');
-  updateClanUI();
   saveGame();
 }
 
@@ -2795,7 +2813,6 @@ function leaveClan() {
   if(!g.clan) return;
   g.clan = null;
   showToast('Left clan.');
-  updateClanUI();
   saveGame();
 }
 
@@ -2815,7 +2832,6 @@ function contributeToСlan() {
   } else {
     showToast('💰 Contributed '+contrib.toLocaleString()+' XSPC to clan!');
   }
-  updateClanUI();
   updateUI();
   saveGame();
 }
@@ -3947,6 +3963,17 @@ async function renderTop(){
   document.getElementById('topList').innerHTML='<div style="text-align:center;color:var(--muted);padding:30px;font-family:Orbitron,monospace;font-size:11px;letter-spacing:2px">LOADING...</div>';
   const top=await apiGetTop();
   const display=top.length?top:[{full_name:'You',coins:g.coins,level:g.level}];
+
+  // Count friends in top
+  const friendIds = (g.friendsData||[]).map(f=>f.user_id);
+  const friendsInTop = display.filter(p => friendIds.includes(p.user_id)).length;
+  const topFriendsEl = document.getElementById('topFriendsCount');
+  if(topFriendsEl) {
+    const total = g.friends || 0;
+    if(friendsInTop > 0) topFriendsEl.textContent = '👥 '+friendsInTop+' friend'+(friendsInTop>1?'s':'')+' in top rankings!';
+    else if(total > 0) topFriendsEl.textContent = total+' friend'+(total!==1?'s':'')+' invited · invite more to compete!';
+    else topFriendsEl.textContent = 'Invite friends to compete together!';
+  }
   const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
   document.getElementById('topList').innerHTML=display.map((p,i)=>`
     <div class="top-item">
@@ -4938,6 +4965,21 @@ function renderStats() {
   document.getElementById('statTotalTaps').textContent = taps>=1000?(taps/1000).toFixed(1)+'K':taps;
   document.getElementById('statPassiveRate').textContent = getPassiveRate();
   document.getElementById('statFriends').textContent = g.friends || 0;
+
+  // Extra stats
+  const pvpWinsEl = document.getElementById('statPvpWins');
+  if(pvpWinsEl) pvpWinsEl.textContent = g.pvpWins || 0;
+  const bossesEl = document.getElementById('statBosses');
+  if(bossesEl) bossesEl.textContent = Object.keys(g.bossesDefeated||{}).length;
+  const rarePlanetsEl = document.getElementById('statRarePlanets');
+  if(rarePlanetsEl) rarePlanetsEl.textContent = Object.keys(g.rarePlanets||{}).length+'/5';
+  const artifactsEl = document.getElementById('statArtifactsCount');
+  if(artifactsEl) artifactsEl.textContent = Object.keys(g.artifacts||{}).length;
+  const totalEarnedEl = document.getElementById('statTotalEarned');
+  if(totalEarnedEl) {
+    const te = g.totalEarned || g.coins || 0;
+    totalEarnedEl.textContent = te>=1000000000?(te/1000000000).toFixed(1)+'B':te>=1000000?(te/1000000).toFixed(1)+'M':te>=1000?(te/1000).toFixed(1)+'K':Math.floor(te);
+  }
 
   // Streak
   const today = new Date().toDateString();
