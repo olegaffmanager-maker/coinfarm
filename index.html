@@ -1210,7 +1210,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
       <div style="font-size:20px;">⚔️</div><div><div style="font-size:12px;font-weight:700;">PvP Battles · Seasons</div><div style="font-size:10px;color:#4a6080;">Fight players, earn seasonal prizes</div></div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+    <div style="display:none;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
       <div style="font-size:20px;">👑</div><div><div style="font-size:12px;font-weight:700;">VIP · Telegram Stars</div><div style="font-size:10px;color:#4a6080;">x2 bonuses, exclusive access</div></div>
     </div>
   </div>
@@ -1647,7 +1647,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-desc">Rare collectible bonuses</div>
       <div id="artifactsBadgeHub" class="hub-badge" style="display:none;">NEW</div>
     </div>
-    <div class="hub-card" onclick="showPage('vip')">
+    <div class="hub-card" onclick="showPage('vip')" style="display:none;">
       <div class="hub-icon">👑</div><div class="hub-name">VIP</div>
       <div class="hub-desc">x2 bonus with Stars</div>
     </div>
@@ -1887,7 +1887,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div style="font-size:12px;font-weight:700;color:#ff3366;">PvP Battle</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">Tap to win!</div>
     </div>
-    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,100,0,0.04));border:2px solid rgba(255,215,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('vip')">
+    <div style="display:none;background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,100,0,0.04));border:2px solid rgba(255,215,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('vip')">
       <div style="font-size:28px;margin-bottom:4px;">👑</div>
       <div style="font-size:12px;font-weight:700;color:#FFD700;">VIP</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">Buy with Stars</div>
@@ -5692,6 +5692,9 @@ function closePlanetDiscovery() {
 
 // ═══ VIP SYSTEM ═══
 function buyVip(type) {
+  showToast('👑 VIP coming soon! Stay tuned for Telegram Stars integration.');
+  return;
+  // DISABLED — original code below
   const tg = window.Telegram?.WebApp;
   if(!tg) {
     showToast('Open in Telegram to purchase! 📱');
