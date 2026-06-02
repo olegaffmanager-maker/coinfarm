@@ -25,8 +25,8 @@ DAILY_PROMOS = ["XSPACE2026", "LAUNCH", "SPACE100", "WELCOMEGIFT",
 def get_daily_promo():
     return DAILY_PROMOS[datetime.now().day % len(DAILY_PROMOS)]
 
-def make_play_button(user_id):
-    webapp_url = f"{WEBAPP_URL}?user_id={user_id}"
+def make_play_button(user_id, extra=""):
+    webapp_url = f"{WEBAPP_URL}?user_id={user_id}{extra}"
     return InlineKeyboardButton(text="🚀 Play XSPACECOIN!", web_app=WebAppInfo(url=webapp_url))
 
 # ═══ /start ═══

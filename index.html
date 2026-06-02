@@ -2352,6 +2352,23 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <script>
 const API_URL='https://coinfarm-production.up.railway.app';
 
+// ═══ ЧИТАЕМ user_id ИЗ URL СРАЗУ — до любой инициализации ═══
+(function() {
+  try {
+    // 1. URL параметр (бот передаёт ?user_id=...)
+    const _p = new URLSearchParams(window.location.search);
+    const _uid = parseInt(_p.get('user_id') || '0');
+    if(_uid && !isNaN(_uid)) {
+      localStorage.setItem('xspc_telegram_id', String(_uid));
+    }
+    // 2. Telegram WebApp API
+    const _tg = window.Telegram?.WebApp;
+    if(_tg?.initDataUnsafe?.user?.id) {
+      localStorage.setItem('xspc_telegram_id', String(_tg.initDataUnsafe.user.id));
+    }
+  } catch(e) {}
+})();
+
 // ═══ UTILITY ═══
 function formatCoins(n) {
   n = Math.floor(n || 0);
@@ -3680,27 +3697,13 @@ let g={
 
 function loadGame(){
   try{const s=localStorage.getItem('xspacecoin_v2');if(s)Object.assign(g,JSON.parse(s));}catch(e){}
-  // Читаем telegramId из всех возможных источников
+  // Читаем telegramId — всегда берём из xspc_telegram_id (установлен выше)
   if(!g.telegramId) {
-    try {
-      // 1. Telegram WebApp API
-      const _tg = window.Telegram?.WebApp;
-      if(_tg?.initDataUnsafe?.user?.id) {
-        g.telegramId = _tg.initDataUnsafe.user.id;
-      }
-      // 2. URL параметр
-      if(!g.telegramId) {
-        const _p = new URLSearchParams(window.location.search);
-        const _uid = parseInt(_p.get('user_id'));
-        if(_uid && !isNaN(_uid)) g.telegramId = _uid;
-      }
-      // 3. Отдельный localStorage ключ
-      if(!g.telegramId) {
-        const _saved = parseInt(localStorage.getItem('xspc_telegram_id') || '0');
-        if(_saved && !isNaN(_saved)) g.telegramId = _saved;
-      }
-    } catch(e) {}
-    if(g.telegramId) console.log('[XSPC] telegramId restored:', g.telegramId);
+    const _saved = parseInt(localStorage.getItem('xspc_telegram_id') || '0');
+    if(_saved && !isNaN(_saved)) {
+      g.telegramId = _saved;
+      console.log('[XSPC] telegramId from cache:', _saved);
+    }
   }
   const today=new Date().toDateString();
   if(g.lastTaskReset!==today){g.lastTaskReset=today;g.dailyTasksDone={};g.todaySpins=0;g.loggedIn=1;}
@@ -4319,10 +4322,19 @@ async function loadFriends(userId){
   const uid = userId || g.telegramId || parseInt(new URLSearchParams(window.location.search).get('user_id'));
   if(!uid || isNaN(uid)) {
     console.log('[XSPC] loadFriends: no valid userId, g.telegramId=', g.telegramId);
-    // Try again in 2 seconds after initUser completes
-    setTimeout(() => {
-      if(g.telegramId) loadFriends(g.telegramId);
-    }, 2000);
+    // Wait for initUser to set telegramId
+    let _retries = 0;
+    const _poll = setInterval(() => {
+      _retries++;
+      const _uid2 = g.telegramId || parseInt(localStorage.getItem('xspc_telegram_id')||'0');
+      if(_uid2) {
+        clearInterval(_poll);
+        loadFriends(_uid2);
+      } else if(_retries > 10) {
+        clearInterval(_poll);
+        console.log('[XSPC] loadFriends: gave up waiting for telegramId');
+      }
+    }, 500);
     return;
   }
   console.log('[XSPC] loadFriends for:', uid);
@@ -4544,8 +4556,10 @@ function showPage(page){
   if(page==='artifacts'){renderArtifacts();}
   if(page==='combo'){comboSelected=[];renderCombo();}
   if(page==='friends'){
-    const _fid = g.telegramId || parseInt(new URLSearchParams(window.location.search).get('user_id'));
-    loadFriends(_fid);const td=document.getElementById('tournamentDays');if(td)td.textContent=getDaysUntilMonday()+' days';const fe=document.getElementById('friendEarnings');if(fe)fe.textContent=((g.friends||0)*500).toLocaleString();}
+    const _fid = g.telegramId 
+      || parseInt(localStorage.getItem('xspc_telegram_id')||'0')
+      || parseInt(new URLSearchParams(window.location.search).get('user_id')||'0');
+    loadFriends(_fid || null);const td=document.getElementById('tournamentDays');if(td)td.textContent=getDaysUntilMonday()+' days';const fe=document.getElementById('friendEarnings');if(fe)fe.textContent=((g.friends||0)*500).toLocaleString();}
   if(page==='stats'){renderStats();}
   if(page==='whitepaper'){updateCountdown();updateWhitepaperProgress();}
   if(page==='pvp'){
@@ -6936,8 +6950,13 @@ async function initUser(){
   if(refEl) refEl.textContent = getRefLink();
   const fe = document.getElementById('friendEarnings');
   if(fe) fe.textContent = ((g.friends||0)*500).toLocaleString();
-  // Delay friends load to not block init
-  setTimeout(() => loadFriends(userId), 1000);
+  // Load friends immediately after we have userId
+  loadFriends(userId);
+  
+  // Also update friends page if it's open
+  if(document.getElementById('pageFriends')?.classList.contains('active')) {
+    setTimeout(() => loadFriends(userId), 500);
+  }
 }
 
 // ═══ DAILY STREAK CHECK ═══
