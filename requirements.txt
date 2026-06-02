@@ -2,3 +2,4 @@ fastapi
 uvicorn
 aiohttp
 aiogram==3.3.0
+psycopg2-binary
