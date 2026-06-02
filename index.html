@@ -800,12 +800,22 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     </div>
   </div>
 
+  <!-- MINI BOOST CARDS (горизонтальный скролл) -->
+  <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">⚡ BOOST CARDS</div>
+  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;margin-bottom:14px;">
+    <div id="boostCards" style="display:flex;gap:8px;width:max-content;padding:4px;"></div>
+  </div>
+
+  <!-- FULL CARDS GRID -->
+  <div id="boostCardsGrid" style="margin-bottom:14px;"></div>
+
   <!-- FREE BOOSTS -->
   <div class="section-title">⚡ Free Boosts</div>
   <div class="boost-item" onclick="useBoost('turbo')">
     <div class="boost-icon">🚀</div>
     <div class="boost-info"><div class="boost-name">Turbo Mode</div><div class="boost-desc">x5 XSPC for 20 seconds</div></div>
     <div class="boost-cost" id="turboCount">3/3</div>
+    <div id="turboTimer" style="font-size:10px;color:#00ff88;display:none;font-family:Orbitron,monospace;"></div>
   </div>
   <div class="boost-item" onclick="useBoost('energy')">
     <div class="boost-icon">⚡</div>
@@ -2207,6 +2217,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 <!-- OVERLAYS -->
 <div class="overlay" id="levelupOverlay" onclick="closeLevelUp()">
+  <div id="levelupParticles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;"></div>
   <div class="overlay-card">
     <div class="overlay-emoji" id="levelupEmoji">🎉</div>
     <div class="overlay-title">LEVEL UP!</div>
@@ -3748,7 +3759,7 @@ function handleClick(e){
   }
 
   // Обновляем только монеты и энергию (не весь UI)
-  if(!_coinCountEl) _coinCountEl=document.getElementById('coinCount');
+  if(!_coinCountEl) _coinCountEl=document.getElementById('coinCount')||document.getElementById('headerCoins');
   if(_coinCountEl) _coinCountEl.textContent=formatCoins(g.coins);
   if(!_energyFillEl) _energyFillEl=document.getElementById('energyFill');
   if(_energyFillEl) {
@@ -4326,7 +4337,7 @@ function updateUI(){
   }
   const coins=Math.floor(g.coins),lv=g.level;
   const league=getLeague(coins);
-  document.getElementById('headerCoins').textContent=coins.toLocaleString();
+  const _hc=document.getElementById('headerCoins'); if(_hc) _hc.textContent=coins.toLocaleString();
   document.getElementById('headerLevel').textContent=lv;
   document.getElementById('levelName').textContent=LEVEL_NAMES[lv]||'';
   document.getElementById('leagueBadge').textContent=`${league.icon} ${league.name.toUpperCase()}`;
