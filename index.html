@@ -694,6 +694,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       </div>
     </div>
 
+    <!-- COSMOS MAP SHORTCUT -->
+    <div onclick="showPage('cosmosmap');renderCosmosMap();" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.15);border-radius:12px;margin-bottom:8px;cursor:pointer;">
+      <div style="font-size:20px;">🗺️</div>
+      <div style="flex:1;">
+        <div style="font-size:12px;font-weight:700;color:var(--accent);" id="mineCosmosName">🌍 Earth (Lv1)</div>
+        <div style="font-size:10px;color:#4a6080;">Open Cosmos Map →</div>
+      </div>
+      <div style="font-size:12px;color:#4a6080;">›</div>
+    </div>
+
     <!-- MINI QUEST -->
     <div style="width:100%;padding:0 16px 6px;">
       <div style="background:rgba(123,47,255,0.08);border:1px solid rgba(123,47,255,0.2);border-radius:12px;padding:10px 14px;">
@@ -1602,10 +1612,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-desc">Daily free spin</div>
       <div id="wheelBadgeHub" class="hub-badge" style="display:none;">READY</div>
     </div>
-    <div class="hub-card" onclick="showPage('staking')">
-      <div class="hub-icon">💰</div><div class="hub-name">Staking</div>
-      <div class="hub-desc">Earn daily XSPC rewards</div>
-    </div>
+
     <div class="hub-card" onclick="showPage('tasks')">
       <div class="hub-icon">🤝</div><div class="hub-name">Earn Tasks</div>
       <div class="hub-desc">Complete & get XSPC</div>
@@ -1745,6 +1752,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-icon">🗺️</div><div class="hub-name">Cosmos Map</div>
       <div class="hub-desc">Your journey through space</div>
     </div>
+    <div class="hub-card" onclick="showPage('staking')">
+      <div class="hub-icon">💰</div><div class="hub-name">Staking</div>
+      <div class="hub-desc">Earn up to 20%/day</div>
+    </div>
     <div class="hub-card" onclick="showPage('clans')">
       <div class="hub-icon">🛸</div><div class="hub-name">Clans</div>
       <div class="hub-desc">Join a clan</div>
@@ -1785,7 +1796,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-desc">Weekly referral contest</div>
     </div>
   </div>
-</div>
+
+
+  <!-- Battle History in Hub -->
+  <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-top:14px;margin-bottom:8px;">📊 RECENT BATTLES</div>
+  <div id="battleHistoryHub" style="display:flex;flex-direction:column;gap:6px;"></div></div>
 
 <!-- PROMO PAGE -->
 <div class="page" id="pagePromo">
@@ -2842,6 +2857,27 @@ function renderClansList() {
         +'<div style="font-size:10px;color:#4a6080;">Lv'+c.level+' · '+c.members+' members · +'+c.bonus+'% bonus</div>'
       +'</div>'
       +'<button data-t="'+c.tag+'" onclick="joinClan(this.dataset.t)" style="padding:6px 12px;background:linear-gradient(135deg,#7b2fff,#00f5ff);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer;">JOIN</button>'
+      +'</div>';
+  }).join('');
+}
+
+
+function renderBattleHistoryHub() {
+  const el = document.getElementById('battleHistoryHub');
+  if(!el) return;
+  const history = (g.battleHistory || []).slice(0, 5); // Show last 5
+  if(history.length === 0) {
+    el.innerHTML = '<div style="text-align:center;color:#4a6080;padding:12px;font-size:12px;">No battles yet</div>';
+    return;
+  }
+  el.innerHTML = history.map(h => {
+    const win = h.result === 'win';
+    const time = new Date(h.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border:1px solid '+(win?'rgba(0,255,136,0.2)':'rgba(255,50,50,0.2)')+';border-radius:10px;">'
+      +'<div style="font-size:16px;">'+(win?'🏆':'💥')+'</div>'
+      +'<div style="flex:1;"><div style="font-size:11px;font-weight:700;color:'+(win?'#00ff88':'#ff3366')+'">'+(win?'WIN':'LOSS')+' vs '+h.opponent+'</div>'
+      +'<div style="font-size:9px;color:#4a6080;">'+time+'</div></div>'
+      +'<div style="font-size:11px;color:'+(win?'#00ff88':'#ff3366')+'">'+(win?'+':'')+h.reward.toLocaleString()+'</div>'
       +'</div>';
   }).join('');
 }
@@ -4049,7 +4085,7 @@ function goBack(){
     'keys':'earn','combo':'earn','tasks':'earn','streak':'earn','wheel':'earn','promo':'earn',
     'cards':'upgrade','artifacts':'upgrade',
     'top':'mine','whitepaper':'mine','stats':'mine',
-    'clans':'galaxy','pvp':'battle','season':'battle','tournament':'battle','staking':'earn','cosmosmap':'galaxy','boss':'cosmosmap','rareplanets':'galaxy',
+    'clans':'galaxy','pvp':'battle','season':'battle','tournament':'battle','staking':'galaxy','cosmosmap':'galaxy','boss':'cosmosmap','rareplanets':'galaxy',
     'friends':'friends'
   };
   const current = document.querySelector('.page.active');
@@ -4101,7 +4137,7 @@ function showPage(page){
   if(page==='clans'){updateClanUI();}
   if(page==='boss'){updateBossUI();}
   if(page==='rareplanets'){renderRarePlanets();const rc=document.getElementById('rarePlanetsCount');if(rc)rc.textContent=Object.keys(g.rarePlanets||{}).length+'/5 discovered';}
-  if(page==='battle'){updateBattleHub();}
+  if(page==='battle'){updateBattleHub();renderBattleHistoryHub();}
   if(page==='pvp'){renderAttackBots();updatePvpBattlesUI();renderBattleHistory();}
   if(page==='staking') showFeatureTip('staking','💰 Staking','Stake your XSPC tokens to earn daily passive rewards. More staked = more earned!');
   if(page==='boss') showFeatureTip('boss','💀 Boss Battle','Attack the boss using tap attacks or power blasts. Defeat it to unlock the next planet!');
