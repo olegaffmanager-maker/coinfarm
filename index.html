@@ -4293,7 +4293,13 @@ function copyRef(){const l=getRefLink();navigator.clipboard?.writeText(l).catch(
 function shareRef(){const l=getRefLink();if(window.Telegram?.WebApp)window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(l)}&text=${encodeURIComponent('🪐 Join XSPACECOIN! Earn XSPC tokens!')}`);else copyRef();}
 
 async function loadFriends(userId){
-  if(!userId) return;
+  // Ensure we have a valid userId
+  const uid = userId || g.telegramId;
+  if(!uid || isNaN(uid)) {
+    console.log('[XSPC] loadFriends: no valid userId');
+    return;
+  }
+  console.log('[XSPC] loadFriends for:', uid);
   
   // Show loading state
   const listEl = document.getElementById('friendsList');
@@ -4301,10 +4307,12 @@ async function loadFriends(userId){
 
   try{
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 6000);
-    const r = await fetch(`${API_URL}/user/${userId}/friends`, {signal: controller.signal});
+    const timer = setTimeout(() => controller.abort(), 8000);
+    const r = await fetch(API_URL+'/user/'+uid+'/friends', {signal: controller.signal});
     clearTimeout(timer);
+    if(!r.ok) { console.log('[XSPC] friends API error:', r.status); return; }
     const d = await r.json();
+    console.log('[XSPC] friends response:', d);
     const refs = d.referrals || d.total || 0;
     // Never decrease friends count (network glitches can return 0)
     if(refs > 0) { const oldFriends = g.friends||0; g.friends = Math.max(refs, oldFriends); checkInviteBonus(g.friends); }
@@ -4509,7 +4517,7 @@ function showPage(page){
   if(page==='cards'){renderFullCards();}
   if(page==='artifacts'){renderArtifacts();}
   if(page==='combo'){comboSelected=[];renderCombo();}
-  if(page==='friends'){loadFriends(g.telegramId);const td=document.getElementById('tournamentDays');if(td)td.textContent=getDaysUntilMonday()+' days';const fe=document.getElementById('friendEarnings');if(fe)fe.textContent=((g.friends||0)*500).toLocaleString();}
+  if(page==='friends'){loadFriends(g.telegramId||g.userId);const td=document.getElementById('tournamentDays');if(td)td.textContent=getDaysUntilMonday()+' days';const fe=document.getElementById('friendEarnings');if(fe)fe.textContent=((g.friends||0)*500).toLocaleString();}
   if(page==='stats'){renderStats();}
   if(page==='whitepaper'){updateCountdown();updateWhitepaperProgress();}
   if(page==='pvp'){
@@ -6898,7 +6906,8 @@ async function initUser(){
   if(refEl) refEl.textContent = getRefLink();
   const fe = document.getElementById('friendEarnings');
   if(fe) fe.textContent = ((g.friends||0)*500).toLocaleString();
-  loadFriends(userId);
+  // Delay friends load to not block init
+  setTimeout(() => loadFriends(userId), 1000);
 }
 
 // ═══ DAILY STREAK CHECK ═══
@@ -6960,6 +6969,15 @@ setManagedInterval("apiSave", ()=>{ if(g.telegramId) apiSave(); }, 30000);
 loadGame();
 
 checkDailyLogin();
+// Restore friends from cache immediately
+const _cachedFriends = parseInt(localStorage.getItem('xspc_friends_cache') || '0');
+if(_cachedFriends > 0) {
+  g.friends = Math.max(g.friends||0, _cachedFriends);
+  ['friendCount','friendCount2','friendCountLabel'].forEach(id => {
+    const e = document.getElementById(id);
+    if(e) e.textContent = _cachedFriends;
+  });
+}
 // Force planet recalculation — reset saved name so it always updates visually
 g.currentPlanetName = '';
 // Restore friends count from localStorage cache

@@ -99,7 +99,8 @@ def get_friends(user_id: int):
     conn = get_db()
     c = conn.cursor()
     c.execute("""
-        SELECT u.user_id, u.full_name, u.coins, u.level
+        SELECT u.user_id, u.full_name, u.username, u.coins, u.level,
+               r.coins_earned
         FROM referrals r
         JOIN users u ON u.user_id = r.referred_id
         WHERE r.referrer_id = ?
