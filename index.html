@@ -2198,23 +2198,23 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="bottom-menu">
   <div class="menu-item active" id="menuMine" onclick="showPage('mine')">
     <span class="m-icon" id="menuPlanetIcon"></span>
-    <span>Mine</span>
+    <span id="navLabelMine">Mine</span>
   </div>
   <div class="menu-item" id="menuEarn" onclick="showPage('earn')" style="position:relative;">
-    <span class="m-icon">🔑</span><span>Earn</span>
+    <span class="m-icon">🔑</span><span id="navLabelEarn">Earn</span>
     <span id="earnBadge" style="display:none;position:absolute;top:4px;right:4px;width:7px;height:7px;background:#00ff88;border-radius:50%;"></span>
   </div>
   <div class="menu-item" id="menuUpgrade" onclick="showPage('upgrade')">
-    <span class="m-icon">⚡</span><span>Upgrade</span>
+    <span class="m-icon">⚡</span><span id="navLabelUpgrade">Upgrade</span>
   </div>
   <div class="menu-item" id="menuGalaxy" onclick="showPage('galaxy')">
-    <span class="m-icon">🌌</span><span>Galaxy</span>
+    <span class="m-icon">🌌</span><span id="navLabelGalaxy">Galaxy</span>
   </div>
   <div class="menu-item" id="menuBattle" onclick="showPage('battle')">
-    <span class="m-icon">⚔️</span><span>Battle</span>
+    <span class="m-icon">⚔️</span><span id="navLabelBattle">Battle</span>
   </div>
   <div class="menu-item" id="menuFriends" onclick="showPage('friends')">
-    <span class="m-icon">👥</span><span>Friends</span>
+    <span class="m-icon">👥</span><span id="navLabelFriends">Friends</span>
   </div>
 </div>
 
@@ -2557,9 +2557,9 @@ function applyLang(){
     const tr=t(k);
     if(tr&&tr!==k)el.textContent=tr;
   });
-  // Nav labels
-  const nav={menuMine:"mine",menuEarn:"earn",menuUpgrade:"upgrade",menuGalaxy:"galaxy",menuBattle:"battle",menuFriends:"friends"};
-  Object.entries(nav).forEach(([id,k])=>{const el=document.getElementById(id);if(el){const s=el.querySelector("span:last-child");if(s)s.textContent=t(k);}});
+  // Nav labels — direct IDs on label spans
+  const navLabels={navLabelMine:"mine",navLabelEarn:"earn",navLabelUpgrade:"upgrade",navLabelGalaxy:"galaxy",navLabelBattle:"battle",navLabelFriends:"friends"};
+  Object.entries(navLabels).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.textContent=t(k);});
   // Special IDs
   const idm={"i18n-energy":()=>"⚡ "+t("energy"),"i18n-perTap":()=>"⛏️ "+t("perTap"),"i18n-taps":()=>"🔥 "+t("taps"),"i18n-passiveIncome":()=>t("passiveIncome"),"i18n-accumulated":()=>t("accumulated"),"galaxyGoal":()=>t("conquestGoal")};
   Object.entries(idm).forEach(([id,fn])=>{const el=document.getElementById(id);if(el)el.textContent=fn();});
@@ -4029,17 +4029,6 @@ function updatePerfCache() {
   _cachedPassiveRate = getPassiveRate();
 }
 setManagedInterval("perfCache", updatePerfCache, 5000);
-
-// Prevent double-tap zoom on planet
-(function(){
-  let _lastTap = 0;
-  const btn = document.getElementById('coinBtn');
-  if(btn) btn.addEventListener('touchend', function(e){
-    const now = Date.now();
-    if(now - _lastTap < 300) e.preventDefault();
-    _lastTap = now;
-  }, {passive: false});
-})();
 
 // ═══ CLICK HANDLER — оптимизирован для мобильного ═══
 // Кэшируем DOM элементы один раз
