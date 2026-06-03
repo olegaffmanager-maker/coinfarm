@@ -493,8 +493,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1.2)}70%{opacity:1;transform:translateY(-50px) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(0.8)}}100%{opacity:0;transform:translateY(-110px) scale(1.4)}}
 
 /* BOTTOM MENU */
-.back-btn{display:none;position:sticky;top:4px;left:0;z-index:200;background:rgba(2,5,16,0.9);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:5px 12px;color:var(--accent);font-family:Orbitron,monospace;font-size:11px;cursor:pointer;backdrop-filter:blur(10px);margin-bottom:8px;width:fit-content;}
-.back-btn.visible{display:flex;align-items:center;gap:6px;}
+.back-btn{display:none;position:sticky;top:4px;left:0;z-index:200;background:rgba(2,5,16,0.85);border:1px solid rgba(0,245,255,0.25);border-radius:50px;padding:6px 14px 6px 10px;color:var(--accent);font-size:13px;cursor:pointer;backdrop-filter:blur(10px);margin-bottom:8px;width:fit-content;transition:all 0.2s;}
+.back-btn:active{transform:scale(0.95);}
+.back-btn.visible{display:flex;align-items:center;gap:5px;}
 .bottom-menu{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(2,5,16,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 20px;}
 .menu-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 10px;border-radius:12px;transition:all 0.2s;min-width:52px;}
 .menu-item .m-icon{font-size:20px;filter:grayscale(0.5);transition:filter 0.2s;}
@@ -610,6 +611,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 </head>
 <body>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<div id="loadingOverlay" style="position:fixed;inset:0;z-index:9999;background:#020510;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="font-size:52px;animation:spin 2s linear infinite;">🪐</div>
+  <div style="font-family:Orbitron,monospace;font-size:14px;color:#00f5ff;letter-spacing:3px;">XSPACECOIN</div>
+  <div style="font-size:11px;color:#4a6080;letter-spacing:2px;">LOADING...</div>
+</div>
+<style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
 
 <div class="header">
   <div class="header-left">
@@ -638,7 +645,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <span id="progressLabel">Lv1 → Lv2</span>
     <span id="progressPct">0%</span>
   </div>
-  <div class="back-btn" id="globalBackBtn" onclick="goBack()">◀ BACK</div>
+  <div class="back-btn" id="globalBackBtn" onclick="goBack()"><span style="font-size:16px;line-height:1;">←</span><span style="font-family:Rajdhani,sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;">BACK</span></div>
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
 </div>
 
@@ -3757,11 +3764,17 @@ function loadGame(){
   }
   g.lastSaveTime = Date.now();
 }
+// Debounced API save — max 1 request per 10 seconds
+let _apiSaveTimer = null;
+function apiSaveDebounced() {
+  if(_apiSaveTimer) clearTimeout(_apiSaveTimer);
+  _apiSaveTimer = setTimeout(() => { apiSave(); _apiSaveTimer = null; }, 10000);
+}
+
 function saveGame(){
   g.lastSaveTime = Date.now();
-  g.lastSaveTime = Date.now();
-  localStorage.setItem('xspacecoin_v2',JSON.stringify(g));
-  apiSave();
+  localStorage.setItem('xspacecoin_v2', JSON.stringify(g));
+  apiSaveDebounced();
 }
 
 
@@ -4557,14 +4570,26 @@ function showPage(page){
   if(page==='cosmosmap') showFeatureTip('cosmos','🗺 Cosmos Map','Your journey through space. Fight 💀 bosses to continue. Tap planets to mine there!');
   if(page==='tournament'){
     const td=document.getElementById('tournamentRefs'); if(td) td.textContent=(g.friends||0);
-    const tr=document.getElementById('tournamentRank'); if(tr) tr.textContent='#'+Math.max(1,Math.floor(Math.random()*50+1));
+    if(!g.tournamentRank || g.tournamentRankWeek !== getWeekNumber()) {
+      const seed = ((g.telegramId||99999) % 47) + Math.max(1, 50 - Math.floor((g.coins||0)/10000));
+      g.tournamentRank = Math.max(1, Math.min(50, seed));
+      g.tournamentRankWeek = getWeekNumber();
+      saveGame();
+    }
+    const tr=document.getElementById('tournamentRank'); if(tr) tr.textContent='#'+g.tournamentRank;
     updateTournamentTimer();
   }
   if(page==='season'){
     const s=getCurrentSeason();
     const sn=document.getElementById('seasonPageName'); if(sn) sn.textContent=(s.icon||'')+' Season '+s.num+': '+(s.name||'');
     const sd=document.getElementById('seasonPageDays'); if(sd) sd.textContent=s.daysLeft+' days remaining';
-    const sr=document.getElementById('seasonPageRank'); if(sr) sr.textContent='#'+Math.max(1,Math.floor(Math.random()*100+1));
+    if(!g.seasonRank || g.seasonRankNum !== s.num) {
+      const seed = ((g.telegramId||99999) % 89) + Math.max(1, 100 - Math.floor((g.pvpWins||0)*2) - Math.floor((g.clicks||0)/500));
+      g.seasonRank = Math.max(1, Math.min(100, seed));
+      g.seasonRankNum = s.num;
+      saveGame();
+    }
+    const sr=document.getElementById('seasonPageRank'); if(sr) sr.textContent='#'+g.seasonRank;
     const ss=document.getElementById('seasonScore'); if(ss) ss.textContent=(g.clicks||0).toLocaleString();
     const sw=document.getElementById('seasonWins'); if(sw) sw.textContent=(g.pvpWins||0);
     const se=document.getElementById('seasonPageEnd'); if(se) se.textContent=s.end.toLocaleDateString();
@@ -4584,7 +4609,7 @@ function showPage(page){
     const s=getCurrentSeason();
     const sn=document.getElementById('seasonName'); if(sn) sn.textContent='Season '+s.num;
     const sd=document.getElementById('seasonDays'); if(sd) sd.textContent=s.daysLeft+' days remaining';
-    const sr=document.getElementById('seasonRank'); if(sr) sr.textContent='#'+Math.max(1,Math.floor(Math.random()*50+1));
+    const sr=document.getElementById('seasonRank'); if(sr) sr.textContent='#'+(g.seasonRank||Math.max(1,Math.min(50,((g.telegramId||99)%47)+1)));
     const pvpResult=document.getElementById('pvpResult'); if(pvpResult) pvpResult.style.display='none';
     const pvpArea=document.getElementById('pvpArea'); if(pvpArea) pvpArea.style.display='none';
     const pvpSetup=document.getElementById('pvpSetup'); if(pvpSetup) pvpSetup.style.display='block';
@@ -5880,16 +5905,10 @@ async function updatePlayerCounter() {
   }
 }
 
-// Update player count every 5 minutes with smooth animation
+// Call immediately on start, then every 5 minutes
+setTimeout(updatePlayerCounter, 500);
 setManagedInterval("playerCounter", updatePlayerCounter, 300000);
-
 setManagedInterval("countdown", updateCountdown, 1000);
-setInterval(updatePlayerCounter, 600000); // update every 10 min
-setInterval(() => {
-  // Live update counter every 10 minutes in real time
-  const el = document.getElementById('playerCounter');
-  if(el) el.textContent = getGrowingPlayerCount().toLocaleString();
-}, 600000);
 
 // ═══ PARTNER TASKS ═══
 const PARTNER_TASKS = [
@@ -7057,7 +7076,7 @@ setInterval(()=>{
     if(energyText) energyText.textContent=Math.floor(g.energy)+'/'+g.maxEnergy;
   }
 },3000); // every 3 seconds instead of 5
-setManagedInterval("levelCheck", ()=>{checkLevelUp();updatePlanet(g.level,false);saveGame();}, 5000);
+setManagedInterval("levelCheck", ()=>{checkLevelUp();updatePlanet(g.level,false);}, 5000);
 // Sync with server every 30 seconds
 setManagedInterval("apiSave", ()=>{ if(g.telegramId) apiSave(); }, 30000);
 
