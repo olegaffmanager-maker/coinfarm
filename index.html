@@ -15,10 +15,20 @@
   --planet-glow: rgba(0,100,255,0.6);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);min-height:100vh;font-family:'Rajdhani',sans-serif;color:var(--text);overflow-x:hidden;user-select:none;;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+html{height:100%;overflow:hidden;overscroll-behavior:none;}
+body{
+  background:var(--bg);height:100%;font-family:'Rajdhani',sans-serif;color:var(--text);
+  overflow:hidden;overscroll-behavior:none;
+  user-select:none;-webkit-user-select:none;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;
+  position:fixed;width:100%;
+  -webkit-overflow-scrolling:auto;
+}
 body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 20%,rgba(123,47,255,0.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(0,245,255,0.1) 0%,transparent 50%);pointer-events:none;}
 body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,245,255,0.01) 2px,rgba(0,245,255,0.01) 4px);pointer-events:none;}
 
+.app-scroll{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch;}
+.page{overscroll-behavior:none;}
 .header{position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:linear-gradient(180deg,rgba(0,245,255,0.08) 0%,transparent 100%);border-bottom:1px solid var(--border);}
 .header-left{display:flex;flex-direction:column;gap:2px;}
 .header-level{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
@@ -671,7 +681,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div class="orbit-ring"><div class="orbit-moon"></div></div>
         <div class="orbit-ring"><div class="orbit-dot"></div></div>
         <div class="saturn-rings" id="saturnRings"></div>
-        <button class="coin-btn planet-earth" id="coinBtn" ontouchstart="handleClick(event);event.preventDefault();" onclick="handleClick(event)">
+        <button class="coin-btn planet-earth" id="coinBtn" ontouchstart="handleClick(event);event.preventDefault();" ontouchmove="event.preventDefault();" onclick="handleClick(event)">
           <div class="planet-shine"></div>
         </button>
       </div>
@@ -7404,6 +7414,31 @@ updatePlanet(g.level, true);
 renderBoostCards();
 renderQuest();
 updatePassive();
+
+// Prevent page jitter on tap
+document.addEventListener('touchmove', function(e) {
+  // Allow scroll in scrollable elements, prevent everywhere else
+  let el = e.target;
+  let allowScroll = false;
+  while(el && el !== document.body) {
+    const style = window.getComputedStyle(el);
+    const overflow = style.overflow + style.overflowY;
+    if(overflow.includes('scroll') || overflow.includes('auto')) {
+      allowScroll = true;
+      break;
+    }
+    el = el.parentElement;
+  }
+  if(!allowScroll) e.preventDefault();
+}, {passive: false});
+
+// Prevent double-tap zoom
+let lastTap = 0;
+document.addEventListener('touchend', function(e) {
+  const now = Date.now();
+  if(now - lastTap < 300) e.preventDefault();
+  lastTap = now;
+}, {passive: false});
 
 if(window.Telegram?.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();}
 initUser();
