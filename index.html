@@ -2662,6 +2662,13 @@ async function apiRegister(u,un,fn,r){
     }
   } catch(e) { console.log('[XSPC] Register failed:', e); }
 }
+// Debounced API save
+let _apiSaveTimer = null;
+function apiSaveDebounced() {
+  if(_apiSaveTimer) clearTimeout(_apiSaveTimer);
+  _apiSaveTimer = setTimeout(() => { if(typeof apiSave==='function') apiSave(); _apiSaveTimer=null; }, 10000);
+}
+
 async function apiSave(){
   // Берём ID из всех источников
   if(!g.telegramId) {
@@ -4010,18 +4017,10 @@ function loadGame(){
   }
   g.lastSaveTime = Date.now();
 }
-// Debounced API save — max 1 request per 10 seconds
-let _apiSaveTimer = null;
-function apiSaveDebounced() {
-  if(_apiSaveTimer) clearTimeout(_apiSaveTimer);
-  _apiSaveTimer = setTimeout(() => { if(typeof apiSave==='function') apiSave(); _apiSaveTimer = null; }, 10000);
-}
-
 function saveGame(){
   g.lastSaveTime = Date.now();
-  // Track coins history for chart
   if(!g.coinsHistory) g.coinsHistory = [];
-  g.coinsHistory.push({t: Date.now(), c: Math.floor(g.coins)});
+  g.coinsHistory.push({t:Date.now(),c:Math.floor(g.coins)});
   if(g.coinsHistory.length > 20) g.coinsHistory = g.coinsHistory.slice(-20);
   localStorage.setItem('xspacecoin_v2',JSON.stringify(g));
   apiSaveDebounced();
@@ -5237,7 +5236,7 @@ function collectPassive() {
   }
 
   // Flash the passive income block
-  const block = document.querySelector('[id="passiveAccum"]')?.closest('div[style*="border"]');
+  const block = document.querySelector('[id="passiveAccum2"]')?.closest('div[style*="border"]');
   if(block) {
     block.style.transition = 'box-shadow 0.3s';
     block.style.boxShadow = '0 0 20px rgba(0,255,136,0.6)';
@@ -6346,6 +6345,16 @@ function saveTonWallet() {
 
 // ═══ MINI GAME ═══
 let miniSecret = 0, miniAttempts = 0, miniMaxAttempts = 7, miniGameOver = false;
+
+function updateMiniGamesCounter() {
+  const today = new Date().toDateString();
+  if(g.miniGamesDate !== today) { g.miniGamesDate = today; g.miniGamesUsed = 0; }
+  const left = Math.max(0, 3 - (g.miniGamesUsed || 0));
+  const el1 = document.getElementById('miniGamesLeft');
+  const el2 = document.getElementById('miniGamesLeftKeys');
+  if(el1) { el1.textContent = left; el1.style.color = left===0?'#ff3366':'#FFD700'; }
+  if(el2) { el2.textContent = left+' game'+(left!==1?'s':'')+' left'; el2.style.color = left===0?'#ff3366':'#4a6080'; }
+}
 
 function startMiniGame() {
   const today = new Date().toDateString();
