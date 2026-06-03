@@ -2662,7 +2662,6 @@ async function apiRegister(u,un,fn,r){
     }
   } catch(e) { console.log('[XSPC] Register failed:', e); }
 }
-// Debounced API save
 let _apiSaveTimer = null;
 function apiSaveDebounced() {
   if(_apiSaveTimer) clearTimeout(_apiSaveTimer);
@@ -4017,6 +4016,33 @@ function loadGame(){
   }
   g.lastSaveTime = Date.now();
 }
+function renderCoinsChart(){
+  const canvas = document.getElementById('coinsChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const history = (g.coinsHistory||[]).slice(-10);
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  if(history.length < 2){
+    ctx.fillStyle='#4a6080';ctx.font='12px Rajdhani,sans-serif';
+    ctx.textAlign='center';ctx.fillText('Play more to see your growth!',W/2,H/2);return;
+  }
+  const pad=10, vals=history.map(h=>h.c);
+  const minV=Math.min(...vals), maxV=Math.max(...vals), range=maxV-minV||1;
+  const pts=vals.map((v,i)=>({x:pad+(i/(vals.length-1))*(W-pad*2),y:H-pad-((v-minV)/range)*(H-pad*2)}));
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(0,245,255,0.35)');grad.addColorStop(1,'rgba(0,245,255,0.02)');
+  ctx.beginPath();ctx.moveTo(pts[0].x,H-pad);pts.forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.lineTo(pts[pts.length-1].x,H-pad);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++){const cx=(pts[i-1].x+pts[i].x)/2;ctx.bezierCurveTo(cx,pts[i-1].y,cx,pts[i].y,pts[i].x,pts[i].y);}
+  ctx.strokeStyle='#00f5ff';ctx.lineWidth=2.5;ctx.shadowColor='#00f5ff';ctx.shadowBlur=8;ctx.stroke();ctx.shadowBlur=0;
+  pts.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,i===pts.length-1?4:2.5,0,Math.PI*2);ctx.fillStyle=i===pts.length-1?'#FFD700':'#00f5ff';ctx.fill();});
+  const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n);
+  const mn=document.getElementById('chartMin');if(mn)mn.textContent=fmt(minV);
+  const mx=document.getElementById('chartMax');if(mx)mx.textContent=fmt(maxV);
+}
+
 function saveGame(){
   g.lastSaveTime = Date.now();
   if(!g.coinsHistory) g.coinsHistory = [];
@@ -6142,16 +6168,10 @@ async function updatePlayerCounter() {
   }
 }
 
-// Update player count every 5 minutes with smooth animation
+// Single interval - call immediately then every 5 min
+setTimeout(updatePlayerCounter, 500);
 setManagedInterval("playerCounter", updatePlayerCounter, 300000);
-
 setManagedInterval("countdown", updateCountdown, 1000);
-setInterval(updatePlayerCounter, 600000); // update every 10 min
-setInterval(() => {
-  // Live update counter every 10 minutes in real time
-  const el = document.getElementById('playerCounter');
-  if(el) el.textContent = getGrowingPlayerCount().toLocaleString();
-}, 600000);
 
 // ═══ PARTNER TASKS ═══
 const PARTNER_TASKS = [
@@ -6349,7 +6369,7 @@ let miniSecret = 0, miniAttempts = 0, miniMaxAttempts = 7, miniGameOver = false;
 function updateMiniGamesCounter() {
   const today = new Date().toDateString();
   if(g.miniGamesDate !== today) { g.miniGamesDate = today; g.miniGamesUsed = 0; }
-  const left = Math.max(0, 3 - (g.miniGamesUsed || 0));
+  const left = Math.max(0, 3 - (g.miniGamesUsed||0));
   const el1 = document.getElementById('miniGamesLeft');
   const el2 = document.getElementById('miniGamesLeftKeys');
   if(el1) { el1.textContent = left; el1.style.color = left===0?'#ff3366':'#FFD700'; }
