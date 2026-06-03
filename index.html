@@ -493,9 +493,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1.2)}70%{opacity:1;transform:translateY(-50px) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(0.8)}}100%{opacity:0;transform:translateY(-110px) scale(1.4)}}
 
 /* BOTTOM MENU */
-.back-btn{display:none;position:sticky;top:4px;left:0;z-index:200;background:rgba(2,5,16,0.85);border:1px solid rgba(0,245,255,0.25);border-radius:50px;padding:6px 14px 6px 10px;color:var(--accent);font-size:13px;cursor:pointer;backdrop-filter:blur(10px);margin-bottom:8px;width:fit-content;transition:all 0.2s;}
-.back-btn:active{transform:scale(0.95);}
-.back-btn.visible{display:flex;align-items:center;gap:5px;}
+.back-btn{display:none;position:sticky;top:4px;left:0;z-index:200;background:rgba(2,5,16,0.9);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:5px 12px;color:var(--accent);font-family:Orbitron,monospace;font-size:11px;cursor:pointer;backdrop-filter:blur(10px);margin-bottom:8px;width:fit-content;}
+.back-btn.visible{display:flex;align-items:center;gap:6px;}
 .bottom-menu{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(2,5,16,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 20px;}
 .menu-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 10px;border-radius:12px;transition:all 0.2s;min-width:52px;}
 .menu-item .m-icon{font-size:20px;filter:grayscale(0.5);transition:filter 0.2s;}
@@ -659,7 +658,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#00f5ff;margin-bottom:8px;" id="expTitle">Expedition!</div>
     <div style="font-size:13px;color:#4a6080;margin-bottom:20px;" id="expDesc">A mysterious event...</div>
     <div id="expButtons"></div>
-    <button onclick="skipExpedition()" style="width:100%;padding:14px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:14px;cursor:pointer;margin-top:8px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;">Skip for now</button>
+    <button onclick="skipExpedition()" style="width:100%;padding:14px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:14px;cursor:pointer;margin-top:8px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span data-i18n="skipForNow">Skip for now</span></button>
   </div>
 </div>
 
@@ -678,7 +677,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       </div>
     </div>
     <div class="energy-wrap">
-      <div class="energy-info"><span>⚡ ENERGY</span><span id="energyText">500/500</span></div>
+      <div class="energy-info"><span><span data-i18n="energy">⚡ ENERGY</span></span><span id="energyText">500/500</span></div>
       <div class="energy-bar"><div class="energy-fill" id="energyFill" style="width:100%"></div></div>
     </div>
 
@@ -691,15 +690,15 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:18px;">⛏️</span>
           <div>
-            <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;">PASSIVE INCOME</div>
+            <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;"><span data-i18n="passiveIncome">PASSIVE INCOME</span></div>
             <div style="font-size:13px;font-weight:700;color:#00ff88;" id="passiveRate">+0 XSPC/hr</div>
           </div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:10px;color:#FFD700;font-family:Orbitron,monospace;letter-spacing:1px;opacity:0.7;">ACCUMULATED</div>
+          <div style="font-size:10px;color:#FFD700;font-family:Orbitron,monospace;letter-spacing:1px;opacity:0.7;"><span data-i18n="accumulated">ACCUMULATED</span></div>
           <div style="font-size:18px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;" id="passiveAccum">0</div>
         </div>
-        <button onclick="collectPassive()" id="collectBtn" style="display:none;padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:12px;font-family:Rajdhani,sans-serif;margin-left:8px;">COLLECT</button>
+        <button onclick="collectPassive()" id="collectBtn" style="display:none;padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:12px;font-family:Rajdhani,sans-serif;margin-left:8px;"><span data-i18n="collect">COLLECT</span></button>
       </div>
     </div>
 
@@ -726,7 +725,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:4px;">
           <div style="font-size:10px;color:#4a6080;" id="questProgress">0/0</div>
-          <button onclick="claimQuest()" id="questClaimBtn" style="display:none;padding:4px 12px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#7b2fff,#00f5ff);color:#000;font-weight:700;font-size:11px;">CLAIM</button>
+          <button onclick="claimQuest()" id="questClaimBtn" style="display:none;padding:4px 12px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#7b2fff,#00f5ff);color:#000;font-weight:700;font-size:11px;"><span data-i18n="claim">CLAIM</span></button>
         </div>
       </div>
     </div>
@@ -757,7 +756,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="font-size:26px;">🏆</div>
           <div style="flex:1;">
-            <div style="font-size:13px;font-weight:700;color:#FFD700;">Top Players</div>
+            <div style="font-size:13px;font-weight:700;color:#FFD700;"><span data-i18n="topPlayers">Top Players</span></div>
             <div style="font-size:11px;color:#4a6080;margin-top:1px;" id="topPreviewText">See who leads the galaxy</div>
           </div>
           <!-- TON wallet status inline -->
@@ -778,7 +777,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="font-size:10px;color:#4a6080;margin-top:2px;">Tokenomics & Roadmap →</div>
       </div>
       <div style="flex:1;background:linear-gradient(135deg,rgba(255,100,0,0.1),rgba(255,200,0,0.06));border:1px solid rgba(255,150,0,0.3);border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;" onclick="showPage('whitepaper')">
-        <div style="font-size:9px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:4px;">LAUNCH IN</div>
+        <div style="font-size:9px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:4px;"><span data-i18n="launchIn">LAUNCH IN</span></div>
         <div style="font-family:Orbitron,monospace;font-size:24px;font-weight:900;color:#FFD700;line-height:1;" id="launchDaysMain">---</div>
         <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:3px;">DAYS</div>
       </div>
@@ -797,9 +796,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div style="font-size:18px;font-weight:700;color:#00ff88;font-family:Orbitron,monospace;" id="totalPassiveRate">0 XSPC/hr</div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;">ACCUMULATED</div>
+      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;"><span data-i18n="accumulated">ACCUMULATED</span></div>
       <div style="font-size:16px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;" id="boostPageAccum">0</div>
-      <button onclick="collectPassive()" id="collectBtn2" style="display:none;margin-top:4px;padding:5px 14px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:11px;">COLLECT</button>
+      <button onclick="collectPassive()" id="collectBtn2" style="display:none;margin-top:4px;padding:5px 14px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:11px;"><span data-i18n="collect">COLLECT</span></button>
     </div>
   </div>
 
@@ -816,13 +815,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="section-title">⚡ Free Boosts</div>
   <div class="boost-item" onclick="useBoost('turbo')">
     <div class="boost-icon">🚀</div>
-    <div class="boost-info"><div class="boost-name">Turbo Mode</div><div class="boost-desc">x5 XSPC for 20 seconds</div></div>
+    <div class="boost-info"><div class="boost-name"><span data-i18n="turboMode">Turbo Mode</span></div><div class="boost-desc">x5 XSPC for 20 seconds</div></div>
     <div class="boost-cost" id="turboCount">3/3</div>
     <div id="turboTimer" style="font-size:10px;color:#00ff88;display:none;font-family:Orbitron,monospace;"></div>
   </div>
   <div class="boost-item" onclick="useBoost('energy')">
     <div class="boost-icon">⚡</div>
-    <div class="boost-info"><div class="boost-name">Full Energy</div><div class="boost-desc">Restore all energy instantly</div></div>
+    <div class="boost-info"><div class="boost-name"><span data-i18n="fullEnergy">Full Energy</span></div><div class="boost-desc">Restore all energy instantly</div></div>
     <div class="boost-cost" id="energyBoostCount">3/3</div>
   </div>
 
@@ -830,7 +829,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="section-title" style="margin-top:14px">👆 Tap Power</div>
   <div class="boost-item" onclick="buyUpgrade('multitap')">
     <div class="boost-icon">👆</div>
-    <div class="boost-info"><div class="boost-name">Multitap</div><div class="boost-desc">+1 XSPC per tap (Lv <span id="multitapLv">1</span>)</div></div>
+    <div class="boost-info"><div class="boost-name"><span data-i18n="multitap">Multitap</span></div><div class="boost-desc">+1 XSPC per tap (Lv <span id="multitapLv">1</span>)</div></div>
     <div class="boost-cost" id="multitapCost">500 🪐</div>
   </div>
   <div class="boost-item" onclick="buyUpgrade('critchance')">
@@ -848,12 +847,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="section-title" style="margin-top:14px">🔋 Energy</div>
   <div class="boost-item" onclick="buyUpgrade('maxenergy')">
     <div class="boost-icon">🔋</div>
-    <div class="boost-info"><div class="boost-name">Energy Limit</div><div class="boost-desc">+500 max energy (Lv <span id="maxenergyLv">1</span>)</div></div>
+    <div class="boost-info"><div class="boost-name"><span data-i18n="energyLimit">Energy Limit</span></div><div class="boost-desc">+500 max energy (Lv <span id="maxenergyLv">1</span>)</div></div>
     <div class="boost-cost" id="maxenergyCost">1000 🪐</div>
   </div>
   <div class="boost-item" onclick="buyUpgrade('recharge')">
     <div class="boost-icon">⚡</div>
-    <div class="boost-info"><div class="boost-name">Recharge Speed</div><div class="boost-desc">2x faster regen (Lv <span id="rechargeLv">1</span>)</div></div>
+    <div class="boost-info"><div class="boost-name"><span data-i18n="rechargeSpeed">Recharge Speed</span></div><div class="boost-desc">2x faster regen (Lv <span id="rechargeLv">1</span>)</div></div>
     <div class="boost-cost" id="rechargeCost">2000 🪐</div>
   </div>
   <div class="boost-item" onclick="buyUpgrade('energysave')">
@@ -865,7 +864,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Go to Cards page -->
   <div style="margin-top:14px;padding:14px;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.2);border-radius:14px;text-align:center;cursor:pointer;" onclick="showPage('cards')">
     <div style="font-size:22px;margin-bottom:6px;">📈</div>
-    <div style="font-size:14px;font-weight:700;color:#00ff88;">Passive Income Cards</div>
+    <div style="font-size:14px;font-weight:700;color:#00ff88;"><span data-i18n="passiveCards">Passive Income Cards</span></div>
     <div style="font-size:12px;color:#4a6080;margin-top:4px;">42 cards across 6 categories →</div>
   </div>
 
@@ -881,11 +880,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="font-size:12px;color:#4a6080;margin-bottom:10px;">Find 3 correct cards to win the jackpot!</div>
     <div style="display:flex;justify-content:center;gap:16px;">
       <div style="text-align:center;">
-        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">REWARD</div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;"><span data-i18n="reward">REWARD</span></div>
         <div style="font-size:16px;font-weight:700;color:#FFD700;" id="comboRewardText">500,000 🪐</div>
       </div>
       <div style="text-align:center;">
-        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">STATUS</div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;"><span data-i18n="status">STATUS</span></div>
         <div style="font-size:14px;font-weight:700;" id="comboStatus">0/3</div>
       </div>
       <div style="text-align:center;">
@@ -940,7 +939,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">🔥</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);" id="statTotalTaps">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">TOTAL TAPS</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="totalTaps">TOTAL TAPS</span></div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">⚡</div>
@@ -955,12 +954,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">🔥</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff9500;" id="statStreak">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">DAY STREAK</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="dayStreak">DAY STREAK</span></div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">⚔️</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff3366;" id="statPvpWins">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">PVP WINS</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="pvpWins">PVP WINS</span></div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">💀</div>
@@ -975,7 +974,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">🪐</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#7b2fff;" id="statTotalEarned">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">TOTAL EARNED</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="totalEarned">TOTAL EARNED</span></div>
     </div>
   </div>
 
@@ -1006,7 +1005,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="font-size:20px;">🏆</span>
-        <div><div style="font-size:13px;font-weight:600;">Achievements</div><div style="font-size:11px;color:#4a6080;">Completed achievements</div></div>
+        <div><div style="font-size:13px;font-weight:600;"><span data-i18n="achievements">Achievements</span></div><div style="font-size:11px;color:#4a6080;"><span data-i18n="completedAchievements">Completed achievements</span></div></div>
       </div>
       <div style="font-family:Orbitron,monospace;font-size:14px;font-weight:700;color:#FFD700;" id="statAchieves">0</div>
     </div>
@@ -1017,7 +1016,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
       <div style="font-size:18px;">👆</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;">Multitap</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="multitap">Multitap</span></div>
       <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:var(--accent);" id="statMultitap">Lv1</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
@@ -1038,7 +1037,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="page" id="pageTasks">
   <div style="background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(123,47,255,0.06));border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;">
     <div style="font-size:36px;margin-bottom:6px;">🤝</div>
-    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;">EARN MORE XSPC</div>
+    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;"><span data-i18n="earnMoreXspc">EARN MORE XSPC</span></div>
     <div style="font-size:12px;color:#4a6080;">Complete tasks to earn bonus coins</div>
   </div>
 
@@ -1244,7 +1243,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div style="font-size:20px;">🌌</div><div><div style="font-size:12px;font-weight:700;">200 Levels · 20+ Planets</div><div style="font-size:10px;color:#4a6080;">From Mercury to Omniverse</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
-      <div style="font-size:20px;">💀</div><div><div style="font-size:12px;font-weight:700;">Planet Bosses</div><div style="font-size:10px;color:#4a6080;">Fight bosses to unlock new worlds</div></div>
+      <div style="font-size:20px;">💀</div><div><div style="font-size:12px;font-weight:700;"><span data-i18n="planetBosses">Planet Bosses</span></div><div style="font-size:10px;color:#4a6080;">Fight bosses to unlock new worlds</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
       <div style="font-size:20px;">🛸</div><div><div style="font-size:12px;font-weight:700;">Cosmic Expeditions</div><div style="font-size:10px;color:#4a6080;">Every 4 hours — random events with rewards</div></div>
@@ -1331,7 +1330,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Your stats -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
     <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
-      <div style="font-size:11px;color:#4a6080;">Your Referrals</div>
+      <div style="font-size:11px;color:#4a6080;"><span data-i18n="yourReferrals">Your Referrals</span></div>
       <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:var(--accent);" id="tournamentRefs">0</div>
     </div>
     <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
@@ -1355,7 +1354,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="font-size:12px;color:#4a6080;margin-top:2px;" id="seasonPageDays">29 days remaining</div>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:11px;color:#4a6080;">YOUR RANK</div>
+        <div style="font-size:11px;color:#4a6080;"><span data-i18n="yourRank">YOUR RANK</span></div>
         <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff9500;" id="seasonPageRank">#--</div>
       </div>
     </div>
@@ -1416,7 +1415,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Header -->
   <div style="background:linear-gradient(135deg,rgba(255,50,100,0.1),rgba(255,150,0,0.06));border:1px solid rgba(255,50,100,0.25);border-radius:18px;padding:14px;margin-bottom:14px;text-align:center;">
     <div style="font-size:11px;color:#ff3366;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:4px;">⚔️ TAP BATTLE</div>
-    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;" id="pvpOpponentName">Choose your opponent</div>
+    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;" id="pvpOpponentName"><span data-i18n="chooseOpponent">Choose your opponent</span></div>
     <div style="font-size:11px;color:#4a6080;margin-top:4px;">Tap faster and win XSPC!</div>
   </div>
 
@@ -1520,7 +1519,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="font-size:11px;color:#4a6080;" id="seasonDays">Loading...</div>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">YOUR RANK</div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;"><span data-i18n="yourRank">YOUR RANK</span></div>
         <div style="font-size:18px;font-weight:700;color:#FFD700;" id="seasonRank">#--</div>
       </div>
     </div>
@@ -1637,19 +1636,19 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;letter-spacing:2px;">🔑 EARN</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div class="hub-card" onclick="showPage('keys')">
-      <div class="hub-icon">🔑</div><div class="hub-name">Keys & Chest</div>
+      <div class="hub-icon">🔑</div><div class="hub-name"><span data-i18n="keysAndChest">Keys & Chest</span></div>
       <div class="hub-desc">Daily chest + XKEY balance</div>
       <div id="earnBadge2" style="display:none;" class="hub-badge">NEW</div>
     </div>
     <div class="hub-card" onclick="showPage('combo')">
-      <div class="hub-icon">⚡</div><div class="hub-name">Daily Combo</div>
+      <div class="hub-icon">⚡</div><div class="hub-name"><span data-i18n="dailyCombo">Daily Combo</span></div>
       <div class="hub-desc">Guess 3 cards, win jackpot</div>
       <div id="comboBadgeHub" class="hub-badge" style="display:none;">NEW</div>
     </div>
     <div class="hub-card" onclick="showPage('wheel')">
-      <div class="hub-icon">🎰</div><div class="hub-name">Fortune Wheel</div>
+      <div class="hub-icon">🎰</div><div class="hub-name"><span data-i18n="fortuneWheel">Fortune Wheel</span></div>
       <div class="hub-desc">Daily free spin</div>
-      <div id="wheelBadgeHub" class="hub-badge" style="display:none;">READY</div>
+      <div id="wheelBadgeHub" class="hub-badge" style="display:none;"><span data-i18n="ready">READY</span></div>
     </div>
 
     <div class="hub-card" onclick="showPage('tasks')">
@@ -1657,19 +1656,19 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-desc">Complete & get XSPC</div>
     </div>
     <div class="hub-card" onclick="showPage('streak')">
-      <div class="hub-icon">🔥</div><div class="hub-name">Daily Streak</div>
+      <div class="hub-icon">🔥</div><div class="hub-name"><span data-i18n="dailyStreak">Daily Streak</span></div>
       <div class="hub-desc">Login every day for rewards</div>
     </div>
     <div class="hub-card" onclick="showPage('mini')" style="display:none;">
-      <div class="hub-icon">🎮</div><div class="hub-name">Mini Game</div>
+      <div class="hub-icon">🎮</div><div class="hub-name"><span data-i18n="miniGame">Mini Game</span></div>
       <div class="hub-desc">Guess number, win XSPC</div>
     </div>
     <div class="hub-card" onclick="showPage('promo')">
-      <div class="hub-icon">🎁</div><div class="hub-name">Promo Code</div>
+      <div class="hub-icon">🎁</div><div class="hub-name"><span data-i18n="promoCode">Promo Code</span></div>
       <div class="hub-desc">Enter code for bonus</div>
     </div>
     <div class="hub-card" onclick="showPage('top')">
-      <div class="hub-icon">🏆</div><div class="hub-name">Leaderboard</div>
+      <div class="hub-icon">🏆</div><div class="hub-name"><span data-i18n="leaderboard">Leaderboard</span></div>
       <div class="hub-desc">Top players ranking</div>
     </div>
   </div>
@@ -1680,7 +1679,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;letter-spacing:2px;">⚡ UPGRADE</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div class="hub-card" onclick="showPage('boosts')">
-      <div class="hub-icon">⚡</div><div class="hub-name">Tap Boosts</div>
+      <div class="hub-icon">⚡</div><div class="hub-name"><span data-i18n="tapBoosts">Tap Boosts</span></div>
       <div class="hub-desc">Multitap, Energy, Crit</div>
     </div>
     <div class="hub-card" onclick="showPage('cards')">
@@ -1767,7 +1766,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         </div>
       </div>
       <div style="text-align:center;">
-        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">GOAL</div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;"><span data-i18n="goal">GOAL</span></div>
         <div style="font-size:20px;">☀️</div>
         <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;">SUN</div>
       </div>
@@ -1780,7 +1779,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div class="hub-card" onclick="showPage('achieve')">
-      <div class="hub-icon">🏅</div><div class="hub-name">Achievements</div>
+      <div class="hub-icon">🏅</div><div class="hub-name"><span data-i18n="achievements">Achievements</span></div>
       <div class="hub-desc" id="galaxyAchieveDesc">0/45 completed</div>
     </div>
     <div class="hub-card" onclick="showPage('stats')">
@@ -1788,11 +1787,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-desc">Profile & records</div>
     </div>
     <div class="hub-card" onclick="showPage('cosmosmap')">
-      <div class="hub-icon">🗺️</div><div class="hub-name">Cosmos Map</div>
+      <div class="hub-icon">🗺️</div><div class="hub-name"><span data-i18n="cosmosMap">Cosmos Map</span></div>
       <div class="hub-desc">Your journey through space</div>
     </div>
     <div class="hub-card" onclick="showPage('staking')">
-      <div class="hub-icon">💰</div><div class="hub-name">Staking</div>
+      <div class="hub-icon">💰</div><div class="hub-name"><span data-i18n="staking">Staking</span></div>
       <div class="hub-desc">Earn up to 20%/day</div>
     </div>
     <div class="hub-card" onclick="showPage('clans')">
@@ -1804,12 +1803,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-desc" id="expeditionStatus">Ready to explore!</div>
     </div>
     <div class="hub-card" onclick="showPage('rareplanets');renderRarePlanets();">
-      <div class="hub-icon">🌟</div><div class="hub-name">Rare Planets</div>
+      <div class="hub-icon">🌟</div><div class="hub-name"><span data-i18n="rarePlanets">Rare Planets</span></div>
       <div class="hub-desc">Collect rare planets</div>
     </div>
     <div class="hub-card" onclick="showPage('whitepaper')">
       <div class="hub-icon">📄</div><div class="hub-name">Whitepaper</div>
-      <div class="hub-desc">Token & Roadmap</div>
+      <div class="hub-desc"><span data-i18n="tokenRoadmap">Token & Roadmap</span></div>
     </div>
   </div>
 </div>
@@ -1819,19 +1818,19 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff3366;margin-bottom:14px;letter-spacing:2px;">⚔️ BATTLE</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div class="hub-card" onclick="showPage('pvp')">
-      <div class="hub-icon">⚔️</div><div class="hub-name">PvP Battle</div>
+      <div class="hub-icon">⚔️</div><div class="hub-name"><span data-i18n="pvpBattle">PvP Battle</span></div>
       <div class="hub-desc">Tap faster than opponent</div>
     </div>
     <div class="hub-card" onclick="showPage('top')">
-      <div class="hub-icon">🏆</div><div class="hub-name">Leaderboard</div>
-      <div class="hub-desc">Global ranking</div>
+      <div class="hub-icon">🏆</div><div class="hub-name"><span data-i18n="leaderboard">Leaderboard</span></div>
+      <div class="hub-desc"><span data-i18n="globalRanking">Global ranking</span></div>
     </div>
     <div class="hub-card" onclick="showPage('season')">
-      <div class="hub-icon">🏅</div><div class="hub-name">Season</div>
+      <div class="hub-icon">🏅</div><div class="hub-name"><span data-i18n="season">Season</span></div>
       <div class="hub-desc" id="battleSeasonDesc">Season 6 · 29 days left</div>
     </div>
     <div class="hub-card" onclick="showPage('tournament')">
-      <div class="hub-icon">🥊</div><div class="hub-name">Tournament</div>
+      <div class="hub-icon">🥊</div><div class="hub-name"><span data-i18n="tournament">Tournament</span></div>
       <div class="hub-desc">Weekly referral contest</div>
     </div>
   </div>
@@ -1856,12 +1855,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <!-- STREAK PAGE -->
 <div class="page" id="pageStreak">
   <div style="text-align:center;padding:10px 0 20px;">
-    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;">DAILY REWARD</div>
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;"><span data-i18n="dailyReward">DAILY REWARD</span></div>
     <div style="font-size:22px;font-weight:900;font-family:Orbitron,monospace;color:#FFD700;margin-bottom:4px;">🔥 DAY STREAK</div>
-    <div style="font-size:12px;color:#4a6080;margin-bottom:16px;">Come back every day for bigger rewards!</div>
+    <div style="font-size:12px;color:#4a6080;margin-bottom:16px;"><span data-i18n="comeBackEveryDay">Come back every day for bigger rewards!</span></div>
     <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px;" id="streakGridPage"></div>
     <div style="background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);border-radius:14px;padding:14px;margin-bottom:16px;">
-      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;">TODAY'S REWARD</div>
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;"><span data-i18n="todayReward">TODAY'S REWARD</span></div>
       <div style="font-size:28px;margin-bottom:4px;" id="streakRewardIconPage">🪐</div>
       <div style="font-size:18px;font-weight:700;color:#FFD700;" id="streakRewardTextPage">+1,000 XSPC</div>
     </div>
@@ -1902,12 +1901,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
     <div style="background:linear-gradient(135deg,rgba(123,47,255,0.1),rgba(0,245,255,0.05));border:1px solid rgba(123,47,255,0.25);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('wheel')">
       <div style="font-size:28px;margin-bottom:4px;">🎰</div>
-      <div style="font-size:12px;font-weight:700;color:var(--accent);">Fortune Wheel</div>
+      <div style="font-size:12px;font-weight:700;color:var(--accent);"><span data-i18n="fortuneWheel">Fortune Wheel</span></div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;" id="wheelStatusInKeys">Ready!</div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(255,150,0,0.1),rgba(255,50,100,0.05));border:1px solid rgba(255,150,0,0.25);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('top')">
       <div style="font-size:28px;margin-bottom:4px;">🏆</div>
-      <div style="font-size:12px;font-weight:700;color:#ff9500;">Leaderboard</div>
+      <div style="font-size:12px;font-weight:700;color:#ff9500;"><span data-i18n="leaderboard">Leaderboard</span></div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">Top players</div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,245,255,0.04));border:1px solid rgba(0,255,136,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('earn')">
@@ -1917,17 +1916,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     </div>
     <div style="background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,100,0,0.04));border:1px solid rgba(255,215,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('achieve')">
       <div style="font-size:28px;margin-bottom:4px;">🏅</div>
-      <div style="font-size:12px;font-weight:700;color:#FFD700;">Achievements</div>
+      <div style="font-size:12px;font-weight:700;color:#FFD700;"><span data-i18n="achievements">Achievements</span></div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;" id="achieveCountKeys">0/20 done</div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(123,47,255,0.04));border:1px solid rgba(0,245,255,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('whitepaper')">
       <div style="font-size:28px;margin-bottom:4px;">📄</div>
       <div style="font-size:12px;font-weight:700;color:var(--accent);">Whitepaper</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;">Token & Roadmap</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="tokenRoadmap">Token & Roadmap</span></div>
     </div>
     <div style="display:none;background:linear-gradient(135deg,rgba(255,100,0,0.08),rgba(255,200,0,0.04));border:1px solid rgba(255,150,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('mini')">
       <div style="font-size:28px;margin-bottom:4px;">🎮</div>
-      <div style="font-size:12px;font-weight:700;color:#ff9500;">Mini Game</div>
+      <div style="font-size:12px;font-weight:700;color:#ff9500;"><span data-i18n="miniGame">Mini Game</span></div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;" id="miniGamesLeftKeys">3 games left</div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(123,47,255,0.08),rgba(0,245,255,0.04));border:1px solid rgba(123,47,255,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('stats')">
@@ -1937,8 +1936,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     </div>
     <div style="background:linear-gradient(135deg,rgba(255,50,100,0.1),rgba(255,150,0,0.04));border:1px solid rgba(255,50,100,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('pvp')">
       <div style="font-size:28px;margin-bottom:4px;">⚔️</div>
-      <div style="font-size:12px;font-weight:700;color:#ff3366;">PvP Battle</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;">Tap to win!</div>
+      <div style="font-size:12px;font-weight:700;color:#ff3366;"><span data-i18n="pvpBattle">PvP Battle</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="tapToWin">Tap to win!</span></div>
     </div>
     <div style="display:none;background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,100,0,0.04));border:2px solid rgba(255,215,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('vip')">
       <div style="font-size:28px;margin-bottom:4px;">👑</div>
@@ -1964,7 +1963,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
     <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
       <div style="font-size:28px;">📦</div>
-      <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Daily Chest</div><div style="font-size:11px;color:#4a6080;">Open once per day — 1-3 keys</div></div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;"><span data-i18n="dailyChest">Daily Chest</span></div><div style="font-size:11px;color:#4a6080;">Open once per day — 1-3 keys</div></div>
       <div style="font-size:14px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;">1-3 🔑</div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
@@ -1974,7 +1973,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
       <div style="font-size:28px;">🎰</div>
-      <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Fortune Wheel</div><div style="font-size:11px;color:#4a6080;">Spin daily — chance to get key</div></div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;"><span data-i18n="fortuneWheel">Fortune Wheel</span></div><div style="font-size:11px;color:#4a6080;">Spin daily — chance to get key</div></div>
       <div style="font-size:14px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;">0-1 🔑</div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
@@ -1996,13 +1995,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Passive income header -->
   <div style="background:linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,245,255,0.05));border:1px solid rgba(0,255,136,0.2);border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
     <div>
-      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;">PASSIVE INCOME</div>
+      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;"><span data-i18n="passiveIncome">PASSIVE INCOME</span></div>
       <div style="font-size:20px;font-weight:700;color:#00ff88;font-family:Orbitron,monospace;" id="cardsPassiveRate">0 XSPC/hr</div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;">READY TO COLLECT</div>
+      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;"><span data-i18n="readyToCollect">READY TO COLLECT</span></div>
       <div style="font-size:18px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;" id="cardsAccum">0</div>
-      <button onclick="collectPassive()" id="collectBtn3" style="display:none;margin-top:4px;padding:6px 16px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:12px;">COLLECT</button>
+      <button onclick="collectPassive()" id="collectBtn3" style="display:none;margin-top:4px;padding:6px 16px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:12px;"><span data-i18n="collect">COLLECT</span></button>
     </div>
   </div>
 
@@ -2083,7 +2082,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#FFD700;margin-bottom:14px;letter-spacing:2px;">💰 STAKING</div>
 
   <div style="background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,149,0,0.06));border:1px solid rgba(255,215,0,0.3);border-radius:18px;padding:16px;margin-bottom:12px;text-align:center;">
-    <div style="font-size:12px;color:#4a6080;font-family:Orbitron,monospace;margin-bottom:6px;">YOUR STAKE</div>
+    <div style="font-size:12px;color:#4a6080;font-family:Orbitron,monospace;margin-bottom:6px;"><span data-i18n="yourStake">YOUR STAKE</span></div>
     <div style="font-family:Orbitron,monospace;font-size:28px;font-weight:700;color:#FFD700;" id="stakeAmount">0</div>
     <div style="font-size:11px;color:#4a6080;margin-top:4px;">XSPC staked</div>
     <div style="font-size:13px;color:#00ff88;margin-top:8px;" id="stakeRewards">Daily reward: 0 XSPC</div>
@@ -2094,25 +2093,25 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div><div style="font-size:13px;font-weight:700;">🟢 Basic Stake</div><div style="font-size:11px;color:#4a6080;">Stake 10,000 XSPC</div></div>
-        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#00ff88;">+5%/day</div><button onclick="stake(10000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,255,136,0.15);border:1px solid rgba(0,255,136,0.3);border-radius:8px;color:#00ff88;font-size:11px;cursor:pointer;">STAKE</button></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#00ff88;">+5%/day</div><button onclick="stake(10000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,255,136,0.15);border:1px solid rgba(0,255,136,0.3);border-radius:8px;color:#00ff88;font-size:11px;cursor:pointer;"><span data-i18n="stake">STAKE</span></button></div>
       </div>
     </div>
     <div style="padding:12px;background:var(--card);border:1px solid rgba(0,245,255,0.2);border-radius:12px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div><div style="font-size:13px;font-weight:700;">🔵 Pro Stake</div><div style="font-size:11px;color:#4a6080;">Stake 100,000 XSPC</div></div>
-        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:var(--accent);">+10%/day</div><button onclick="stake(100000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:8px;color:var(--accent);font-size:11px;cursor:pointer;">STAKE</button></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:var(--accent);">+10%/day</div><button onclick="stake(100000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:8px;color:var(--accent);font-size:11px;cursor:pointer;"><span data-i18n="stake">STAKE</span></button></div>
       </div>
     </div>
     <div style="padding:12px;background:var(--card);border:1px solid rgba(123,47,255,0.3);border-radius:12px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div><div style="font-size:13px;font-weight:700;">🟣 Elite Stake</div><div style="font-size:11px;color:#4a6080;">Stake 1,000,000 XSPC</div></div>
-        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#7b2fff;">+20%/day</div><button onclick="stake(1000000)" style="margin-top:4px;padding:4px 12px;background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.3);border-radius:8px;color:#7b2fff;font-size:11px;cursor:pointer;">STAKE</button></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#7b2fff;">+20%/day</div><button onclick="stake(1000000)" style="margin-top:4px;padding:4px 12px;background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.3);border-radius:8px;color:#7b2fff;font-size:11px;cursor:pointer;"><span data-i18n="stake">STAKE</span></button></div>
       </div>
     </div>
   </div>
 
   <button onclick="collectStake()" id="collectStakeBtn" style="display:none;width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#ff9500);border:none;border-radius:16px;color:#000;font-weight:700;font-size:15px;cursor:pointer;font-family:Orbitron,monospace;margin-bottom:10px;">💰 COLLECT REWARDS</button>
-  <button onclick="unstake()" id="unstakeBtn" style="display:none;width:100%;padding:12px;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);border-radius:14px;color:#ff3366;font-weight:700;font-size:13px;cursor:pointer;">Unstake All</button>
+  <button onclick="unstake()" id="unstakeBtn" style="display:none;width:100%;padding:12px;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);border-radius:14px;color:#ff3366;font-weight:700;font-size:13px;cursor:pointer;"><span data-i18n="unstakeAll">Unstake All</span></button>
 </div>
 
 <!-- WHEEL -->
@@ -2121,7 +2120,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="wheel-container">
     <div class="wheel-wrap"><div class="wheel-arrow">▼</div><canvas class="wheel-canvas" id="wheelCanvas" width="260" height="260"></canvas><div class="wheel-center"></div></div>
     <div class="wheel-legend" id="wheelLegend"></div>
-    <div class="wheel-info">Daily free spin: <span class="spin-cost" id="spinStatus">READY</span></div>
+    <div class="wheel-info">Daily free spin: <span class="spin-cost" id="spinStatus"><span data-i18n="ready">READY</span></span></div>
     <button class="btn-accent" onclick="spinWheel()" id="spinBtn">🎰 SPIN — FREE</button>
   </div>
   <div class="section-title" style="margin-top:16px">📋 Daily Tasks</div>
@@ -2133,7 +2132,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 <div class="page" id="pageTop">
   <div class="section-title">🏆 Leaderboard</div>
-  <div id="topList"><div style="text-align:center;color:var(--muted);padding:30px;font-family:Orbitron,monospace;font-size:11px;letter-spacing:2px">LOADING...</div></div>
+  <div id="topList"><div style="text-align:center;color:var(--muted);padding:30px;font-family:Orbitron,monospace;font-size:11px;letter-spacing:2px"><span data-i18n="loading">LOADING...</span></div></div>
 </div>
 
 <!-- FRIENDS -->
@@ -2141,7 +2140,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Beautiful referral card -->
   <div style="background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(123,47,255,0.08));border:1px solid rgba(0,245,255,0.25);border-radius:20px;padding:20px;margin-bottom:14px;text-align:center;">
     <div style="font-size:40px;margin-bottom:8px;">👥</div>
-    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;">INVITE & EARN</div>
+    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;"><span data-i18n="inviteEarn">INVITE & EARN</span></div>
     <div style="font-size:12px;color:#4a6080;margin-bottom:14px;">Share your link and earn together</div>
     <div style="display:flex;gap:12px;justify-content:center;margin-bottom:16px;">
       <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:14px;padding:12px 20px;text-align:center;">
@@ -2164,12 +2163,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:20px;margin-bottom:4px;">🪐</div>
       <div style="font-size:13px;font-weight:700;color:#FFD700;">+500 XSPC</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;">per referral</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="perReferral">per referral</span></div>
     </div>
     <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:20px;margin-bottom:4px;">🔑</div>
       <div style="font-size:13px;font-weight:700;color:#FFD700;">+1 XKEY</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;">per referral</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="perReferral">per referral</span></div>
     </div>
     <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:20px;margin-bottom:4px;">💰</div>
@@ -2223,7 +2222,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div id="levelupParticles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;"></div>
   <div class="overlay-card">
     <div class="overlay-emoji" id="levelupEmoji">🎉</div>
-    <div class="overlay-title">LEVEL UP!</div>
+    <div class="overlay-title"><span data-i18n="levelUp">LEVEL UP!</span></div>
     <div class="overlay-sub" id="levelupSub">You reached level 2</div>
     <button class="btn-primary" onclick="closeLevelUp()">Continue 🚀</button>
   </div>
@@ -2242,7 +2241,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="overlay" id="wheelOverlay" onclick="closeWheelOverlay()">
   <div class="overlay-card">
     <div class="overlay-emoji" id="wheelWinEmoji">🎰</div>
-    <div class="overlay-title">YOU WON!</div>
+    <div class="overlay-title"><span data-i18n="youWon">YOU WON!</span></div>
     <div class="overlay-sub" id="wheelWinText">+500 XSPC</div>
     <button class="btn-primary" onclick="closeWheelOverlay()">Awesome! 🚀</button>
   </div>
@@ -2262,16 +2261,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <!-- DAILY STREAK OVERLAY -->
 <div class="overlay" id="streakOverlay">
   <div class="overlay-card" style="max-width:340px;">
-    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;">DAILY REWARD</div>
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;"><span data-i18n="dailyReward">DAILY REWARD</span></div>
     <div style="font-size:22px;font-weight:900;font-family:Orbitron,monospace;color:#FFD700;margin-bottom:4px;">🔥 DAY STREAK</div>
-    <div style="font-size:13px;color:#4a6080;margin-bottom:16px;">Come back every day for bigger rewards!</div>
+    <div style="font-size:13px;color:#4a6080;margin-bottom:16px;"><span data-i18n="comeBackEveryDay">Come back every day for bigger rewards!</span></div>
 
     <!-- 7 day grid -->
     <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px;" id="streakGrid"></div>
 
     <!-- Today reward -->
     <div style="background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);border-radius:14px;padding:14px;margin-bottom:16px;text-align:center;">
-      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;">TODAY'S REWARD</div>
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;"><span data-i18n="todayReward">TODAY'S REWARD</span></div>
       <div style="font-size:28px;margin-bottom:4px;" id="streakRewardIcon">🪐</div>
       <div style="font-size:18px;font-weight:700;color:#FFD700;" id="streakRewardText">+1,000 XSPC</div>
     </div>
@@ -2294,7 +2293,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <button onclick="saveTonWallet()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0088cc,#00aaff);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:8px;">💾 Save Wallet</button>
       <div id="tonSavedAddr" style="font-size:11px;color:#00ff88;text-align:center;"></div>
     </div>
-    <button onclick="closeTon()" style="width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:12px;color:#4a6080;font-size:13px;cursor:pointer;margin-top:8px;">Close</button>
+    <button onclick="closeTon()" style="width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:12px;color:#4a6080;font-size:13px;cursor:pointer;margin-top:8px;"><span data-i18n="close">Close</span></button>
   </div>
 </div>
 
@@ -2344,7 +2343,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff3366;margin:12px 0 6px;letter-spacing:2px;">⚠️ ASTEROID!</div>
     <div style="font-size:13px;color:#aaa;margin-bottom:16px;">Tap as fast as you can!</div>
     <div style="font-family:Orbitron,monospace;font-size:48px;font-weight:900;color:#FFD700;" id="asteroidTimer">30</div>
-    <div style="font-size:12px;color:#4a6080;margin-top:4px;font-family:Orbitron,monospace;">SECONDS LEFT</div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;font-family:Orbitron,monospace;"><span data-i18n="secondsLeft">SECONDS LEFT</span></div>
     <div style="margin-top:16px;font-size:14px;color:#00ff88;font-family:Orbitron,monospace;" id="asteroidBonus">x5 COINS!</div>
   </div>
 </div>
@@ -2352,344 +2351,1159 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="lucky-toast" id="luckyToast">🍀 LUCKY! +50 XSPC!</div>
 
 <script>
-// ═══ I18N SYSTEM ═══
-const LANGS = {
-  en: {
-    flag: '🇬🇧', name: 'English',
-    mine: 'Mine', earn: 'Earn', upgrade: 'Upgrade', galaxy: 'Galaxy', battle: 'Battle', friends: 'Friends',
-    energy: 'ENERGY', perTap: 'PER TAP', taps: 'TAPS', level: 'LEVEL',
-    passiveIncome: 'PASSIVE INCOME', accumulated: 'ACCUMULATED', collect: 'COLLECT',
-    conquestGoal: '🌌 CONQUER THE GALAXY',
-    loading: 'LOADING...',
-    tapToMine: 'Tap to mine!',
-    noEnergy: '❌ No energy!',
-    levelUp: 'LEVEL UP!',
-    youReachedLevel: 'You reached level',
-    wellcomeBonus: '🎁 Welcome bonus! +1,000 XSPC + 1 XKEY added!',
-    // Onboarding
-    ob_badge0:'WELCOME', ob_title0:'Welcome to XSPACECOIN!', ob_text0:'Mine planets, earn XSPC tokens and conquer the galaxy. The token launches Q1 2027 on TON blockchain!', ob_btn0:"Let's go! 🚀",
-    ob_badge1:'STEP 1 OF 5', ob_title1:'Tap to Mine XSPC', ob_text1:'Tap the planet as fast as you can! Every tap earns XSPC coins. Bigger combos = bigger rewards!', ob_btn1:'Got it!', ob_hint1:'💡 Multi-touch bonus on fast taps',
-    ob_badge2:'STEP 2 OF 5', ob_title2:'Manage Your Energy', ob_text2:'Each tap uses 1 energy. It recharges over time. Upgrade energy in the UPGRADE tab to tap more!', ob_btn2:'Understood!', ob_hint2:'💡 Energy recharges even offline',
-    ob_badge3:'STEP 3 OF 5', ob_title3:'Upgrade & Earn Passively', ob_text3:"Buy Boost Cards in UPGRADE — they earn XSPC every hour automatically, even when you're offline!", ob_btn3:'Nice!', ob_hint3:'💡 More cards = more passive income',
-    ob_badge4:'STEP 4 OF 5', ob_title4:'Collect XKEY Keys', ob_text4:'Keys unlock powerful artifacts. Earn them by leveling up, solving Daily Combo and completing quests!', ob_btn4:'Cool!', ob_hint4:'💡 Artifacts give permanent bonuses',
-    ob_badge5:'STEP 5 OF 5', ob_title5:'Conquer the Galaxy!', ob_text5:'20 planets · 200 levels · Bosses · Expeditions · PvP battles · Clans · Staking. Everything is waiting!', ob_btn5:'🚀 Start Mining!',
-    skipTutorial: 'Skip tutorial',
-    // Settings
-    language: 'Language', settings: 'Settings',
-    // Common
-    back: 'BACK', save: 'Save', cancel: 'Cancel', confirm: 'Confirm',
-    daily: 'Daily', weekly: 'Weekly', total: 'Total',
-    players: 'players', yourRank: 'Your rank',
-    // Boost / upgrade
-    buy: 'BUY', maxed: 'MAXED', owned: 'OWNED',
-    // Earn
-    promoCode: 'PROMO CODE', redeem: '🎁 REDEEM', enterCode: 'ENTER CODE...',
-    usedCodes: 'USED CODES', noCodesYet: 'No codes used yet', getDailyCode: 'Get a free code daily:',
-    // Friends
-    inviteFriends: '🚀 SHARE WITH FRIENDS', noFriendsYet: 'No friends yet!',
-    referrals: 'Referrals', earnedTogether: 'Earned together',
+// ═══ COMPLETE I18N SYSTEM ═══
+const TRANSLATIONS = {
+  "mine": {
+    "en": "Mine",
+    "ru": "Майнинг",
+    "uk": "Майнінг",
+    "es": "Minar",
+    "zh": "挖矿",
+    "ar": "تعدين",
+    "pt": "Minerar"
   },
-  ru: {
-    flag: '🇷🇺', name: 'Русский',
-    mine: 'Майнинг', earn: 'Заработок', upgrade: 'Апгрейд', galaxy: 'Галактика', battle: 'Битва', friends: 'Друзья',
-    energy: 'ЭНЕРГИЯ', perTap: 'ЗА ТАП', taps: 'ТАПОВ', level: 'УРОВЕНЬ',
-    passiveIncome: 'ПАССИВНЫЙ ДОХОД', accumulated: 'НАКОПЛЕНО', collect: 'СОБРАТЬ',
-    conquestGoal: '🌌 ПОКОРИТЬ ГАЛАКТИКУ',
-    loading: 'ЗАГРУЗКА...',
-    tapToMine: 'Тапай для майнинга!',
-    noEnergy: '❌ Нет энергии!',
-    levelUp: 'НОВЫЙ УРОВЕНЬ!',
-    youReachedLevel: 'Вы достигли уровня',
-    wellcomeBonus: '🎁 Приветственный бонус! +1,000 XSPC + 1 XKEY добавлено!',
-    ob_badge0:'ДОБРО ПОЖАЛОВАТЬ', ob_title0:'Добро пожаловать в XSPACECOIN!', ob_text0:'Майни планеты, зарабатывай токены XSPC и покоряй галактику. Запуск токена Q1 2027 на блокчейне TON!', ob_btn0:'Поехали! 🚀',
-    ob_badge1:'ШАГ 1 ИЗ 5', ob_title1:'Тапай и майни XSPC', ob_text1:'Тапай по планете как можно быстрее! Каждый тап приносит монеты XSPC. Комбо = больше наград!', ob_btn1:'Понял!', ob_hint1:'💡 Несколько пальцев = бонус',
-    ob_badge2:'ШАГ 2 ИЗ 5', ob_title2:'Следи за энергией', ob_text2:'Каждый тап тратит 1 энергию. Она восстанавливается со временем. Прокачай энергию во вкладке АПГРЕЙД!', ob_btn2:'Понятно!', ob_hint2:'💡 Энергия восстанавливается офлайн',
-    ob_badge3:'ШАГ 3 ИЗ 5', ob_title3:'Апгрейды и пассивный доход', ob_text3:'Покупай карты буста в АПГРЕЙД — они зарабатывают XSPC каждый час, даже когда ты офлайн!', ob_btn3:'Отлично!', ob_hint3:'💡 Больше карт = больше пассивного дохода',
-    ob_badge4:'ШАГ 4 ИЗ 5', ob_title4:'Собирай ключи XKEY', ob_text4:'Ключи открывают мощные артефакты. Получай их при повышении уровня, в Дейли Комбо и квестах!', ob_btn4:'Круто!', ob_hint4:'💡 Артефакты дают постоянные бонусы',
-    ob_badge5:'ШАГ 5 ИЗ 5', ob_title5:'Покоряй Галактику!', ob_text5:'20 планет · 200 уровней · Боссы · Экспедиции · PvP битвы · Кланы · Стейкинг. Всё ждёт тебя!', ob_btn5:'🚀 Начать майнинг!',
-    skipTutorial: 'Пропустить',
-    back: 'НАЗАД', save: 'Сохранить', cancel: 'Отмена', confirm: 'Подтвердить',
-    daily: 'Ежедневно', weekly: 'Еженедельно', total: 'Всего',
-    players: 'игроков', yourRank: 'Ваш ранг',
-    buy: 'КУПИТЬ', maxed: 'МАКС', owned: 'ЕСТЬ',
-    promoCode: 'ПРОМОКОД', redeem: '🎁 АКТИВИРОВАТЬ', enterCode: 'ВВЕДИТЕ КОД...',
-    usedCodes: 'ИСПОЛЬЗОВАННЫЕ КОДЫ', noCodesYet: 'Кодов ещё нет', getDailyCode: 'Получи бесплатный код:',
-    inviteFriends: '🚀 ПРИГЛАСИТЬ ДРУЗЕЙ', noFriendsYet: 'Друзей пока нет!',
-    referrals: 'Рефералы', earnedTogether: 'Заработано вместе',
-    language: 'Язык', settings: 'Настройки',
+  "earn": {
+    "en": "Earn",
+    "ru": "Заработок",
+    "uk": "Заробіток",
+    "es": "Ganar",
+    "zh": "赚取",
+    "ar": "كسب",
+    "pt": "Ganhar"
   },
-  uk: {
-    flag: '🇺🇦', name: 'Українська',
-    mine: 'Майнінг', earn: 'Заробіток', upgrade: 'Апгрейд', galaxy: 'Галактика', battle: 'Битва', friends: 'Друзі',
-    energy: 'ЕНЕРГІЯ', perTap: 'ЗА ТАП', taps: 'ТАПІВ', level: 'РІВЕНЬ',
-    passiveIncome: 'ПАСИВНИЙ ДОХІД', accumulated: 'НАКОПИЧЕНО', collect: 'ЗІБРАТИ',
-    conquestGoal: '🌌 ПІДКОРИТИ ГАЛАКТИКУ',
-    loading: 'ЗАВАНТАЖЕННЯ...',
-    tapToMine: 'Тапай для майнінгу!',
-    noEnergy: '❌ Немає енергії!',
-    levelUp: 'НОВИЙ РІВЕНЬ!',
-    youReachedLevel: 'Ви досягли рівня',
-    wellcomeBonus: '🎁 Привітальний бонус! +1,000 XSPC + 1 XKEY додано!',
-    ob_badge0:'ЛАСКАВО ПРОСИМО', ob_title0:'Ласкаво просимо до XSPACECOIN!', ob_text0:'Майни планети, заробляй токени XSPC і підкоряй галактику. Запуск токена Q1 2027 на блокчейні TON!', ob_btn0:'Поїхали! 🚀',
-    ob_badge1:'КРОК 1 З 5', ob_title1:'Тапай і майни XSPC', ob_text1:'Тапай по планеті якомога швидше! Кожен тап приносить монети XSPC. Комбо = більше нагород!', ob_btn1:'Зрозумів!', ob_hint1:'💡 Кілька пальців = бонус',
-    ob_badge2:'КРОК 2 З 5', ob_title2:'Стеж за енергією', ob_text2:'Кожен тап витрачає 1 енергію. Вона відновлюється з часом. Прокачай енергію у вкладці АПГРЕЙД!', ob_btn2:'Зрозуміло!', ob_hint2:'💡 Енергія відновлюється офлайн',
-    ob_badge3:'КРОК 3 З 5', ob_title3:'Апгрейди і пасивний дохід', ob_text3:'Купуй карти бусту в АПГРЕЙД — вони заробляють XSPC щогодини, навіть коли ти офлайн!', ob_btn3:'Чудово!', ob_hint3:'💡 Більше карт = більше пасивного доходу',
-    ob_badge4:'КРОК 4 З 5', ob_title4:'Збирай ключі XKEY', ob_text4:'Ключі відкривають потужні артефакти. Отримуй їх при підвищенні рівня, в Дейлі Комбо та квестах!', ob_btn4:'Круто!', ob_hint4:'💡 Артефакти дають постійні бонуси',
-    ob_badge5:'КРОК 5 З 5', ob_title5:'Підкоряй Галактику!', ob_text5:'20 планет · 200 рівнів · Боси · Експедиції · PvP битви · Клани · Стейкінг. Все чекає на тебе!', ob_btn5:'🚀 Почати майнінг!',
-    skipTutorial: 'Пропустити',
-    back: 'НАЗАД', save: 'Зберегти', cancel: 'Скасувати', confirm: 'Підтвердити',
-    daily: 'Щодня', weekly: 'Щотижня', total: 'Всього',
-    players: 'гравців', yourRank: 'Ваш ранг',
-    buy: 'КУПИТИ', maxed: 'МАКС', owned: 'Є',
-    promoCode: 'ПРОМОКОД', redeem: '🎁 АКТИВУВАТИ', enterCode: 'ВВЕДІТЬ КОД...',
-    usedCodes: 'ВИКОРИСТАНІ КОДИ', noCodesYet: 'Кодів ще немає', getDailyCode: 'Отримай безкоштовний код:',
-    inviteFriends: '🚀 ЗАПРОСИТИ ДРУЗІВ', noFriendsYet: 'Друзів поки немає!',
-    referrals: 'Реферали', earnedTogether: 'Зароблено разом',
-    language: 'Мова', settings: 'Налаштування',
+  "upgrade": {
+    "en": "Upgrade",
+    "ru": "Апгрейд",
+    "uk": "Апгрейд",
+    "es": "Mejorar",
+    "zh": "升级",
+    "ar": "ترقية",
+    "pt": "Melhorar"
   },
-  es: {
-    flag: '🇪🇸', name: 'Español',
-    mine: 'Minar', earn: 'Ganar', upgrade: 'Mejorar', galaxy: 'Galaxia', battle: 'Batalla', friends: 'Amigos',
-    energy: 'ENERGÍA', perTap: 'POR TAP', taps: 'TAPS', level: 'NIVEL',
-    passiveIncome: 'INGRESOS PASIVOS', accumulated: 'ACUMULADO', collect: 'RECOGER',
-    conquestGoal: '🌌 CONQUISTAR LA GALAXIA',
-    loading: 'CARGANDO...',
-    tapToMine: '¡Toca para minar!',
-    noEnergy: '❌ ¡Sin energía!',
-    levelUp: '¡SUBISTE DE NIVEL!',
-    youReachedLevel: 'Alcanzaste el nivel',
-    wellcomeBonus: '🎁 ¡Bono de bienvenida! +1,000 XSPC + 1 XKEY añadido!',
-    ob_badge0:'BIENVENIDO', ob_title0:'¡Bienvenido a XSPACECOIN!', ob_text0:'Mina planetas, gana tokens XSPC y conquista la galaxia. ¡El token se lanza en Q1 2027 en TON!', ob_btn0:'¡Vamos! 🚀',
-    ob_badge1:'PASO 1 DE 5', ob_title1:'Toca para minar XSPC', ob_text1:'¡Toca el planeta lo más rápido posible! Cada toque gana monedas XSPC. ¡Combos = más recompensas!', ob_btn1:'¡Entendido!', ob_hint1:'💡 Multi-toque = bono extra',
-    ob_badge2:'PASO 2 DE 5', ob_title2:'Gestiona tu Energía', ob_text2:'Cada toque usa 1 de energía. Se recarga con el tiempo. ¡Mejora la energía en la pestaña MEJORAR!', ob_btn2:'¡Comprendido!', ob_hint2:'💡 La energía se recarga sin conexión',
-    ob_badge3:'PASO 3 DE 5', ob_title3:'Mejoras e Ingresos Pasivos', ob_text3:'¡Compra Cartas de Impulso en MEJORAR — ganan XSPC cada hora automáticamente, incluso sin conexión!', ob_btn3:'¡Genial!', ob_hint3:'💡 Más cartas = más ingresos pasivos',
-    ob_badge4:'PASO 4 DE 5', ob_title4:'Colecciona llaves XKEY', ob_text4:'Las llaves desbloquean artefactos poderosos. ¡Gánalas subiendo de nivel, con el Combo Diario y misiones!', ob_btn4:'¡Perfecto!', ob_hint4:'💡 Los artefactos dan bonos permanentes',
-    ob_badge5:'PASO 5 DE 5', ob_title5:'¡Conquista la Galaxia!', ob_text5:'20 planetas · 200 niveles · Jefes · Expediciones · Batallas PvP · Clanes · Staking. ¡Todo te espera!', ob_btn5:'🚀 ¡Empezar a minar!',
-    skipTutorial: 'Omitir tutorial',
-    back: 'ATRÁS', save: 'Guardar', cancel: 'Cancelar', confirm: 'Confirmar',
-    daily: 'Diario', weekly: 'Semanal', total: 'Total',
-    players: 'jugadores', yourRank: 'Tu rango',
-    buy: 'COMPRAR', maxed: 'MÁX', owned: 'TIENES',
-    promoCode: 'CÓDIGO PROMO', redeem: '🎁 CANJEAR', enterCode: 'INGRESA CÓDIGO...',
-    usedCodes: 'CÓDIGOS USADOS', noCodesYet: 'Sin códigos aún', getDailyCode: 'Obtén un código gratis:',
-    inviteFriends: '🚀 INVITAR AMIGOS', noFriendsYet: '¡Sin amigos aún!',
-    referrals: 'Referidos', earnedTogether: 'Ganado juntos',
-    language: 'Idioma', settings: 'Configuración',
+  "galaxy": {
+    "en": "Galaxy",
+    "ru": "Галактика",
+    "uk": "Галактика",
+    "es": "Galaxia",
+    "zh": "银河",
+    "ar": "مجرة",
+    "pt": "Galáxia"
   },
-  zh: {
-    flag: '🇨🇳', name: '中文',
-    mine: '挖矿', earn: '赚取', upgrade: '升级', galaxy: '银河', battle: '战斗', friends: '好友',
-    energy: '能量', perTap: '每次点击', taps: '点击数', level: '等级',
-    passiveIncome: '被动收入', accumulated: '已累积', collect: '收集',
-    conquestGoal: '🌌 征服银河',
-    loading: '加载中...',
-    tapToMine: '点击挖矿！',
-    noEnergy: '❌ 没有能量！',
-    levelUp: '升级了！',
-    youReachedLevel: '您达到了等级',
-    wellcomeBonus: '🎁 欢迎奖励！+1,000 XSPC + 1 XKEY 已添加！',
-    ob_badge0:'欢迎', ob_title0:'欢迎来到XSPACECOIN！', ob_text0:'挖掘星球，赚取XSPC代币，征服银河。代币将于2027年第一季度在TON区块链上发布！', ob_btn0:'出发！🚀',
-    ob_badge1:'第1步，共5步', ob_title1:'点击挖掘XSPC', ob_text1:'尽可能快地点击星球！每次点击都能赚取XSPC。连击越多 = 奖励越多！', ob_btn1:'明白了！', ob_hint1:'💡 多指触控 = 额外奖励',
-    ob_badge2:'第2步，共5步', ob_title2:'管理您的能量', ob_text2:'每次点击消耗1点能量。能量会随时间恢复。在升级标签中提升能量！', ob_btn2:'了解了！', ob_hint2:'💡 离线时能量也会恢复',
-    ob_badge3:'第3步，共5步', ob_title3:'升级和被动收入', ob_text3:'在升级中购买加速卡——即使离线，它们每小时自动赚取XSPC！', ob_btn3:'太棒了！', ob_hint3:'💡 卡越多 = 被动收入越多',
-    ob_badge4:'第4步，共5步', ob_title4:'收集XKEY钥匙', ob_text4:'钥匙解锁强大的文物。通过升级、每日组合和任务来获得它们！', ob_btn4:'很酷！', ob_hint4:'💡 文物给予永久加成',
-    ob_badge5:'第5步，共5步', ob_title5:'征服银河！', ob_text5:'20个星球·200级·Boss·探险·PvP战斗·公会·质押。一切都在等你！', ob_btn5:'🚀 开始挖矿！',
-    skipTutorial: '跳过教程',
-    back: '返回', save: '保存', cancel: '取消', confirm: '确认',
-    daily: '每日', weekly: '每周', total: '总计',
-    players: '玩家', yourRank: '您的排名',
-    buy: '购买', maxed: '最大', owned: '已拥有',
-    promoCode: '优惠码', redeem: '🎁 兑换', enterCode: '输入代码...',
-    usedCodes: '已使用的代码', noCodesYet: '还没有代码', getDailyCode: '每天获取免费代码：',
-    inviteFriends: '🚀 邀请好友', noFriendsYet: '还没有好友！',
-    referrals: '推荐人', earnedTogether: '共同赚取',
-    language: '语言', settings: '设置',
+  "battle": {
+    "en": "Battle",
+    "ru": "Битва",
+    "uk": "Битва",
+    "es": "Batalla",
+    "zh": "战斗",
+    "ar": "معركة",
+    "pt": "Batalha"
   },
-  ar: {
-    flag: '🇸🇦', name: 'العربية',
-    mine: 'تعدين', earn: 'كسب', upgrade: 'ترقية', galaxy: 'مجرة', battle: 'معركة', friends: 'أصدقاء',
-    energy: 'طاقة', perTap: 'لكل نقر', taps: 'نقرات', level: 'مستوى',
-    passiveIncome: 'الدخل السلبي', accumulated: 'متراكم', collect: 'جمع',
-    conquestGoal: '🌌 اغزو المجرة',
-    loading: 'جار التحميل...',
-    tapToMine: 'انقر للتعدين!',
-    noEnergy: '❌ لا طاقة!',
-    levelUp: 'ارتقيت مستوى!',
-    youReachedLevel: 'وصلت إلى المستوى',
-    wellcomeBonus: '🎁 مكافأة الترحيب! تم إضافة +1,000 XSPC + 1 XKEY!',
-    ob_badge0:'مرحباً', ob_title0:'مرحباً بك في XSPACECOIN!', ob_text0:'اعدن الكواكب، اكسب رموز XSPC واغزو المجرة. إطلاق الرمز في الربع الأول 2027 على TON!', ob_btn0:'هيا نبدأ! 🚀',
-    ob_badge1:'الخطوة 1 من 5', ob_title1:'انقر لتعدين XSPC', ob_text1:'انقر على الكوكب بأسرع ما يمكن! كل نقرة تكسب عملات XSPC. التوليفات = مكافآت أكبر!', ob_btn1:'فهمت!', ob_hint1:'💡 اللمس المتعدد = مكافأة إضافية',
-    ob_badge2:'الخطوة 2 من 5', ob_title2:'أدر طاقتك', ob_text2:'كل نقرة تستخدم 1 طاقة. تتجدد مع مرور الوقت. قم بترقية الطاقة في تبويب الترقية!', ob_btn2:'مفهوم!', ob_hint2:'💡 الطاقة تتجدد حتى دون اتصال',
-    ob_badge3:'الخطوة 3 من 5', ob_title3:'الترقيات والدخل السلبي', ob_text3:'اشتر بطاقات التعزيز في الترقية — تكسب XSPC كل ساعة تلقائياً، حتى دون اتصال!', ob_btn3:'رائع!', ob_hint3:'💡 المزيد من البطاقات = المزيد من الدخل',
-    ob_badge4:'الخطوة 4 من 5', ob_title4:'اجمع مفاتيح XKEY', ob_text4:'المفاتيح تفتح القطع الأثرية القوية. اكسبها بالارتقاء والتحدي اليومي والمهام!', ob_btn4:'رائع!', ob_hint4:'💡 القطع الأثرية تعطي مكافآت دائمة',
-    ob_badge5:'الخطوة 5 من 5', ob_title5:'اغزو المجرة!', ob_text5:'20 كوكب · 200 مستوى · رؤساء · استكشافات · معارك PvP · عشائر · التوقيع. كل شيء ينتظرك!', ob_btn5:'🚀 ابدأ التعدين!',
-    skipTutorial: 'تخطي الشرح',
-    back: 'رجوع', save: 'حفظ', cancel: 'إلغاء', confirm: 'تأكيد',
-    daily: 'يومي', weekly: 'أسبوعي', total: 'إجمالي',
-    players: 'لاعبين', yourRank: 'ترتيبك',
-    buy: 'شراء', maxed: 'أقصى', owned: 'لديك',
-    promoCode: 'رمز ترويجي', redeem: '🎁 استرداد', enterCode: 'أدخل الرمز...',
-    usedCodes: 'الرموز المستخدمة', noCodesYet: 'لا رموز بعد', getDailyCode: 'احصل على رمز مجاني:',
-    inviteFriends: '🚀 دعوة الأصدقاء', noFriendsYet: 'لا أصدقاء بعد!',
-    referrals: 'الإحالات', earnedTogether: 'مكتسب معاً',
-    language: 'اللغة', settings: 'الإعدادات',
+  "friends": {
+    "en": "Friends",
+    "ru": "Друзья",
+    "uk": "Друзі",
+    "es": "Amigos",
+    "zh": "好友",
+    "ar": "أصدقاء",
+    "pt": "Amigos"
   },
-  pt: {
-    flag: '🇧🇷', name: 'Português',
-    mine: 'Minerar', earn: 'Ganhar', upgrade: 'Melhorar', galaxy: 'Galáxia', battle: 'Batalha', friends: 'Amigos',
-    energy: 'ENERGIA', perTap: 'POR TOQUE', taps: 'TOQUES', level: 'NÍVEL',
-    passiveIncome: 'RENDA PASSIVA', accumulated: 'ACUMULADO', collect: 'COLETAR',
-    conquestGoal: '🌌 CONQUISTAR A GALÁXIA',
-    loading: 'CARREGANDO...',
-    tapToMine: 'Toque para minerar!',
-    noEnergy: '❌ Sem energia!',
-    levelUp: 'SUBIU DE NÍVEL!',
-    youReachedLevel: 'Você alcançou o nível',
-    wellcomeBonus: '🎁 Bônus de boas-vindas! +1,000 XSPC + 1 XKEY adicionado!',
-    ob_badge0:'BEM-VINDO', ob_title0:'Bem-vindo ao XSPACECOIN!', ob_text0:'Mine planetas, ganhe tokens XSPC e conquiste a galáxia. O token é lançado no Q1 2027 na TON!', ob_btn0:'Vamos lá! 🚀',
-    ob_badge1:'PASSO 1 DE 5', ob_title1:'Toque para minerar XSPC', ob_text1:'Toque no planeta o mais rápido possível! Cada toque ganha moedas XSPC. Combos = mais recompensas!', ob_btn1:'Entendido!', ob_hint1:'💡 Multi-toque = bônus extra',
-    ob_badge2:'PASSO 2 DE 5', ob_title2:'Gerencie sua Energia', ob_text2:'Cada toque usa 1 de energia. Ela recarrega com o tempo. Atualize a energia na aba MELHORAR!', ob_btn2:'Compreendido!', ob_hint2:'💡 A energia recarrega offline',
-    ob_badge3:'PASSO 3 DE 5', ob_title3:'Melhorias e Renda Passiva', ob_text3:'Compre Cartas de Impulso em MELHORAR — elas ganham XSPC a cada hora automaticamente, mesmo offline!', ob_btn3:'Ótimo!', ob_hint3:'💡 Mais cartas = mais renda passiva',
-    ob_badge4:'PASSO 4 DE 5', ob_title4:'Colecione chaves XKEY', ob_text4:'As chaves desbloqueiam artefatos poderosos. Ganhe-as subindo de nível, com o Combo Diário e missões!', ob_btn4:'Legal!', ob_hint4:'💡 Artefatos dão bônus permanentes',
-    ob_badge5:'PASSO 5 DE 5', ob_title5:'Conquiste a Galáxia!', ob_text5:'20 planetas · 200 níveis · Chefes · Expedições · Batalhas PvP · Clãs · Staking. Tudo espera por você!', ob_btn5:'🚀 Começar a minerar!',
-    skipTutorial: 'Pular tutorial',
-    back: 'VOLTAR', save: 'Salvar', cancel: 'Cancelar', confirm: 'Confirmar',
-    daily: 'Diário', weekly: 'Semanal', total: 'Total',
-    players: 'jogadores', yourRank: 'Sua posição',
-    buy: 'COMPRAR', maxed: 'MÁX', owned: 'TEM',
-    promoCode: 'CÓDIGO PROMO', redeem: '🎁 RESGATAR', enterCode: 'INSIRA O CÓDIGO...',
-    usedCodes: 'CÓDIGOS USADOS', noCodesYet: 'Sem códigos ainda', getDailyCode: 'Obtenha um código grátis:',
-    inviteFriends: '🚀 CONVIDAR AMIGOS', noFriendsYet: 'Sem amigos ainda!',
-    referrals: 'Indicados', earnedTogether: 'Ganho juntos',
-    language: 'Idioma', settings: 'Configurações',
+  "energy": {
+    "en": "ENERGY",
+    "ru": "ЭНЕРГИЯ",
+    "uk": "ЕНЕРГІЯ",
+    "es": "ENERGÍA",
+    "zh": "能量",
+    "ar": "طاقة",
+    "pt": "ENERGIA"
   },
+  "perTap": {
+    "en": "Per Tap",
+    "ru": "За тап",
+    "uk": "За тап",
+    "es": "Por tap",
+    "zh": "每次点击",
+    "ar": "لكل نقر",
+    "pt": "Por toque"
+  },
+  "taps": {
+    "en": "Taps",
+    "ru": "Тапов",
+    "uk": "Тапів",
+    "es": "Taps",
+    "zh": "点击数",
+    "ar": "نقرات",
+    "pt": "Toques"
+  },
+  "passiveIncome": {
+    "en": "PASSIVE INCOME",
+    "ru": "ПАССИВНЫЙ ДОХОД",
+    "uk": "ПАСИВНИЙ ДОХІД",
+    "es": "INGRESOS PASIVOS",
+    "zh": "被动收入",
+    "ar": "الدخل السلبي",
+    "pt": "RENDA PASSIVA"
+  },
+  "accumulated": {
+    "en": "ACCUMULATED",
+    "ru": "НАКОПЛЕНО",
+    "uk": "НАКОПИЧЕНО",
+    "es": "ACUMULADO",
+    "zh": "已累积",
+    "ar": "متراكم",
+    "pt": "ACUMULADO"
+  },
+  "collect": {
+    "en": "COLLECT",
+    "ru": "СОБРАТЬ",
+    "uk": "ЗІБРАТИ",
+    "es": "RECOGER",
+    "zh": "收集",
+    "ar": "جمع",
+    "pt": "COLETAR"
+  },
+  "conquestGoal": {
+    "en": "🌌 CONQUER THE GALAXY",
+    "ru": "🌌 ПОКОРИТЬ ГАЛАКТИКУ",
+    "uk": "🌌 ПІДКОРИТИ ГАЛАКТИКУ",
+    "es": "🌌 CONQUISTAR LA GALAXIA",
+    "zh": "🌌 征服银河",
+    "ar": "🌌 اغزو المجرة",
+    "pt": "🌌 CONQUISTAR A GALÁXIA"
+  },
+  "earnMoreXspc": {
+    "en": "EARN MORE XSPC",
+    "ru": "ЗАРАБОТАЙ БОЛЬШЕ XSPC",
+    "uk": "ЗАРОБИ БІЛЬШЕ XSPC",
+    "es": "GANA MÁS XSPC",
+    "zh": "赚取更多XSPC",
+    "ar": "اكسب المزيد من XSPC",
+    "pt": "GANHE MAIS XSPC"
+  },
+  "dailyCombo": {
+    "en": "Daily Combo",
+    "ru": "Ежедневное комбо",
+    "uk": "Щоденне комбо",
+    "es": "Combo diario",
+    "zh": "每日组合",
+    "ar": "الكومبو اليومي",
+    "pt": "Combo diário"
+  },
+  "dailyStreak": {
+    "en": "Daily Streak",
+    "ru": "Серия входов",
+    "uk": "Серія входів",
+    "es": "Racha diaria",
+    "zh": "每日连胜",
+    "ar": "السلسلة اليومية",
+    "pt": "Sequência diária"
+  },
+  "dailyChest": {
+    "en": "Daily Chest",
+    "ru": "Ежедневный сундук",
+    "uk": "Щоденна скриня",
+    "es": "Cofre diario",
+    "zh": "每日宝箱",
+    "ar": "الصندوق اليومي",
+    "pt": "Baú diário"
+  },
+  "fortuneWheel": {
+    "en": "Fortune Wheel",
+    "ru": "Колесо удачи",
+    "uk": "Колесо удачі",
+    "es": "Rueda de la suerte",
+    "zh": "幸运轮",
+    "ar": "عجلة الحظ",
+    "pt": "Roda da fortuna"
+  },
+  "promoCode": {
+    "en": "Promo Code",
+    "ru": "Промокод",
+    "uk": "Промокод",
+    "es": "Código promo",
+    "zh": "优惠码",
+    "ar": "رمز ترويجي",
+    "pt": "Código promo"
+  },
+  "miniGame": {
+    "en": "Mini Game",
+    "ru": "Мини-игра",
+    "uk": "Міні-гра",
+    "es": "Mini juego",
+    "zh": "小游戏",
+    "ar": "لعبة صغيرة",
+    "pt": "Mini jogo"
+  },
+  "inviteEarn": {
+    "en": "INVITE & EARN",
+    "ru": "ПРИГЛАСИ И ЗАРАБАТЫВАЙ",
+    "uk": "ЗАПРОСИ І ЗАРОБЛЯЙ",
+    "es": "INVITA Y GANA",
+    "zh": "邀请赚钱",
+    "ar": "ادعُ واكسب",
+    "pt": "CONVIDE E GANHE"
+  },
+  "tapBoosts": {
+    "en": "Tap Boosts",
+    "ru": "Буcты тапа",
+    "uk": "Бусти тапу",
+    "es": "Mejoras de toque",
+    "zh": "点击加速",
+    "ar": "تعزيزات النقر",
+    "pt": "Melhorias de toque"
+  },
+  "passiveCards": {
+    "en": "Passive Income Cards",
+    "ru": "Карты пассивного дохода",
+    "uk": "Карти пасивного доходу",
+    "es": "Cartas de ingresos pasivos",
+    "zh": "被动收入卡",
+    "ar": "بطاقات الدخل السلبي",
+    "pt": "Cartas de renda passiva"
+  },
+  "multitap": {
+    "en": "Multitap",
+    "ru": "Мультитап",
+    "uk": "Мультитап",
+    "es": "Multitoque",
+    "zh": "多点触控",
+    "ar": "نقر متعدد",
+    "pt": "Multitoque"
+  },
+  "energyLimit": {
+    "en": "Energy Limit",
+    "ru": "Лимит энергии",
+    "uk": "Ліміт енергії",
+    "es": "Límite de energía",
+    "zh": "能量上限",
+    "ar": "حد الطاقة",
+    "pt": "Limite de energia"
+  },
+  "rechargeSpeed": {
+    "en": "Recharge Speed",
+    "ru": "Скорость зарядки",
+    "uk": "Швидкість зарядки",
+    "es": "Velocidad de recarga",
+    "zh": "充能速度",
+    "ar": "سرعة الشحن",
+    "pt": "Velocidade de recarga"
+  },
+  "turboMode": {
+    "en": "Turbo Mode",
+    "ru": "Турбо режим",
+    "uk": "Турбо режим",
+    "es": "Modo turbo",
+    "zh": "涡轮模式",
+    "ar": "وضع توربو",
+    "pt": "Modo turbo"
+  },
+  "fullEnergy": {
+    "en": "Full Energy",
+    "ru": "Полная энергия",
+    "uk": "Повна енергія",
+    "es": "Energía completa",
+    "zh": "满能量",
+    "ar": "طاقة كاملة",
+    "pt": "Energia completa"
+  },
+  "cosmosMap": {
+    "en": "Cosmos Map",
+    "ru": "Карта космоса",
+    "uk": "Карта космосу",
+    "es": "Mapa del cosmos",
+    "zh": "宇宙地图",
+    "ar": "خريطة الكون",
+    "pt": "Mapa do cosmos"
+  },
+  "expedition": {
+    "en": "Expedition",
+    "ru": "Экспедиция",
+    "uk": "Експедиція",
+    "es": "Expedición",
+    "zh": "探险",
+    "ar": "استكشاف",
+    "pt": "Expedição"
+  },
+  "rarePlanets": {
+    "en": "Rare Planets",
+    "ru": "Редкие планеты",
+    "uk": "Рідкісні планети",
+    "es": "Planetas raros",
+    "zh": "稀有星球",
+    "ar": "الكواكب النادرة",
+    "pt": "Planetas raros"
+  },
+  "staking": {
+    "en": "Staking",
+    "ru": "Стейкинг",
+    "uk": "Стейкінг",
+    "es": "Staking",
+    "zh": "质押",
+    "ar": "التوقيع",
+    "pt": "Staking"
+  },
+  "clans": {
+    "en": "Clans",
+    "ru": "Кланы",
+    "uk": "Клани",
+    "es": "Clanes",
+    "zh": "公会",
+    "ar": "العشائر",
+    "pt": "Clãs"
+  },
+  "planetBosses": {
+    "en": "Planet Bosses",
+    "ru": "Боссы планет",
+    "uk": "Боси планет",
+    "es": "Jefes de planeta",
+    "zh": "星球Boss",
+    "ar": "رؤساء الكواكب",
+    "pt": "Chefes de planeta"
+  },
+  "pvpBattle": {
+    "en": "PvP Battle",
+    "ru": "PvP Битва",
+    "uk": "PvP Битва",
+    "es": "Batalla PvP",
+    "zh": "PvP战斗",
+    "ar": "معركة PvP",
+    "pt": "Batalha PvP"
+  },
+  "tournament": {
+    "en": "Tournament",
+    "ru": "Турнир",
+    "uk": "Турнір",
+    "es": "Torneo",
+    "zh": "锦标赛",
+    "ar": "بطولة",
+    "pt": "Torneio"
+  },
+  "season": {
+    "en": "Season",
+    "ru": "Сезон",
+    "uk": "Сезон",
+    "es": "Temporada",
+    "zh": "赛季",
+    "ar": "موسم",
+    "pt": "Temporada"
+  },
+  "leaderboard": {
+    "en": "Leaderboard",
+    "ru": "Таблица лидеров",
+    "uk": "Таблиця лідерів",
+    "es": "Clasificación",
+    "zh": "排行榜",
+    "ar": "لوحة المتصدرين",
+    "pt": "Classificação"
+  },
+  "totalEarned": {
+    "en": "TOTAL EARNED",
+    "ru": "ВСЕГО ЗАРАБОТАНО",
+    "uk": "ВСЬОГО ЗАРОБЛЕНО",
+    "es": "TOTAL GANADO",
+    "zh": "总计赚取",
+    "ar": "إجمالي المكتسب",
+    "pt": "TOTAL GANHO"
+  },
+  "totalTaps": {
+    "en": "TOTAL TAPS",
+    "ru": "ВСЕГО ТАПОВ",
+    "uk": "ВСЬОГО ТАПІВ",
+    "es": "TAPS TOTALES",
+    "zh": "总点击数",
+    "ar": "إجمالي النقرات",
+    "pt": "TOQUES TOTAIS"
+  },
+  "pvpWins": {
+    "en": "PVP WINS",
+    "ru": "ПОБЕД В PVP",
+    "uk": "ПЕРЕМОГ PVP",
+    "es": "VICTORIAS PVP",
+    "zh": "PVP胜利",
+    "ar": "انتصارات PvP",
+    "pt": "VITÓRIAS PVP"
+  },
+  "yourRank": {
+    "en": "YOUR RANK",
+    "ru": "ВАШ РАНГ",
+    "uk": "ВАШ РАНГ",
+    "es": "TU RANGO",
+    "zh": "您的排名",
+    "ar": "ترتيبك",
+    "pt": "SEU RANK"
+  },
+  "back": {
+    "en": "BACK",
+    "ru": "НАЗАД",
+    "uk": "НАЗАД",
+    "es": "ATRÁS",
+    "zh": "返回",
+    "ar": "رجوع",
+    "pt": "VOLTAR"
+  },
+  "claim": {
+    "en": "CLAIM",
+    "ru": "ЗАБРАТЬ",
+    "uk": "ЗАБРАТИ",
+    "es": "RECLAMAR",
+    "zh": "领取",
+    "ar": "استلام",
+    "pt": "REIVINDICAR"
+  },
+  "buy": {
+    "en": "BUY",
+    "ru": "КУПИТЬ",
+    "uk": "КУПИТИ",
+    "es": "COMPRAR",
+    "zh": "购买",
+    "ar": "شراء",
+    "pt": "COMPRAR"
+  },
+  "stake": {
+    "en": "STAKE",
+    "ru": "СТЕЙК",
+    "uk": "СТЕЙК",
+    "es": "APOSTAR",
+    "zh": "质押",
+    "ar": "توقيع",
+    "pt": "APOSTAR"
+  },
+  "unstakeAll": {
+    "en": "Unstake All",
+    "ru": "Вывести всё",
+    "uk": "Вивести все",
+    "es": "Retirar todo",
+    "zh": "取消全部质押",
+    "ar": "إلغاء التوقيع",
+    "pt": "Retirar tudo"
+  },
+  "levelUp": {
+    "en": "LEVEL UP!",
+    "ru": "НОВЫЙ УРОВЕНЬ!",
+    "uk": "НОВИЙ РІВЕНЬ!",
+    "es": "¡SUBISTE DE NIVEL!",
+    "zh": "升级了！",
+    "ar": "ارتقيت مستوى!",
+    "pt": "SUBIU DE NÍVEL!"
+  },
+  "loading": {
+    "en": "LOADING...",
+    "ru": "ЗАГРУЗКА...",
+    "uk": "ЗАВАНТАЖЕННЯ...",
+    "es": "CARGANDO...",
+    "zh": "加载中...",
+    "ar": "جار التحميل...",
+    "pt": "CARREGANDO..."
+  },
+  "players": {
+    "en": "players",
+    "ru": "игроков",
+    "uk": "гравців",
+    "es": "jugadores",
+    "zh": "玩家",
+    "ar": "لاعبين",
+    "pt": "jogadores"
+  },
+  "keysAndChest": {
+    "en": "Keys & Chest",
+    "ru": "Ключи и сундук",
+    "uk": "Ключі та скриня",
+    "es": "Llaves y cofre",
+    "zh": "钥匙与宝箱",
+    "ar": "المفاتيح والصندوق",
+    "pt": "Chaves e baú"
+  },
+  "xkeyBalance": {
+    "en": "XKEY BALANCE",
+    "ru": "БАЛАНС XKEY",
+    "uk": "БАЛАНС XKEY",
+    "es": "SALDO XKEY",
+    "zh": "XKEY余额",
+    "ar": "رصيد XKEY",
+    "pt": "SALDO XKEY"
+  },
+  "openDailyChest": {
+    "en": "Open Daily Chest",
+    "ru": "Открыть сундук",
+    "uk": "Відкрити скриню",
+    "es": "Abrir cofre diario",
+    "zh": "打开每日宝箱",
+    "ar": "فتح الصندوق اليومي",
+    "pt": "Abrir baú diário"
+  },
+  "dayStreak": {
+    "en": "DAY STREAK",
+    "ru": "СЕРИЯ ДНЕЙ",
+    "uk": "СЕРІЯ ДНІВ",
+    "es": "RACHA DE DÍAS",
+    "zh": "连续天数",
+    "ar": "سلسلة الأيام",
+    "pt": "SEQUÊNCIA DE DIAS"
+  },
+  "dailyReward": {
+    "en": "DAILY REWARD",
+    "ru": "ЕЖЕДНЕВНАЯ НАГРАДА",
+    "uk": "ЩОДЕННА НАГОРОДА",
+    "es": "RECOMPENSA DIARIA",
+    "zh": "每日奖励",
+    "ar": "المكافأة اليومية",
+    "pt": "RECOMPENSA DIÁRIA"
+  },
+  "todayReward": {
+    "en": "TODAY'S REWARD",
+    "ru": "НАГРАДА СЕГОДНЯ",
+    "uk": "НАГОРОДА СЬОГОДНІ",
+    "es": "RECOMPENSA DE HOY",
+    "zh": "今日奖励",
+    "ar": "مكافأة اليوم",
+    "pt": "RECOMPENSA DE HOJE"
+  },
+  "comeBackEveryDay": {
+    "en": "Come back every day for bigger rewards!",
+    "ru": "Заходи каждый день за большими наградами!",
+    "uk": "Заходь щодня за більшими нагородами!",
+    "es": "¡Vuelve cada día para mejores recompensas!",
+    "zh": "每天回来获得更多奖励！",
+    "ar": "عد كل يوم للحصول على مكافآت أكبر!",
+    "pt": "Volte todo dia para maiores recompensas!"
+  },
+  "achievements": {
+    "en": "Achievements",
+    "ru": "Достижения",
+    "uk": "Досягнення",
+    "es": "Logros",
+    "zh": "成就",
+    "ar": "الإنجازات",
+    "pt": "Conquistas"
+  },
+  "completedAchievements": {
+    "en": "Completed achievements",
+    "ru": "Выполненные достижения",
+    "uk": "Виконані досягнення",
+    "es": "Logros completados",
+    "zh": "已完成成就",
+    "ar": "الإنجازات المكتملة",
+    "pt": "Conquistas concluídas"
+  },
+  "launchIn": {
+    "en": "LAUNCH IN",
+    "ru": "ЗАПУСК ЧЕРЕЗ",
+    "uk": "ЗАПУСК ЧЕРЕЗ",
+    "es": "LANZAMIENTO EN",
+    "zh": "发布倒计时",
+    "ar": "الإطلاق في",
+    "pt": "LANÇAMENTO EM"
+  },
+  "tokenRoadmap": {
+    "en": "Token & Roadmap",
+    "ru": "Токен и дорожная карта",
+    "uk": "Токен та дорожня карта",
+    "es": "Token y hoja de ruta",
+    "zh": "代币与路线图",
+    "ar": "الرمز وخارطة الطريق",
+    "pt": "Token e roteiro"
+  },
+  "topPlayers": {
+    "en": "Top Players",
+    "ru": "Лучшие игроки",
+    "uk": "Кращі гравці",
+    "es": "Mejores jugadores",
+    "zh": "顶级玩家",
+    "ar": "أفضل اللاعبين",
+    "pt": "Melhores jogadores"
+  },
+  "globalRanking": {
+    "en": "Global ranking",
+    "ru": "Глобальный рейтинг",
+    "uk": "Глобальний рейтинг",
+    "es": "Clasificación global",
+    "zh": "全球排名",
+    "ar": "التصنيف العالمي",
+    "pt": "Classificação global"
+  },
+  "chooseOpponent": {
+    "en": "Choose your opponent",
+    "ru": "Выбери соперника",
+    "uk": "Обери суперника",
+    "es": "Elige tu oponente",
+    "zh": "选择对手",
+    "ar": "اختر خصمك",
+    "pt": "Escolha seu oponente"
+  },
+  "tapToWin": {
+    "en": "Tap to win!",
+    "ru": "Тапай чтобы победить!",
+    "uk": "Тапай щоб перемогти!",
+    "es": "¡Toca para ganar!",
+    "zh": "点击获胜！",
+    "ar": "انقر للفوز!",
+    "pt": "Toque para ganhar!"
+  },
+  "youWon": {
+    "en": "YOU WON!",
+    "ru": "ВЫ ПОБЕДИЛИ!",
+    "uk": "ВИ ПЕРЕМОГЛИ!",
+    "es": "¡GANASTE!",
+    "zh": "你赢了！",
+    "ar": "فزت!",
+    "pt": "VOCÊ GANHOU!"
+  },
+  "secondsLeft": {
+    "en": "SECONDS LEFT",
+    "ru": "СЕКУНД ОСТАЛОСЬ",
+    "uk": "СЕКУНД ЗАЛИШИЛОСЬ",
+    "es": "SEGUNDOS RESTANTES",
+    "zh": "剩余秒数",
+    "ar": "ثوانٍ متبقية",
+    "pt": "SEGUNDOS RESTANTES"
+  },
+  "yourStake": {
+    "en": "YOUR STAKE",
+    "ru": "ВАШ СТЕЙК",
+    "uk": "ВАШ СТЕЙК",
+    "es": "TU APUESTA",
+    "zh": "您的质押",
+    "ar": "توقيعك",
+    "pt": "SUA APOSTA"
+  },
+  "readyToCollect": {
+    "en": "READY TO COLLECT",
+    "ru": "ГОТОВО К СБОРУ",
+    "uk": "ГОТОВО ДО ЗБОРУ",
+    "es": "LISTO PARA RECOGER",
+    "zh": "准备收集",
+    "ar": "جاهز للجمع",
+    "pt": "PRONTO PARA COLETAR"
+  },
+  "shareFriends": {
+    "en": "🚀 SHARE WITH FRIENDS",
+    "ru": "🚀 ПОДЕЛИТЬСЯ С ДРУЗЬЯМИ",
+    "uk": "🚀 ПОДІЛИТИСЯ З ДРУЗЯМИ",
+    "es": "🚀 COMPARTIR CON AMIGOS",
+    "zh": "🚀 与朋友分享",
+    "ar": "🚀 شارك مع الأصدقاء",
+    "pt": "🚀 COMPARTILHAR COM AMIGOS"
+  },
+  "yourReferrals": {
+    "en": "Your Referrals",
+    "ru": "Ваши рефералы",
+    "uk": "Ваші реферали",
+    "es": "Tus referidos",
+    "zh": "您的推荐人",
+    "ar": "إحالاتك",
+    "pt": "Seus indicados"
+  },
+  "perReferral": {
+    "en": "per referral",
+    "ru": "за реферала",
+    "uk": "за реферала",
+    "es": "por referido",
+    "zh": "每位推荐",
+    "ar": "لكل إحالة",
+    "pt": "por indicado"
+  },
+  "skipForNow": {
+    "en": "Skip for now",
+    "ru": "Пропустить",
+    "uk": "Пропустити",
+    "es": "Omitir por ahora",
+    "zh": "暂时跳过",
+    "ar": "تخطي الآن",
+    "pt": "Pular por agora"
+  },
+  "ready": {
+    "en": "READY",
+    "ru": "ГОТОВО",
+    "uk": "ГОТОВО",
+    "es": "LISTO",
+    "zh": "准备好了",
+    "ar": "جاهز",
+    "pt": "PRONTO"
+  },
+  "status": {
+    "en": "STATUS",
+    "ru": "СТАТУС",
+    "uk": "СТАТУС",
+    "es": "ESTADO",
+    "zh": "状态",
+    "ar": "الحالة",
+    "pt": "STATUS"
+  },
+  "reward": {
+    "en": "REWARD",
+    "ru": "НАГРАДА",
+    "uk": "НАГОРОДА",
+    "es": "RECOMPENSA",
+    "zh": "奖励",
+    "ar": "مكافأة",
+    "pt": "RECOMPENSA"
+  },
+  "goal": {
+    "en": "GOAL",
+    "ru": "ЦЕЛЬ",
+    "uk": "ЦІЛЬ",
+    "es": "META",
+    "zh": "目标",
+    "ar": "الهدف",
+    "pt": "META"
+  },
+  "close": {
+    "en": "Close",
+    "ru": "Закрыть",
+    "uk": "Закрити",
+    "es": "Cerrar",
+    "zh": "关闭",
+    "ar": "إغلاق",
+    "pt": "Fechar"
+  }
+};
+const ONBOARDING_TRANSLATIONS = {
+  "en": [
+    {
+      "badge": "WELCOME",
+      "title": "Welcome to XSPACECOIN!",
+      "text": "Mine planets, earn XSPC tokens and conquer the galaxy. Token launches Q1 2027 on TON!",
+      "btn": "Let's go! 🚀",
+      "hint": null
+    },
+    {
+      "badge": "STEP 1 OF 5",
+      "title": "Tap to Mine XSPC",
+      "text": "Tap the planet as fast as you can! Every tap earns XSPC. Bigger combos = bigger rewards!",
+      "btn": "Got it!",
+      "hint": "💡 Multi-touch = extra bonus"
+    },
+    {
+      "badge": "STEP 2 OF 5",
+      "title": "Manage Your Energy",
+      "text": "Each tap uses 1 energy. It recharges over time. Upgrade energy in the UPGRADE tab!",
+      "btn": "Understood!",
+      "hint": "💡 Energy recharges even offline"
+    },
+    {
+      "badge": "STEP 3 OF 5",
+      "title": "Upgrade & Earn Passively",
+      "text": "Buy Boost Cards in UPGRADE — they earn XSPC every hour automatically, even offline!",
+      "btn": "Nice!",
+      "hint": "💡 More cards = more passive income"
+    },
+    {
+      "badge": "STEP 4 OF 5",
+      "title": "Collect XKEY Keys",
+      "text": "Keys unlock powerful artifacts. Earn them by leveling up, Daily Combo and quests!",
+      "btn": "Cool!",
+      "hint": "💡 Artifacts give permanent bonuses"
+    },
+    {
+      "badge": "STEP 5 OF 5",
+      "title": "Conquer the Galaxy!",
+      "text": "20 planets · 200 levels · Bosses · Expeditions · PvP · Clans · Staking. All waiting!",
+      "btn": "🚀 Start Mining!",
+      "hint": null
+    }
+  ],
+  "ru": [
+    {
+      "badge": "ДОБРО ПОЖАЛОВАТЬ",
+      "title": "Добро пожаловать в XSPACECOIN!",
+      "text": "Майни планеты, зарабатывай XSPC и покоряй галактику. Запуск токена Q1 2027 на TON!",
+      "btn": "Поехали! 🚀",
+      "hint": null
+    },
+    {
+      "badge": "ШАГ 1 ИЗ 5",
+      "title": "Тапай и майни XSPC",
+      "text": "Тапай по планете как можно быстрее! Каждый тап приносит XSPC. Комбо = больше наград!",
+      "btn": "Понял!",
+      "hint": "💡 Несколько пальцев = бонус"
+    },
+    {
+      "badge": "ШАГ 2 ИЗ 5",
+      "title": "Следи за энергией",
+      "text": "Каждый тап тратит 1 энергию. Она восстанавливается. Прокачай энергию в АПГРЕЙД!",
+      "btn": "Понятно!",
+      "hint": "💡 Энергия восстанавливается офлайн"
+    },
+    {
+      "badge": "ШАГ 3 ИЗ 5",
+      "title": "Апгрейды и пассивный доход",
+      "text": "Покупай карты буста в АПГРЕЙД — они зарабатывают XSPC каждый час, даже офлайн!",
+      "btn": "Отлично!",
+      "hint": "💡 Больше карт = больше дохода"
+    },
+    {
+      "badge": "ШАГ 4 ИЗ 5",
+      "title": "Собирай ключи XKEY",
+      "text": "Ключи открывают артефакты. Получай их при повышении уровня, в Комбо и квестах!",
+      "btn": "Круто!",
+      "hint": "💡 Артефакты дают постоянные бонусы"
+    },
+    {
+      "badge": "ШАГ 5 ИЗ 5",
+      "title": "Покоряй Галактику!",
+      "text": "20 планет · 200 уровней · Боссы · Экспедиции · PvP · Кланы · Стейкинг. Всё ждёт!",
+      "btn": "🚀 Начать майнинг!",
+      "hint": null
+    }
+  ],
+  "uk": [
+    {
+      "badge": "ЛАСКАВО ПРОСИМО",
+      "title": "Ласкаво просимо до XSPACECOIN!",
+      "text": "Майни планети, заробляй XSPC і підкоряй галактику. Запуск токена Q1 2027 на TON!",
+      "btn": "Поїхали! 🚀",
+      "hint": null
+    },
+    {
+      "badge": "КРОК 1 З 5",
+      "title": "Тапай і майни XSPC",
+      "text": "Тапай по планеті якомога швидше! Кожен тап приносить XSPC. Комбо = більше нагород!",
+      "btn": "Зрозумів!",
+      "hint": "💡 Кілька пальців = бонус"
+    },
+    {
+      "badge": "КРОК 2 З 5",
+      "title": "Стеж за енергією",
+      "text": "Кожен тап витрачає 1 енергію. Вона відновлюється. Прокачай енергію в АПГРЕЙД!",
+      "btn": "Зрозуміло!",
+      "hint": "💡 Енергія відновлюється офлайн"
+    },
+    {
+      "badge": "КРОК 3 З 5",
+      "title": "Апгрейди і пасивний дохід",
+      "text": "Купуй карти бусту в АПГРЕЙД — вони заробляють XSPC щогодини, навіть офлайн!",
+      "btn": "Чудово!",
+      "hint": "💡 Більше карт = більше доходу"
+    },
+    {
+      "badge": "КРОК 4 З 5",
+      "title": "Збирай ключі XKEY",
+      "text": "Ключі відкривають артефакти. Отримуй їх при підвищенні рівня, в Комбо та квестах!",
+      "btn": "Круто!",
+      "hint": "💡 Артефакти дають постійні бонуси"
+    },
+    {
+      "badge": "КРОК 5 З 5",
+      "title": "Підкоряй Галактику!",
+      "text": "20 планет · 200 рівнів · Боси · Експедиції · PvP · Клани · Стейкінг. Все чекає!",
+      "btn": "🚀 Почати майнінг!",
+      "hint": null
+    }
+  ],
+  "es": [
+    {
+      "badge": "BIENVENIDO",
+      "title": "¡Bienvenido a XSPACECOIN!",
+      "text": "Mina planetas, gana XSPC y conquista la galaxia. ¡Lanzamiento del token Q1 2027 en TON!",
+      "btn": "¡Vamos! 🚀",
+      "hint": null
+    },
+    {
+      "badge": "PASO 1 DE 5",
+      "title": "Toca para minar XSPC",
+      "text": "¡Toca el planeta lo más rápido posible! Cada toque gana XSPC. ¡Combos = más recompensas!",
+      "btn": "¡Entendido!",
+      "hint": "💡 Multi-toque = bono extra"
+    },
+    {
+      "badge": "PASO 2 DE 5",
+      "title": "Gestiona tu Energía",
+      "text": "Cada toque usa 1 de energía. Se recarga con el tiempo. ¡Mejora la energía en MEJORAR!",
+      "btn": "¡Comprendido!",
+      "hint": "💡 La energía se recarga offline"
+    },
+    {
+      "badge": "PASO 3 DE 5",
+      "title": "Mejoras e Ingresos Pasivos",
+      "text": "¡Compra Cartas de Impulso en MEJORAR — ganan XSPC cada hora, incluso offline!",
+      "btn": "¡Genial!",
+      "hint": "💡 Más cartas = más ingresos"
+    },
+    {
+      "badge": "PASO 4 DE 5",
+      "title": "Colecciona llaves XKEY",
+      "text": "Las llaves desbloquean artefactos. ¡Gánalas subiendo de nivel, Combo Diario y misiones!",
+      "btn": "¡Perfecto!",
+      "hint": "💡 Los artefactos dan bonos permanentes"
+    },
+    {
+      "badge": "PASO 5 DE 5",
+      "title": "¡Conquista la Galaxia!",
+      "text": "20 planetas · 200 niveles · Jefes · Expediciones · PvP · Clanes · Staking. ¡Todo espera!",
+      "btn": "🚀 ¡Empezar a minar!",
+      "hint": null
+    }
+  ],
+  "zh": [
+    {
+      "badge": "欢迎",
+      "title": "欢迎来到XSPACECOIN！",
+      "text": "挖掘星球，赚取XSPC代币，征服银河。代币将于2027年Q1在TON上发布！",
+      "btn": "出发！🚀",
+      "hint": null
+    },
+    {
+      "badge": "第1步，共5步",
+      "title": "点击挖掘XSPC",
+      "text": "尽可能快地点击星球！每次点击赚取XSPC。连击越多 = 奖励越多！",
+      "btn": "明白了！",
+      "hint": "💡 多指触控 = 额外奖励"
+    },
+    {
+      "badge": "第2步，共5步",
+      "title": "管理您的能量",
+      "text": "每次点击消耗1点能量。能量会恢复。在升级标签中提升能量！",
+      "btn": "了解了！",
+      "hint": "💡 离线时能量也会恢复"
+    },
+    {
+      "badge": "第3步，共5步",
+      "title": "升级和被动收入",
+      "text": "在升级中购买加速卡——即使离线，它们每小时自动赚取XSPC！",
+      "btn": "太棒了！",
+      "hint": "💡 卡越多 = 被动收入越多"
+    },
+    {
+      "badge": "第4步，共5步",
+      "title": "收集XKEY钥匙",
+      "text": "钥匙解锁强大文物。通过升级、每日组合和任务来获得它们！",
+      "btn": "很酷！",
+      "hint": "💡 文物给予永久加成"
+    },
+    {
+      "badge": "第5步，共5步",
+      "title": "征服银河！",
+      "text": "20个星球·200级·Boss·探险·PvP·公会·质押。一切都在等你！",
+      "btn": "🚀 开始挖矿！",
+      "hint": null
+    }
+  ],
+  "ar": [
+    {
+      "badge": "مرحباً",
+      "title": "مرحباً بك في XSPACECOIN!",
+      "text": "اعدن الكواكب، اكسب XSPC واغزو المجرة. إطلاق الرمز Q1 2027 على TON!",
+      "btn": "هيا نبدأ! 🚀",
+      "hint": null
+    },
+    {
+      "badge": "الخطوة 1 من 5",
+      "title": "انقر لتعدين XSPC",
+      "text": "انقر على الكوكب بأسرع ما يمكن! كل نقرة تكسب XSPC. التوليفات = مكافآت أكبر!",
+      "btn": "فهمت!",
+      "hint": "💡 اللمس المتعدد = مكافأة إضافية"
+    },
+    {
+      "badge": "الخطوة 2 من 5",
+      "title": "أدر طاقتك",
+      "text": "كل نقرة تستخدم 1 طاقة. تتجدد مع الوقت. قم بترقية الطاقة في تبويب الترقية!",
+      "btn": "مفهوم!",
+      "hint": "💡 الطاقة تتجدد حتى دون اتصال"
+    },
+    {
+      "badge": "الخطوة 3 من 5",
+      "title": "الترقيات والدخل السلبي",
+      "text": "اشتر بطاقات التعزيز في الترقية — تكسب XSPC كل ساعة تلقائياً، حتى دون اتصال!",
+      "btn": "رائع!",
+      "hint": "💡 المزيد من البطاقات = المزيد من الدخل"
+    },
+    {
+      "badge": "الخطوة 4 من 5",
+      "title": "اجمع مفاتيح XKEY",
+      "text": "المفاتيح تفتح القطع الأثرية. اكسبها بالارتقاء والتحدي اليومي والمهام!",
+      "btn": "رائع!",
+      "hint": "💡 القطع الأثرية تعطي مكافآت دائمة"
+    },
+    {
+      "badge": "الخطوة 5 من 5",
+      "title": "اغزو المجرة!",
+      "text": "20 كوكب · 200 مستوى · رؤساء · استكشافات · PvP · عشائر · توقيع. كل شيء ينتظرك!",
+      "btn": "🚀 ابدأ التعدين!",
+      "hint": null
+    }
+  ],
+  "pt": [
+    {
+      "badge": "BEM-VINDO",
+      "title": "Bem-vindo ao XSPACECOIN!",
+      "text": "Mine planetas, ganhe XSPC e conquiste a galáxia. Lançamento do token Q1 2027 na TON!",
+      "btn": "Vamos lá! 🚀",
+      "hint": null
+    },
+    {
+      "badge": "PASSO 1 DE 5",
+      "title": "Toque para minerar XSPC",
+      "text": "Toque no planeta o mais rápido possível! Cada toque ganha XSPC. Combos = mais recompensas!",
+      "btn": "Entendido!",
+      "hint": "💡 Multi-toque = bônus extra"
+    },
+    {
+      "badge": "PASSO 2 DE 5",
+      "title": "Gerencie sua Energia",
+      "text": "Cada toque usa 1 de energia. Ela recarrega com o tempo. Atualize em MELHORAR!",
+      "btn": "Compreendido!",
+      "hint": "💡 A energia recarrega offline"
+    },
+    {
+      "badge": "PASSO 3 DE 5",
+      "title": "Melhorias e Renda Passiva",
+      "text": "Compre Cartas de Impulso em MELHORAR — ganham XSPC a cada hora, mesmo offline!",
+      "btn": "Ótimo!",
+      "hint": "💡 Mais cartas = mais renda passiva"
+    },
+    {
+      "badge": "PASSO 4 DE 5",
+      "title": "Colecione chaves XKEY",
+      "text": "As chaves desbloqueiam artefatos. Ganhe-as subindo de nível, Combo Diário e missões!",
+      "btn": "Legal!",
+      "hint": "💡 Artefatos dão bônus permanentes"
+    },
+    {
+      "badge": "PASSO 5 DE 5",
+      "title": "Conquiste a Galáxia!",
+      "text": "20 planetas · 200 níveis · Chefes · Expedições · PvP · Clãs · Staking. Tudo espera!",
+      "btn": "🚀 Começar a minerar!",
+      "hint": null
+    }
+  ]
 };
 
-// Telegram language code → our lang key
+const LANG_META = {
+  en:{flag:'🇬🇧',name:'English'},
+  ru:{flag:'🇷🇺',name:'Русский'},
+  uk:{flag:'🇺🇦',name:'Українська'},
+  es:{flag:'🇪🇸',name:'Español'},
+  zh:{flag:'🇨🇳',name:'中文'},
+  ar:{flag:'🇸🇦',name:'العربية'},
+  pt:{flag:'🇧🇷',name:'Português'},
+};
+
 const TG_LANG_MAP = {
-  'ru': 'ru', 'uk': 'uk', 'be': 'ru',
-  'es': 'es', 'zh': 'zh', 'ar': 'ar',
-  'pt': 'pt', 'br': 'pt',
-  'en': 'en',
+  'ru':'ru','uk':'uk','be':'ru','kk':'ru',
+  'es':'es','zh':'zh','zh-hans':'zh','zh-hant':'zh',
+  'ar':'ar','pt':'pt','br':'pt','en':'en',
 };
 
 let currentLang = 'en';
 
+function t(key) {
+  return (TRANSLATIONS[key] && TRANSLATIONS[key][currentLang]) || (TRANSLATIONS[key] && TRANSLATIONS[key]['en']) || key;
+}
+
+function tOb(step, field) {
+  const ob = ONBOARDING_TRANSLATIONS[currentLang] || ONBOARDING_TRANSLATIONS['en'];
+  return ob[step] && ob[step][field] !== undefined ? ob[step][field] : (ONBOARDING_TRANSLATIONS['en'][step] && ONBOARDING_TRANSLATIONS['en'][step][field]);
+}
+
 function detectLang() {
-  // 1. User saved preference
   const saved = localStorage.getItem('xspc_lang');
-  if(saved && LANGS[saved]) return saved;
-  // 2. Telegram language
-  const tgLang = window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || '';
-  const mapped = TG_LANG_MAP[tgLang.toLowerCase().split('-')[0]];
-  if(mapped) return mapped;
-  // 3. Browser language
+  if(saved && LANG_META[saved]) return saved;
+  const tgLang = (window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || '').toLowerCase().split('-')[0];
+  if(TG_LANG_MAP[tgLang]) return TG_LANG_MAP[tgLang];
   const browserLang = (navigator.language || '').toLowerCase().split('-')[0];
-  const mappedBrowser = TG_LANG_MAP[browserLang];
-  if(mappedBrowser) return mappedBrowser;
+  if(TG_LANG_MAP[browserLang]) return TG_LANG_MAP[browserLang];
   return 'en';
 }
 
 function setLang(lang) {
-  if(!LANGS[lang]) return;
+  if(!LANG_META[lang]) return;
   currentLang = lang;
   localStorage.setItem('xspc_lang', lang);
   applyLang();
   saveGame();
 }
 
-function t(key) {
-  return (LANGS[currentLang] && LANGS[currentLang][key]) || LANGS['en'][key] || key;
-}
-
 function applyLang() {
-  const L = LANGS[currentLang];
-  if(!L) return;
+  const lang = currentLang;
+  document.documentElement.setAttribute('lang', lang);
+  document.body.style.direction = lang === 'ar' ? 'rtl' : 'ltr';
 
-  // RTL support for Arabic
-  document.documentElement.setAttribute('lang', currentLang);
-  document.body.style.direction = currentLang === 'ar' ? 'rtl' : 'ltr';
-
-  // Bottom nav labels
-  const navMap = {
-    menuMine: 'mine', menuEarn: 'earn', menuUpgrade: 'upgrade',
-    menuGalaxy: 'galaxy', menuBattle: 'battle', menuFriends: 'friends'
-  };
-  Object.entries(navMap).forEach(([id, key]) => {
-    const el = document.getElementById(id);
-    if(el) {
-      const span = el.querySelector('span:last-child');
-      if(span) span.textContent = L[key] || LANGS.en[key];
-    }
-  });
-
-  // Loading overlay
-  const loadingText = document.querySelector('#loadingOverlay div:last-child');
-  if(loadingText) loadingText.textContent = L.loading;
-
-  // ENERGY label
+  // Translate all data-i18n elements
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if(L[key]) el.textContent = L[key];
+    const tr = t(key);
+    if(tr && tr !== key) el.textContent = tr;
   });
 
-  // Passive income labels
-  document.querySelectorAll('.i18n-passive').forEach(el => el.textContent = L.passiveIncome);
-  document.querySelectorAll('.i18n-accumulated').forEach(el => el.textContent = L.accumulated);
-  document.querySelectorAll('.i18n-collect').forEach(el => el.textContent = L.collect);
+  // Nav labels
+  const navMap = {menuMine:'mine',menuEarn:'earn',menuUpgrade:'upgrade',menuGalaxy:'galaxy',menuBattle:'battle',menuFriends:'friends'};
+  Object.entries(navMap).forEach(([id,key]) => {
+    const el = document.getElementById(id);
+    if(el) { const s = el.querySelector('span:last-child'); if(s) s.textContent = t(key); }
+  });
+
+  // Special IDs
+  const idMap = {
+    'i18n-energy': () => '⚡ ' + t('energy'),
+    'i18n-perTap': () => '⛏️ ' + t('perTap'),
+    'i18n-taps': () => '🔥 ' + t('taps'),
+    'i18n-passiveIncome': () => t('passiveIncome'),
+    'i18n-accumulated': () => t('accumulated'),
+    'galaxyGoal': () => t('conquestGoal'),
+  };
+  Object.entries(idMap).forEach(([id, fn]) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = fn();
+  });
 
   // Back button
   const backBtn = document.getElementById('globalBackBtn');
-  if(backBtn) {
-    const span = backBtn.querySelector('span:last-child');
-    if(span) span.textContent = L.back;
-  }
+  if(backBtn) { const s = backBtn.querySelector('span:last-child'); if(s) s.textContent = t('back'); }
 
-  // Galaxy goal
-  const goal = document.getElementById('galaxyGoal');
-  if(goal) goal.textContent = L.conquestGoal;
+  // COLLECT buttons
+  document.querySelectorAll('[data-i18n-collect]').forEach(el => { el.textContent = t('collect'); });
 
-  // Level label
-  document.querySelectorAll('.i18n-level').forEach(el => el.textContent = L.level);
+  // Loading overlay text
+  const loadEl = document.querySelector('#loadingOverlay div:last-child');
+  if(loadEl) loadEl.textContent = t('loading');
 
-  // Lang selector active state
+  // Promo input placeholder
+  const promoInp = document.getElementById('promoInputPage');
+  if(promoInp) promoInp.placeholder = lang === 'ru' ? 'ВВЕДИТЕ КОД...' : lang === 'uk' ? 'ВВЕДІТЬ КОД...' : lang === 'es' ? 'INGRESA CÓDIGO...' : lang === 'zh' ? '输入代码...' : lang === 'ar' ? 'أدخل الرمز...' : lang === 'pt' ? 'INSIRA O CÓDIGO...' : 'ENTER CODE...';
+
+  // Redeem button
+  const redeemBtn = document.querySelector('button[onclick="redeemPromoPage()"]');
+  if(redeemBtn) redeemBtn.textContent = lang === 'ru' ? '🎁 АКТИВИРОВАТЬ' : lang === 'uk' ? '🎁 АКТИВУВАТИ' : lang === 'es' ? '🎁 CANJEAR' : lang === 'zh' ? '🎁 兑换' : lang === 'ar' ? '🎁 استرداد' : lang === 'pt' ? '🎁 RESGATAR' : '🎁 REDEEM';
+
+  // Share button
+  const shareBtn = document.querySelector('button[onclick="shareRefLink()"]');
+  if(shareBtn) shareBtn.textContent = t('shareFriends');
+
+  // Lang picker buttons active state
   document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.style.background = btn.dataset.lang === currentLang
-      ? 'rgba(0,245,255,0.15)' : 'rgba(255,255,255,0.04)';
-    btn.style.borderColor = btn.dataset.lang === currentLang
-      ? 'rgba(0,245,255,0.5)' : 'rgba(255,255,255,0.1)';
+    const active = btn.dataset.lang === lang;
+    btn.style.background = active ? 'rgba(0,245,255,0.15)' : 'rgba(255,255,255,0.04)';
+    btn.style.borderColor = active ? 'rgba(0,245,255,0.5)' : 'rgba(255,255,255,0.1)';
+    const nameEl = btn.querySelector('span:last-child');
+    if(nameEl) nameEl.style.color = active ? '#00f5ff' : '#fff';
   });
 }
 
 function showLangPicker() {
   const existing = document.getElementById('langPickerOverlay');
   if(existing) { existing.remove(); return; }
-
   const overlay = document.createElement('div');
   overlay.id = 'langPickerOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.7);display:flex;align-items:flex-end;justify-content:center;';
-  overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
-
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.75);display:flex;align-items:flex-end;justify-content:center;';
+  overlay.onclick = e => { if(e.target === overlay) overlay.remove(); };
+  const langs = ['en','ru','uk','es','zh','ar','pt'];
   const card = document.createElement('div');
-  card.style.cssText = 'background:#0a0f1e;border-top:1px solid rgba(0,245,255,0.2);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:420px;';
-
-  card.innerHTML = '<div style="text-align:center;font-family:Orbitron,monospace;font-size:13px;color:#00f5ff;letter-spacing:2px;margin-bottom:16px;">'
-    + (t('language') || 'LANGUAGE') + '</div>'
+  card.style.cssText = 'background:#0a0f1e;border-top:1px solid rgba(0,245,255,0.2);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:420px;padding-bottom:36px;';
+  card.innerHTML = '<div style="text-align:center;font-family:Orbitron,monospace;font-size:13px;color:#00f5ff;letter-spacing:2px;margin-bottom:16px;">🌐 LANGUAGE</div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-    + Object.entries(LANGS).map(([code, l]) =>
-        '<button class="lang-btn" data-lang="' + code + '" onclick="setLang(\'' + code + '\');document.getElementById(\'langPickerOverlay\').remove();" '
-        + 'style="display:flex;align-items:center;gap:8px;padding:12px 14px;background:' + (currentLang===code?'rgba(0,245,255,0.15)':'rgba(255,255,255,0.04)') + ';'
-        + 'border:1px solid ' + (currentLang===code?'rgba(0,245,255,0.5)':'rgba(255,255,255,0.1)') + ';'
-        + 'border-radius:12px;cursor:pointer;color:#fff;font-size:13px;transition:all 0.2s;">'
-        + '<span style="font-size:20px;">' + l.flag + '</span>'
-        + '<span style="font-weight:' + (currentLang===code?'700':'400') + ';color:' + (currentLang===code?'#00f5ff':'#fff') + ';">' + l.name + '</span>'
-        + (currentLang===code ? '<span style="margin-left:auto;color:#00f5ff;font-size:12px;">✓</span>' : '')
-        + '</button>'
-      ).join('')
+    + langs.map(code => {
+        const m = LANG_META[code];
+        const active = currentLang === code;
+        return '<button class="lang-btn" data-lang="' + code + '" onclick="setLang(\'' + code + '\');document.getElementById(\'langPickerOverlay\').remove();" '
+          + 'style="display:flex;align-items:center;gap:8px;padding:12px 14px;background:' + (active?'rgba(0,245,255,0.15)':'rgba(255,255,255,0.04)') + ';'
+          + 'border:1px solid ' + (active?'rgba(0,245,255,0.5)':'rgba(255,255,255,0.1)') + ';'
+          + 'border-radius:12px;cursor:pointer;color:#fff;font-size:13px;transition:all 0.2s;">'
+          + '<span style="font-size:20px;">' + m.flag + '</span>'
+          + '<span style="font-weight:' + (active?'700':'400') + ';color:' + (active?'#00f5ff':'#fff') + ';">' + m.name + '</span>'
+          + (active ? '<span style="margin-left:auto;color:#00f5ff;">✓</span>' : '')
+          + '</button>';
+      }).join('')
     + '</div>'
-    + '<button onclick="document.getElementById(\'langPickerOverlay\').remove();" style="width:100%;margin-top:12px;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#4a6080;font-size:13px;cursor:pointer;">'
-    + (t('cancel') || 'Cancel') + '</button>';
-
+    + '<button onclick="document.getElementById(\'langPickerOverlay\').remove();" style="width:100%;margin-top:12px;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#4a6080;font-size:13px;cursor:pointer;">✕ Close</button>';
   overlay.appendChild(card);
   document.body.appendChild(overlay);
 }
@@ -4582,7 +5396,7 @@ function renderTasks(){
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
         <div class="task-reward">+${t.reward} <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:14px;height:14px;vertical-align:middle;border-radius:50%;"></div>
-        ${canClaim?`<button class="claim-btn" onclick="claimTask('${t.id}',${t.reward})">CLAIM</button>`:''}
+        ${canClaim?`<button class="claim-btn" onclick="claimTask('${t.id}',${t.reward})"><span data-i18n="claim">CLAIM</span></button>`:''}
         ${done?'<span style="color:var(--accent);font-size:18px">✅</span>':''}
       </div>
     </div>`;
@@ -4704,7 +5518,7 @@ async function loadFriends(userId){
   
   // Show loading state
   const listEl = document.getElementById('friendsList');
-  if(listEl) listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;font-family:Orbitron,monospace;font-size:11px;">LOADING...</div>';
+  if(listEl) listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;font-family:Orbitron,monospace;font-size:11px;"><span data-i18n="loading">LOADING...</span></div>';
 
   try{
     const controller = new AbortController();
@@ -6225,10 +7039,16 @@ async function updatePlayerCounter() {
   }
 }
 
-// Single interval for player counter
-setTimeout(updatePlayerCounter, 500);
+// Update player count every 5 minutes with smooth animation
 setManagedInterval("playerCounter", updatePlayerCounter, 300000);
+
 setManagedInterval("countdown", updateCountdown, 1000);
+setInterval(updatePlayerCounter, 600000); // update every 10 min
+setInterval(() => {
+  // Live update counter every 10 minutes in real time
+  const el = document.getElementById('playerCounter');
+  if(el) el.textContent = getGrowingPlayerCount().toLocaleString();
+}, 600000);
 
 // ═══ PARTNER TASKS ═══
 const PARTNER_TASKS = [
@@ -6276,7 +7096,7 @@ function renderPartnerTasks() {
         ${isDone
           ? '<span style="color:#00ff88;font-size:20px;">✅</span>'
           : canClaim
-            ? `<button onclick="claimPartnerTask('${t.id}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;font-weight:700;font-size:12px;">CLAIM</button>`
+            ? `<button onclick="claimPartnerTask('${t.id}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;font-weight:700;font-size:12px;"><span data-i18n="claim">CLAIM</span></button>`
             : t.type==='telegram'||t.type==='share'
               ? `<button onclick="doPartnerTask('${t.id}','${t.url}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:rgba(0,245,255,0.1);border:1px solid var(--border);color:var(--text);font-weight:700;font-size:12px;">GO →</button>`
               : `<span style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;">${t.type==='referral'?`${g.friends||0}/${t.need}`:`Lv${g.level}/${t.need}`}</span>`
@@ -7071,24 +7891,21 @@ function renderOnboardStep() {
   }
   const isLast = onboardStep === ONBOARDING_STEPS.length - 1;
 
-  const badge = (typeof t==='function' && t('ob_badge'+onboardStep)) || step.badge || '';
-  const title = (typeof t==='function' && t('ob_title'+onboardStep)) || step.title;
-  const text  = (typeof t==='function' && t('ob_text'+onboardStep))  || step.text;
-  const btn   = (typeof t==='function' && t('ob_btn'+onboardStep))   || step.btn;
-  const hint  = (typeof t==='function' && t('ob_hint'+onboardStep))  || step.hint || '';
-  const skipLabel = (typeof t==='function' && t('skipTutorial')) || 'Skip';
-  const dots = ONBOARDING_STEPS.map((_,i) =>
-    '<div style="width:'+(i===onboardStep?'20px':'8px')+';height:8px;border-radius:4px;background:'
-    +(i<onboardStep?'#00ff88':i===onboardStep?'#FFD700':'rgba(255,255,255,0.15)')+';transition:all 0.3s;"></div>'
-  ).join('');
-  content.innerHTML =
-    '<div style="display:flex;gap:6px;justify-content:center;margin-bottom:20px;">' + dots + '</div>'
-    + (badge ? '<div style="display:inline-block;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:20px;padding:3px 12px;font-size:10px;color:#00f5ff;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:14px;">' + badge + '</div><br>' : '')
-    + '<div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:12px;line-height:1.3;">' + title + '</div>'
-    + '<div style="font-size:14px;color:#aaa;line-height:1.7;margin-bottom:' + (hint ? '14px' : '24px') + ';">' + text + '</div>'
-    + (hint ? '<div style="font-size:12px;color:#4a6080;margin-bottom:22px;padding:8px 14px;background:rgba(255,255,255,0.03);border-radius:10px;">' + hint + '</div>' : '')
-    + '<button onclick="nextOnboardStep()" style="width:100%;padding:16px;background:linear-gradient(135deg,#7b2fff,#00f5ff);border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px;">' + btn + '</button>'
-    + (onboardStep > 0 ? '<button onclick="closeOnboarding()" style="width:100%;padding:10px;background:transparent;border:none;color:#4a6080;font-size:12px;cursor:pointer;margin-top:6px;">' + skipLabel + '</button>' : '');
+  const badge=tOb(onboardStep,'badge')||'';
+  const title=tOb(onboardStep,'title')||step.title;
+  const text=tOb(onboardStep,'text')||step.text;
+  const btn=tOb(onboardStep,'btn')||step.btn;
+  const hint=tOb(onboardStep,'hint')||null;
+  const skipLbl=currentLang==='ru'?'Пропустить':currentLang==='uk'?'Пропустити':currentLang==='es'?'Omitir':currentLang==='zh'?'跳过':currentLang==='ar'?'تخطي':currentLang==='pt'?'Pular':'Skip';
+  const dots=ONBOARDING_STEPS.map((_,i)=>'<div style="width:'+(i===onboardStep?'20px':'8px')+';height:8px;border-radius:4px;background:'+(i<onboardStep?'#00ff88':i===onboardStep?'#FFD700':'rgba(255,255,255,0.15)')+';transition:all 0.3s;"></div>').join('');
+  content.innerHTML=
+    '<div style="display:flex;gap:6px;justify-content:center;margin-bottom:20px;">'+dots+'</div>'
+    +(badge?'<div style="display:inline-block;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:20px;padding:3px 12px;font-size:10px;color:#00f5ff;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:14px;">'+badge+'</div><br>':'')
+    +'<div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:12px;line-height:1.3;">'+title+'</div>'
+    +'<div style="font-size:14px;color:#aaa;line-height:1.7;margin-bottom:'+(hint?'14px':'24px')+';">'+text+'</div>'
+    +(hint?'<div style="font-size:12px;color:#4a6080;margin-bottom:22px;padding:8px 14px;background:rgba(255,255,255,0.03);border-radius:10px;">'+hint+'</div>':'')
+    +'<button onclick="nextOnboardStep()" style="width:100%;padding:16px;background:linear-gradient(135deg,#7b2fff,#00f5ff);border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px;">'+btn+'</button>'
+    +(onboardStep>0?'<button onclick="closeOnboarding()" style="width:100%;padding:10px;background:transparent;border:none;color:#4a6080;font-size:12px;cursor:pointer;margin-top:6px;">'+skipLbl+'</button>':'');
 }
 
 function nextOnboardStep() {
@@ -7409,7 +8226,6 @@ setManagedInterval("apiSave", ()=>{ if(g.telegramId) apiSave(); }, 30000);
 
 // ═══ START ═══
 loadGame();
-// Init language
 currentLang = detectLang();
 applyLang();
 
@@ -7504,18 +8320,13 @@ updatePassive();
 
 if(window.Telegram?.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();}
 initUser();
-
-// Hide loading overlay always
 setTimeout(() => {
   const lo = document.getElementById('loadingOverlay');
   if(lo) { lo.style.transition='opacity 0.5s'; lo.style.opacity='0'; setTimeout(()=>{if(lo)lo.style.display='none';},500); }
 }, 800);
-
 if(!localStorage.getItem('xspc_onboarding_done') && !g.onboardingDone) {
   setTimeout(showOnboarding, 1000);
-} else {
-  setTimeout(showStreakOverlay, 1500);
-}
+} else { setTimeout(showStreakOverlay, 1500); }
 setTimeout(checkExpedition, 3000);
 // ═══ ARTIFACTS ═══
 
