@@ -493,8 +493,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1.2)}70%{opacity:1;transform:translateY(-50px) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(0.8)}}100%{opacity:0;transform:translateY(-110px) scale(1.4)}}
 
 /* BOTTOM MENU */
-.back-btn{display:none;position:sticky;top:4px;left:0;z-index:200;background:rgba(2,5,16,0.9);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:5px 12px;color:var(--accent);font-family:Orbitron,monospace;font-size:11px;cursor:pointer;backdrop-filter:blur(10px);margin-bottom:8px;width:fit-content;}
-.back-btn.visible{display:flex;align-items:center;gap:6px;}
+.back-btn{display:none;position:sticky;top:4px;left:0;z-index:200;background:rgba(2,5,16,0.85);border:1px solid rgba(0,245,255,0.25);border-radius:50px;padding:6px 14px 6px 10px;color:var(--accent);font-size:13px;cursor:pointer;backdrop-filter:blur(10px);margin-bottom:8px;width:fit-content;transition:all 0.2s;}
+.back-btn:active{transform:scale(0.95);}
+.back-btn.visible{display:flex;align-items:center;gap:5px;}
 .bottom-menu{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(2,5,16,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 20px;}
 .menu-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 10px;border-radius:12px;transition:all 0.2s;min-width:52px;}
 .menu-item .m-icon{font-size:20px;filter:grayscale(0.5);transition:filter 0.2s;}
@@ -638,7 +639,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <span id="progressLabel">Lv1 → Lv2</span>
     <span id="progressPct">0%</span>
   </div>
-  <div class="back-btn" id="globalBackBtn" onclick="goBack()">◀ BACK</div>
+  <div class="back-btn" id="globalBackBtn" onclick="goBack()"><span style="font-size:16px;line-height:1;">←</span><span style="font-family:Rajdhani,sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;">BACK</span></div>
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
 </div>
 
@@ -1339,7 +1340,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   </div>
 
   <!-- Share button -->
-  <button onclick="shareRef()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ff9500,#ff3366);border:none;border-radius:16px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:Orbitron,monospace;letter-spacing:2px;">🚀 INVITE FRIENDS</button>
+  <button onclick="shareRefLink()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ff9500,#ff3366);border:none;border-radius:16px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:Orbitron,monospace;letter-spacing:2px;">🚀 INVITE FRIENDS</button>
 </div>
 
 <div class="page" id="pageSeason">
@@ -1848,14 +1849,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <input id="promoInputPage" placeholder="ENTER CODE..." style="width:100%;padding:14px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,215,0,0.3);border-radius:14px;color:#FFD700;font-size:16px;outline:none;font-family:Orbitron,monospace;text-transform:uppercase;text-align:center;box-sizing:border-box;margin-bottom:10px;">
     <div id="promoResultPage" style="font-size:13px;text-align:center;min-height:20px;margin-bottom:14px;"></div>
     <button onclick="redeemPromoPage()" style="width:100%;padding:14px;background:linear-gradient(135deg,#cc9900,#FFD700);border:none;border-radius:14px;color:#000;font-weight:700;font-size:16px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px;">🎁 REDEEM</button>
-    <div style="margin-top:20px;text-align:left;">
-      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">USED CODES</div>
-      <div id="promoUsedList"><div style="text-align:center;color:#4a6080;font-size:12px;padding:12px;">No codes used yet</div></div>
-    </div>
-    <div style="margin-top:14px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:12px;padding:12px;text-align:center;">
-      <div style="font-size:11px;color:#4a6080;margin-bottom:4px;">Get a free code daily:</div>
-      <button onclick="showPage('earn')" style="padding:8px 20px;background:transparent;border:1px solid rgba(255,215,0,0.4);border-radius:10px;color:#FFD700;font-size:12px;cursor:pointer;">📅 DAILY CODE →</button>
-    </div>
   </div>
 </div>
 
@@ -2195,7 +2188,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   </div>
   <div class="section-title">🔗 Your Link</div>
   <!-- ref link shown above -->
-  <button class="btn-accent" onclick="shareRef()">📤 Share Link</button>
+  <button class="btn-accent" onclick="shareRefLink()">📤 Share Link</button>
   <div class="section-title" style="margin-top:16px">👥 Friends (<span id="friendCountLabel">0</span>)</div>
   <div id="friendList"><div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No friends yet! 🚀</div></div>
 </div>
@@ -2957,46 +2950,19 @@ function updateClanUI() {
   }
 }
 
-function getClanLeaderboard() {
-  // Build clan list from known clans + current player's clan
-  const builtIn = [
-    {tag:'XSPC', name:'XSPACECOIN Official', emoji:'🚀', members:247, bonus:15},
-    {tag:'MOON', name:'Moon Miners', emoji:'🌙', members:183, bonus:12},
-    {tag:'VOID', name:'Void Hunters', emoji:'🌑', members:156, bonus:10},
-    {tag:'STAR', name:'Star Forge', emoji:'⭐', members:134, bonus:10},
-    {tag:'NOVA', name:'Supernova Squad', emoji:'💥', members:98, bonus:8},
-    {tag:'TON',  name:'TON Believers', emoji:'⛓️', members:87, bonus:8},
-    {tag:'DARK', name:'Dark Matter Crew', emoji:'🕳️', members:71, bonus:6},
-    {tag:'GALX', name:'Galaxy Explorers', emoji:'🌌', members:64, bonus:6},
-  ];
-  // Add player's custom clan if not in list
-  if(g.clan && !builtIn.find(c => c.tag === g.clan.tag)) {
-    builtIn.unshift({tag:g.clan.tag, name:g.clan.name, emoji:g.clan.emoji||'🪐', members:g.clan.members||1, bonus:g.clan.bonus||5});
-  }
-  return builtIn;
-}
-
 function renderClansList() {
   const list = document.getElementById('clansList');
   if(!list) return;
-  const clans = getClanLeaderboard();
-  const myClan = g.clan;
-  list.innerHTML = clans.map((c, i) => {
-    const ismine = myClan && myClan.tag === c.tag;
-    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':('&#'+(35+i)+';');
-    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:'+(ismine?'rgba(0,245,255,0.08)':'var(--card)')+';border:1px solid '+(ismine?'rgba(0,245,255,0.3)':'var(--border)')+';border-radius:12px;margin-bottom:6px;">'      +'<div style="font-size:16px;min-width:22px;text-align:center;">'+medal+'</div>'      +'<div style="font-size:20px;">'+c.emoji+'</div>'      +'<div style="flex:1;">'        +'<div style="font-size:13px;font-weight:700;color:'+(ismine?'#00f5ff':'var(--text)')+';">'+c.name+(ismine?' ✓':'')+'</div>'        +'<div style="font-size:10px;color:#4a6080;">'+c.members+' members · +'+c.bonus+'% bonus</div>'      +'</div>'      +(ismine
-        ? '<span style="font-size:10px;color:#00f5ff;font-weight:700;">YOURS</span>'
-        : '<button data-t="'+c.tag+'" onclick="joinClanByTag(this.dataset.t)" style="padding:6px 12px;background:linear-gradient(135deg,#7b2fff,#00f5ff);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer;">JOIN</button>')      +'</div>';
+  list.innerHTML = DEFAULT_CLANS.map(c => {
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">'
+      +'<div style="font-size:24px;">'+c.emoji+'</div>'
+      +'<div style="flex:1;">'
+        +'<div style="font-size:13px;font-weight:700;">'+c.name+'</div>'
+        +'<div style="font-size:10px;color:#4a6080;">Lv'+c.level+' · '+c.members+' members · +'+c.bonus+'% bonus</div>'
+      +'</div>'
+      +'<button data-t="'+c.tag+'" onclick="joinClan(this.dataset.t)" style="padding:6px 12px;background:linear-gradient(135deg,#7b2fff,#00f5ff);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:11px;cursor:pointer;">JOIN</button>'
+      +'</div>';
   }).join('');
-}
-
-function joinClanByTag(tag) {
-  const clan = getClanLeaderboard().find(c => c.tag === tag);
-  if(!clan) return;
-  if(g.clan) { showToast('Leave your current clan first!'); return; }
-  g.clan = {tag: clan.tag, name: clan.name, emoji: clan.emoji, bonus: clan.bonus, members: clan.members, level: 1};
-  showToast('Joined '+clan.name+'! +'+clan.bonus+'% bonus active!');
-  updateClanUI(); renderClansList(); saveGame();
 }
 
 
@@ -3409,17 +3375,9 @@ function renderAttackBots() {
 // ═══ STAKING ═══
 function stake(amount) {
   if((g.coins||0) < amount) { showToast('Not enough XSPC! Need '+amount.toLocaleString()); return; }
-  // Collect pending rewards before adding more stake
-  const prevStaked = g.stakedAmount || 0;
-  if(prevStaked > 0 && g.stakeTime) {
-    const hrs = (Date.now() - g.stakeTime) / 3600000;
-    const rate = prevStaked >= 1000000 ? 0.20 : prevStaked >= 100000 ? 0.10 : 0.05;
-    const pending = Math.floor(prevStaked * rate * hrs / 24);
-    if(pending > 0) { g.coins += pending; g.totalEarned = (g.totalEarned||0) + pending; showFloat('+'+pending.toLocaleString()+' XSPC collected!', window.innerWidth/2, 200, '#00ff88'); }
-  }
   g.coins -= amount;
   g.stakedAmount = (g.stakedAmount||0) + amount;
-  g.stakeTime = Date.now(); // always reset timer on new stake
+  g.stakeTime = Date.now();
   showToast('💰 Staked '+amount.toLocaleString()+' XSPC!');
   updateStakingUI();
   updateUI(); saveGame();
@@ -3585,59 +3543,44 @@ function toggleSound() {
 }
 
 
-// ═══ PUSH NOTIFICATIONS — via Telegram bot (not browser) ═══
+// ═══ PUSH NOTIFICATIONS ═══
 function requestNotificationPermission() {
-  // Telegram WebApp doesn't support browser Notification API
-  // Notifications are sent via the bot instead
-  if(g.telegramId) {
-    showToast('🔔 Notifications enabled via @play1xfarmbot!');
-    g.notificationsEnabled = true;
-    saveGame();
+  if(!('Notification' in window)) return;
+  if(Notification.permission === 'default') {
+    Notification.requestPermission();
   }
 }
 
-function sendPushNotification(title, body) {
-  // In Telegram WebApp — ping the server which will send bot message
-  if(g.telegramId) {
-    fetch(API_URL+'/notify/energy', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({user_id: g.telegramId, type: 'energy'})
-    }).catch(()=>{});
-  }
+function sendPushNotification(title, body, icon) {
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    new Notification(title, { body, icon: icon || '🪐', tag: 'xspacecoin' });
+  } catch(e) {}
 }
 
 let energyFullNotified = false;
 let passiveReadyNotified = false;
 
 function checkNotifications() {
-  // Energy full — ping server to send bot notification
+  // Energy full notification
   if(g.energy >= g.maxEnergy && !energyFullNotified) {
     energyFullNotified = true;
-    if(g.telegramId) {
-      fetch(API_URL+'/notify/energy', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({user_id: g.telegramId})
-      }).catch(()=>{});
-    }
+    sendPushNotification('⚡ XSPACECOIN', 'Energy is full! Come mine XSPC now!', '⚡');
   }
   if(g.energy < g.maxEnergy) energyFullNotified = false;
 
-  // Passive income ready (100+ accumulated) — show in-app toast only
+  // Passive income ready (100+ accumulated)
   const passive = Math.floor(passiveAccumulated);
   if(passive >= 100 && !passiveReadyNotified) {
     passiveReadyNotified = true;
-    showToast('⛏️ Passive income ready! Collect your XSPC!');
+    sendPushNotification('🪐 XSPACECOIN', 'Passive income ready! +'+passive.toLocaleString()+' XSPC waiting!', '🪐');
   }
   if(passive < 50) passiveReadyNotified = false;
 }
 
-// Enable notifications via bot
+// Request permission on first tap
 function initNotifications() {
-  if(!g.telegramId) { showToast('Open via @play1xfarmbot to enable notifications!'); return; }
-  g.notificationsEnabled = true;
-  saveGame();
-  showToast('🔔 Notifications enabled! The bot will message you.');
+  requestNotificationPermission();
 }
 
 setManagedInterval("notifications", checkNotifications, 30000);
@@ -4391,7 +4334,7 @@ function getRefLink(){
   return `https://t.me/play1xfarmbot?start=ref_${tgId}`;
 }
 function copyRef(){const l=getRefLink();navigator.clipboard?.writeText(l).catch(()=>{});document.getElementById('refLink').textContent='✅ Copied!';setTimeout(()=>document.getElementById('refLink').textContent=l,2000);}
-function shareRef(){const l=getRefLink();if(window.Telegram?.WebApp)window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(l)}&text=${encodeURIComponent('🪐 Join XSPACECOIN! Earn XSPC tokens!')}`);else copyRef();}
+// shareRef removed — use shareRefLink() instead
 
 async function loadFriends(userId){
   // Ensure we have a valid userId — try all sources
@@ -4658,27 +4601,7 @@ function showPage(page){
   if(page==='mini'){startMiniGame();}
   if(page==='achieve'){renderAchievements();}
   if(page==='streak'){renderStreakPage();}
-  if(page==='promo'){
-    // Render used promos list
-    const usedList = document.getElementById('promoUsedList');
-    if(usedList) {
-      const used = g.usedPromos || {};
-      const keys = Object.keys(used);
-      if(keys.length === 0) {
-        usedList.innerHTML = '<div style="text-align:center;color:#4a6080;font-size:12px;padding:12px;">No codes used yet</div>';
-      } else {
-        usedList.innerHTML = keys.map(code => {
-          const p = PROMO_CODES[code];
-          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.15);border-radius:10px;margin-bottom:6px;">'
-            + '<span style="font-family:Orbitron,monospace;font-size:11px;color:#FFD700;">'+code+'</span>'
-            + '<span style="font-size:11px;color:#00ff88;">'+( p ? p.msg : '✅ Used')+'</span>'
-            + '</div>';
-        }).join('');
-      }
-    }
-    // Focus input
-    setTimeout(() => { const inp = document.getElementById('promoInputPage'); if(inp) inp.focus(); }, 300);
-  }
+  if(page==='promo'){}
 }
 
 function updateEarnHub() {
@@ -5958,16 +5881,10 @@ async function updatePlayerCounter() {
   }
 }
 
-// Update player count every 5 minutes with smooth animation
+// Update player count every 5 minutes — single interval
+setTimeout(updatePlayerCounter, 500);
 setManagedInterval("playerCounter", updatePlayerCounter, 300000);
-
 setManagedInterval("countdown", updateCountdown, 1000);
-setInterval(updatePlayerCounter, 600000); // update every 10 min
-setInterval(() => {
-  // Live update counter every 10 minutes in real time
-  const el = document.getElementById('playerCounter');
-  if(el) el.textContent = getGrowingPlayerCount().toLocaleString();
-}, 600000);
 
 // ═══ PARTNER TASKS ═══
 const PARTNER_TASKS = [
@@ -6162,12 +6079,21 @@ function saveTonWallet() {
 // ═══ MINI GAME ═══
 let miniSecret = 0, miniAttempts = 0, miniMaxAttempts = 7, miniGameOver = false;
 
+function updateMiniGamesCounter() {
+  const today = new Date().toDateString();
+  if(g.miniGamesDate !== today) { g.miniGamesDate = today; g.miniGamesUsed = 0; }
+  const left = Math.max(0, 3 - (g.miniGamesUsed || 0));
+  const el1 = document.getElementById('miniGamesLeft');
+  const el2 = document.getElementById('miniGamesLeftKeys');
+  if(el1) { el1.textContent = left; el1.style.color = left === 0 ? '#ff3366' : '#FFD700'; }
+  if(el2) { el2.textContent = left + ' game' + (left !== 1 ? 's' : '') + ' left'; el2.style.color = left === 0 ? '#ff3366' : '#4a6080'; }
+}
+
 function startMiniGame() {
   const today = new Date().toDateString();
   if(g.miniGamesDate !== today) { g.miniGamesDate = today; g.miniGamesUsed = 0; }
-  const left = 3 - (g.miniGamesUsed || 0);
-  const leftEl = document.getElementById('miniGamesLeft');
-  if(leftEl) leftEl.textContent = left;
+  updateMiniGamesCounter();
+  const left = Math.max(0, 3 - (g.miniGamesUsed || 0));
   if(left <= 0) {
     document.getElementById('miniGameMsg').textContent = 'No games left today! Come back tomorrow.';
     document.getElementById('miniGameEmoji').textContent = '😴';
@@ -6209,8 +6135,7 @@ function submitMiniGuess() {
     document.getElementById('miniHintText').style.color = '#00ff88';
     document.getElementById('miniGuessBtn').textContent = 'Play Again';
     document.getElementById('miniGuessInput').style.display = 'none';
-    const leftEl = document.getElementById('miniGamesLeft');
-    if(leftEl) leftEl.textContent = 3-(g.miniGamesUsed||0);
+    updateMiniGamesCounter();
     showFloat(`+${reward.toLocaleString()} XSPC!`, window.innerWidth/2, 200, '#FFD700');
     updateUI(); saveGame();
   } else if(miniAttempts >= miniMaxAttempts) {
@@ -6223,8 +6148,7 @@ function submitMiniGuess() {
     document.getElementById('miniHintText').style.color = '#ff3366';
     document.getElementById('miniGuessBtn').textContent = 'Try Again';
     document.getElementById('miniGuessInput').style.display = 'none';
-    const leftEl = document.getElementById('miniGamesLeft');
-    if(leftEl) leftEl.textContent = 3-(g.miniGamesUsed||0);
+    updateMiniGamesCounter();
     saveGame();
   } else {
     // HINT
