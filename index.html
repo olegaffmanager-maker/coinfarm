@@ -15,20 +15,10 @@
   --planet-glow: rgba(0,100,255,0.6);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html{height:100%;overflow:hidden;overscroll-behavior:none;}
-body{
-  background:var(--bg);height:100%;font-family:'Rajdhani',sans-serif;color:var(--text);
-  overflow:hidden;overscroll-behavior:none;
-  user-select:none;-webkit-user-select:none;
-  -webkit-text-size-adjust:100%;text-size-adjust:100%;
-  position:fixed;width:100%;
-  -webkit-overflow-scrolling:auto;
-}
+body{background:var(--bg);min-height:100vh;font-family:'Rajdhani',sans-serif;color:var(--text);overflow-x:hidden;user-select:none;;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 20%,rgba(123,47,255,0.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(0,245,255,0.1) 0%,transparent 50%);pointer-events:none;}
 body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,245,255,0.01) 2px,rgba(0,245,255,0.01) 4px);pointer-events:none;}
 
-.app-scroll{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch;}
-.page{overscroll-behavior:none;}
 .header{position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:linear-gradient(180deg,rgba(0,245,255,0.08) 0%,transparent 100%);border-bottom:1px solid var(--border);}
 .header-left{display:flex;flex-direction:column;gap:2px;}
 .header-level{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
@@ -233,6 +223,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 }
 
 /* PLANET BUTTON — базовые стили */
+.coin-area{touch-action:none;overscroll-behavior:none;}
 .coin-btn{
   width:175px;height:175px;border-radius:50%;
   border:none;cursor:pointer;position:relative;z-index:2;
@@ -512,7 +503,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 .menu-item.active .m-icon{filter:grayscale(0) drop-shadow(0 0 6px var(--accent));}
 .menu-item.active span{color:var(--accent);}
 
-.page{display:none;padding:12px 16px 110px;position:relative;z-index:10;}
+.page{display:none;padding:12px 16px 110px;position:relative;z-index:10;overscroll-behavior:none;}
 .page.active{display:block;}
 
 .section-title{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
@@ -639,7 +630,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   </div>
   <div style="display:flex;align-items:center;gap:6px;">
     <div id="soundBtn" onclick="toggleSound()" style="width:32px;height:32px;border-radius:50%;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;">🔊</div>
-    <div id="langBtn" onclick="showLangPicker()" style="width:32px;height:32px;border-radius:50%;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;">🌐</div>
     <div class="league-badge" id="leagueBadge">⚪ IRON</div>
   </div>
 </div>
@@ -649,14 +639,14 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <span id="progressLabel">Lv1 → Lv2</span>
     <span id="progressPct">0%</span>
   </div>
-  <div class="back-btn" id="globalBackBtn" onclick="goBack()"><span style="font-size:16px;line-height:1;">←</span><span style="font-family:Rajdhani,sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;">BACK</span></div>
+  <div class="back-btn" id="globalBackBtn" onclick="goBack()">◀ BACK</div>
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
 </div>
 
 <div class="stats-row">
   <div class="stat-item"><div class="stat-value" id="statCoins">0</div><div class="stat-label"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> XSPC</div></div>
-  <div class="stat-item"><div class="stat-value" id="statPerClick">1</div><div class="stat-label" id="i18n-perTap">⛏️ Per Tap</div></div>
-  <div class="stat-item"><div class="stat-value" id="statClicks">0</div><div class="stat-label" id="i18n-taps">🔥 Taps</div></div>
+  <div class="stat-item"><div class="stat-value" id="statPerClick">1</div><div class="stat-label">⛏️ Per Tap</div></div>
+  <div class="stat-item"><div class="stat-value" id="statClicks">0</div><div class="stat-label">🔥 Taps</div></div>
 </div>
 
 <!-- MINE PAGE -->
@@ -668,7 +658,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#00f5ff;margin-bottom:8px;" id="expTitle">Expedition!</div>
     <div style="font-size:13px;color:#4a6080;margin-bottom:20px;" id="expDesc">A mysterious event...</div>
     <div id="expButtons"></div>
-    <button onclick="skipExpedition()" style="width:100%;padding:14px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:14px;cursor:pointer;margin-top:8px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;"><span data-i18n="skipForNow">Skip for now</span></button>
+    <button onclick="skipExpedition()" style="width:100%;padding:14px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#4a6080;font-size:14px;cursor:pointer;margin-top:8px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;">Skip for now</button>
   </div>
 </div>
 
@@ -687,7 +677,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       </div>
     </div>
     <div class="energy-wrap">
-      <div class="energy-info"><span><span data-i18n="energy">⚡ ENERGY</span></span><span id="energyText">500/500</span></div>
+      <div class="energy-info"><span>⚡ ENERGY</span><span id="energyText">500/500</span></div>
       <div class="energy-bar"><div class="energy-fill" id="energyFill" style="width:100%"></div></div>
     </div>
 
@@ -700,15 +690,15 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:18px;">⛏️</span>
           <div>
-            <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;"><span data-i18n="passiveIncome">PASSIVE INCOME</span></div>
+            <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;">PASSIVE INCOME</div>
             <div style="font-size:13px;font-weight:700;color:#00ff88;" id="passiveRate">+0 XSPC/hr</div>
           </div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:10px;color:#FFD700;font-family:Orbitron,monospace;letter-spacing:1px;opacity:0.7;"><span data-i18n="accumulated">ACCUMULATED</span></div>
+          <div style="font-size:10px;color:#FFD700;font-family:Orbitron,monospace;letter-spacing:1px;opacity:0.7;">ACCUMULATED</div>
           <div style="font-size:18px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;" id="passiveAccum">0</div>
         </div>
-        <button onclick="collectPassive()" id="collectBtn" style="display:none;padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:12px;font-family:Rajdhani,sans-serif;margin-left:8px;"><span data-i18n="collect">COLLECT</span></button>
+        <button onclick="collectPassive()" id="collectBtn" style="display:none;padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:12px;font-family:Rajdhani,sans-serif;margin-left:8px;">COLLECT</button>
       </div>
     </div>
 
@@ -717,7 +707,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div style="font-size:20px;">🗺️</div>
       <div style="flex:1;">
         <div style="font-size:12px;font-weight:700;color:var(--accent);" id="mineCosmosName">🌍 Earth (Lv1)</div>
-        <div style="font-size:10px;color:#4a6080;"><span data-i18n="openCosmosMap">Open Cosmos Map →</span></div>
+        <div style="font-size:10px;color:#4a6080;">Open Cosmos Map →</div>
       </div>
       <div style="font-size:12px;color:#4a6080;">›</div>
     </div>
@@ -735,7 +725,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:4px;">
           <div style="font-size:10px;color:#4a6080;" id="questProgress">0/0</div>
-          <button onclick="claimQuest()" id="questClaimBtn" style="display:none;padding:4px 12px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#7b2fff,#00f5ff);color:#000;font-weight:700;font-size:11px;"><span data-i18n="claim">CLAIM</span></button>
+          <button onclick="claimQuest()" id="questClaimBtn" style="display:none;padding:4px 12px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#7b2fff,#00f5ff);color:#000;font-weight:700;font-size:11px;">CLAIM</button>
         </div>
       </div>
     </div>
@@ -750,8 +740,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="font-size:26px;animation:bounceIcon 1.5s ease-in-out infinite;">🤝</div>
           <div style="flex:1;">
-            <div style="font-size:13px;font-weight:700;color:#00ff88;"><span data-i18n="earnTasks">Earn Tasks</span></div>
-            <div style="font-size:11px;color:#4a6080;margin-top:1px;" id="earnTasksPreview"><span data-i18n="completeTasksDesc">Complete tasks → get bonus XSPC</span></div>
+            <div style="font-size:13px;font-weight:700;color:#00ff88;">Earn Tasks</div>
+            <div style="font-size:11px;color:#4a6080;margin-top:1px;" id="earnTasksPreview">Complete tasks → get bonus XSPC</div>
           </div>
           <div style="font-size:18px;color:#00ff88;animation:arrowPulse 1s ease-in-out infinite;">→</div>
         </div>
@@ -766,8 +756,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="font-size:26px;">🏆</div>
           <div style="flex:1;">
-            <div style="font-size:13px;font-weight:700;color:#FFD700;"><span data-i18n="topPlayers">Top Players</span></div>
-            <div style="font-size:11px;color:#4a6080;margin-top:1px;" id="topPreviewText"><span data-i18n="seeWhoLeads">See who leads the galaxy</span></div>
+            <div style="font-size:13px;font-weight:700;color:#FFD700;">Top Players</div>
+            <div style="font-size:11px;color:#4a6080;margin-top:1px;" id="topPreviewText">See who leads the galaxy</div>
           </div>
           <!-- TON wallet status inline -->
           <div style="display:none;flex-direction:column;align-items:center;gap:2px;cursor:pointer;" onclick="event.stopPropagation();openTon()">
@@ -784,12 +774,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="position:absolute;top:-15px;right:-15px;width:60px;height:60px;background:radial-gradient(circle,rgba(0,245,255,0.2),transparent);border-radius:50%;pointer-events:none;"></div>
         <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:4px;">XSPACECOIN</div>
         <div style="font-size:13px;font-weight:700;color:var(--accent);">📄 Whitepaper</div>
-        <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="tokenomicsRoadmap">Tokenomics & Roadmap →</span></div>
+        <div style="font-size:10px;color:#4a6080;margin-top:2px;">Tokenomics & Roadmap →</div>
       </div>
       <div style="flex:1;background:linear-gradient(135deg,rgba(255,100,0,0.1),rgba(255,200,0,0.06));border:1px solid rgba(255,150,0,0.3);border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;" onclick="showPage('whitepaper')">
-        <div style="font-size:9px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:4px;"><span data-i18n="launchCountdown">LAUNCH IN</span></div>
+        <div style="font-size:9px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:4px;">LAUNCH IN</div>
         <div style="font-family:Orbitron,monospace;font-size:24px;font-weight:900;color:#FFD700;line-height:1;" id="launchDaysMain">---</div>
-        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:3px;"><span data-i18n="days">DAYS</span></div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:3px;">DAYS</div>
       </div>
     </div>
 
@@ -802,13 +792,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- PASSIVE INCOME SUMMARY -->
   <div style="background:linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,245,255,0.05));border:1px solid rgba(0,255,136,0.2);border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
     <div>
-      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;"><span data-i18n="totalPassive">TOTAL PASSIVE</span></div>
+      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;">TOTAL PASSIVE</div>
       <div style="font-size:18px;font-weight:700;color:#00ff88;font-family:Orbitron,monospace;" id="totalPassiveRate">0 XSPC/hr</div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;"><span data-i18n="accumulated">ACCUMULATED</span></div>
+      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;">ACCUMULATED</div>
       <div style="font-size:16px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;" id="boostPageAccum">0</div>
-      <button onclick="collectPassive()" id="collectBtn2" style="display:none;margin-top:4px;padding:5px 14px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:11px;"><span data-i18n="collect">COLLECT</span></button>
+      <button onclick="collectPassive()" id="collectBtn2" style="display:none;margin-top:4px;padding:5px 14px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:11px;">COLLECT</button>
     </div>
   </div>
 
@@ -825,13 +815,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="section-title">⚡ Free Boosts</div>
   <div class="boost-item" onclick="useBoost('turbo')">
     <div class="boost-icon">🚀</div>
-    <div class="boost-info"><div class="boost-name"><span data-i18n="turboMode">Turbo Mode</span></div><div class="boost-desc">x5 XSPC for 20 seconds</div></div>
+    <div class="boost-info"><div class="boost-name">Turbo Mode</div><div class="boost-desc">x5 XSPC for 20 seconds</div></div>
     <div class="boost-cost" id="turboCount">3/3</div>
     <div id="turboTimer" style="font-size:10px;color:#00ff88;display:none;font-family:Orbitron,monospace;"></div>
   </div>
   <div class="boost-item" onclick="useBoost('energy')">
     <div class="boost-icon">⚡</div>
-    <div class="boost-info"><div class="boost-name"><span data-i18n="fullEnergy">Full Energy</span></div><div class="boost-desc">Restore all energy instantly</div></div>
+    <div class="boost-info"><div class="boost-name">Full Energy</div><div class="boost-desc">Restore all energy instantly</div></div>
     <div class="boost-cost" id="energyBoostCount">3/3</div>
   </div>
 
@@ -839,7 +829,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="section-title" style="margin-top:14px">👆 Tap Power</div>
   <div class="boost-item" onclick="buyUpgrade('multitap')">
     <div class="boost-icon">👆</div>
-    <div class="boost-info"><div class="boost-name"><span data-i18n="multitap">Multitap</span></div><div class="boost-desc">+1 XSPC per tap (Lv <span id="multitapLv">1</span>)</div></div>
+    <div class="boost-info"><div class="boost-name">Multitap</div><div class="boost-desc">+1 XSPC per tap (Lv <span id="multitapLv">1</span>)</div></div>
     <div class="boost-cost" id="multitapCost">500 🪐</div>
   </div>
   <div class="boost-item" onclick="buyUpgrade('critchance')">
@@ -857,12 +847,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="section-title" style="margin-top:14px">🔋 Energy</div>
   <div class="boost-item" onclick="buyUpgrade('maxenergy')">
     <div class="boost-icon">🔋</div>
-    <div class="boost-info"><div class="boost-name"><span data-i18n="energyLimit">Energy Limit</span></div><div class="boost-desc">+500 max energy (Lv <span id="maxenergyLv">1</span>)</div></div>
+    <div class="boost-info"><div class="boost-name">Energy Limit</div><div class="boost-desc">+500 max energy (Lv <span id="maxenergyLv">1</span>)</div></div>
     <div class="boost-cost" id="maxenergyCost">1000 🪐</div>
   </div>
   <div class="boost-item" onclick="buyUpgrade('recharge')">
     <div class="boost-icon">⚡</div>
-    <div class="boost-info"><div class="boost-name"><span data-i18n="rechargeSpeed">Recharge Speed</span></div><div class="boost-desc">2x faster regen (Lv <span id="rechargeLv">1</span>)</div></div>
+    <div class="boost-info"><div class="boost-name">Recharge Speed</div><div class="boost-desc">2x faster regen (Lv <span id="rechargeLv">1</span>)</div></div>
     <div class="boost-cost" id="rechargeCost">2000 🪐</div>
   </div>
   <div class="boost-item" onclick="buyUpgrade('energysave')">
@@ -874,7 +864,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Go to Cards page -->
   <div style="margin-top:14px;padding:14px;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.2);border-radius:14px;text-align:center;cursor:pointer;" onclick="showPage('cards')">
     <div style="font-size:22px;margin-bottom:6px;">📈</div>
-    <div style="font-size:14px;font-weight:700;color:#00ff88;"><span data-i18n="passiveCards">Passive Income Cards</span></div>
+    <div style="font-size:14px;font-weight:700;color:#00ff88;">Passive Income Cards</div>
     <div style="font-size:12px;color:#4a6080;margin-top:4px;">42 cards across 6 categories →</div>
   </div>
 
@@ -885,16 +875,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
   <!-- Header -->
   <div style="background:linear-gradient(135deg,rgba(255,150,0,0.1),rgba(255,50,100,0.08));border:1px solid rgba(255,150,0,0.25);border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;">
-    <div style="font-size:11px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;"><span data-i18n="dailyChallenge">DAILY CHALLENGE</span></div>
+    <div style="font-size:11px;color:#ff9500;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;">DAILY CHALLENGE</div>
     <div style="font-size:22px;font-weight:900;font-family:Orbitron,monospace;color:#FFD700;margin-bottom:6px;">⚡ DAILY COMBO</div>
     <div style="font-size:12px;color:#4a6080;margin-bottom:10px;">Find 3 correct cards to win the jackpot!</div>
     <div style="display:flex;justify-content:center;gap:16px;">
       <div style="text-align:center;">
-        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;"><span data-i18n="reward">REWARD</span></div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">REWARD</div>
         <div style="font-size:16px;font-weight:700;color:#FFD700;" id="comboRewardText">500,000 🪐</div>
       </div>
       <div style="text-align:center;">
-        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;"><span data-i18n="status">STATUS</span></div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">STATUS</div>
         <div style="font-size:14px;font-weight:700;" id="comboStatus">0/3</div>
       </div>
       <div style="text-align:center;">
@@ -939,17 +929,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">🪐</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#FFD700;" id="statTotalCoins">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="totalXspc">TOTAL XSPC</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">TOTAL XSPC</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">🔑</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#FFD700;" id="statTotalKeys">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="totalXkey">TOTAL XKEY</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">TOTAL XKEY</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">🔥</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);" id="statTotalTaps">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="totalTaps">TOTAL TAPS</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">TOTAL TAPS</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">⚡</div>
@@ -964,17 +954,17 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">🔥</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff9500;" id="statStreak">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="dayStreak">DAY STREAK</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">DAY STREAK</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">⚔️</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff3366;" id="statPvpWins">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="pvpWins">PVP WINS</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">PVP WINS</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">💀</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff9500;" id="statBosses">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="bossesSlain">BOSSES SLAIN</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">BOSSES SLAIN</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">🌟</div>
@@ -984,7 +974,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:22px;margin-bottom:4px;">🪐</div>
       <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#7b2fff;" id="statTotalEarned">0</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;"><span data-i18n="totalEarned">TOTAL EARNED</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;letter-spacing:1px;">TOTAL EARNED</div>
     </div>
   </div>
 
@@ -1015,7 +1005,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="font-size:20px;">🏆</span>
-        <div><div style="font-size:13px;font-weight:600;"><span data-i18n="achievements">Achievements</span></div><div style="font-size:11px;color:#4a6080;"><span data-i18n="completedAchievements">Completed achievements</span></div></div>
+        <div><div style="font-size:13px;font-weight:600;">Achievements</div><div style="font-size:11px;color:#4a6080;">Completed achievements</div></div>
       </div>
       <div style="font-family:Orbitron,monospace;font-size:14px;font-weight:700;color:#FFD700;" id="statAchieves">0</div>
     </div>
@@ -1026,7 +1016,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
       <div style="font-size:18px;">👆</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="multitap">Multitap</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">Multitap</div>
       <div style="font-family:Orbitron,monospace;font-size:13px;font-weight:700;color:var(--accent);" id="statMultitap">Lv1</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
@@ -1047,8 +1037,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="page" id="pageTasks">
   <div style="background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(123,47,255,0.06));border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:14px;text-align:center;">
     <div style="font-size:36px;margin-bottom:6px;">🤝</div>
-    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;"><span data-i18n="earnMoreXspc">EARN MORE XSPC</span></div>
-    <div style="font-size:12px;color:#4a6080;"><span data-i18n="completeTasksEarn">Complete tasks to earn bonus coins</span></div>
+    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;">EARN MORE XSPC</div>
+    <div style="font-size:12px;color:#4a6080;">Complete tasks to earn bonus coins</div>
   </div>
 
   <div class="section-title">📱 Social Tasks</div>
@@ -1102,7 +1092,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   </div>
 
   <div style="text-align:center;margin-bottom:14px;">
-    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;"><span data-i18n="gamesLeftToday">GAMES LEFT TODAY</span></div>
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;">GAMES LEFT TODAY</div>
     <div style="font-family:Orbitron,monospace;font-size:28px;font-weight:700;color:#FFD700;" id="miniGamesLeft">3</div>
   </div>
 
@@ -1145,19 +1135,19 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="display:flex;justify-content:center;gap:12px;" id="countdownTimer">
       <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.3);border-radius:12px;padding:10px 14px;min-width:60px;">
         <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="cdDays">000</div>
-        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;"><span data-i18n="days">DAYS</span></div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">DAYS</div>
       </div>
       <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.3);border-radius:12px;padding:10px 14px;min-width:60px;">
         <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="cdHours">00</div>
-        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;"><span data-i18n="hours">HOURS</span></div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">HOURS</div>
       </div>
       <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.3);border-radius:12px;padding:10px 14px;min-width:60px;">
         <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="cdMins">00</div>
-        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;"><span data-i18n="mins">MINS</span></div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">MINS</div>
       </div>
       <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,150,0,0.3);border-radius:12px;padding:10px 14px;min-width:60px;">
         <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:#FFD700;" id="cdSecs">00</div>
-        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;"><span data-i18n="secs">SECS</span></div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">SECS</div>
       </div>
     </div>
     <div style="margin-top:10px;font-size:12px;color:#4a6080;">Target: <span style="color:#ff9500;font-family:Orbitron,monospace;" id="launchDateText">Q1 2027</span></div>
@@ -1167,22 +1157,22 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="section-title">💎 Tokenomics</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
-      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;"><span data-i18n="totalSupply">TOTAL SUPPLY</span></div>
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;">TOTAL SUPPLY</div>
       <div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:var(--accent);">21,000,000,000</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">XSPC Tokens</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
-      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;"><span data-i18n="playersShare">PLAYERS SHARE</span></div>
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;">PLAYERS SHARE</div>
       <div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#00ff88;">60%</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">12.6B XSPC</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
-      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;"><span data-i18n="minWithdrawal">MIN WITHDRAWAL</span></div>
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;">MIN WITHDRAWAL</div>
       <div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#FFD700;">100,000</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">XSPC required</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
-      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;"><span data-i18n="blockchain">BLOCKCHAIN</span></div>
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:6px;">BLOCKCHAIN</div>
       <div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#0088cc;">TON</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">The Open Network</div>
     </div>
@@ -1253,13 +1243,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div style="font-size:20px;">🌌</div><div><div style="font-size:12px;font-weight:700;">200 Levels · 20+ Planets</div><div style="font-size:10px;color:#4a6080;">From Mercury to Omniverse</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
-      <div style="font-size:20px;">💀</div><div><div style="font-size:12px;font-weight:700;"><span data-i18n="planetBosses">Planet Bosses</span></div><div style="font-size:10px;color:#4a6080;">Fight bosses to unlock new worlds</div></div>
+      <div style="font-size:20px;">💀</div><div><div style="font-size:12px;font-weight:700;">Planet Bosses</div><div style="font-size:10px;color:#4a6080;">Fight bosses to unlock new worlds</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
       <div style="font-size:20px;">🛸</div><div><div style="font-size:12px;font-weight:700;">Cosmic Expeditions</div><div style="font-size:10px;color:#4a6080;">Every 4 hours — random events with rewards</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
-      <div style="font-size:20px;">💰</div><div><div style="font-size:12px;font-weight:700;"><span data-i18n="xscpStaking">XSPC Staking</span></div><div style="font-size:10px;color:#4a6080;">Stake tokens, earn up to 20%/day</div></div>
+      <div style="font-size:20px;">💰</div><div><div style="font-size:12px;font-weight:700;">XSPC Staking</div><div style="font-size:10px;color:#4a6080;">Stake tokens, earn up to 20%/day</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
       <div style="font-size:20px;">🌟</div><div><div style="font-size:12px;font-weight:700;">Rare Planets · Artifacts</div><div style="font-size:10px;color:#4a6080;">Collect ultra-rare items with unique bonuses</div></div>
@@ -1276,7 +1266,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="section-title">💰 Your Withdrawal Status</div>
   <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;">
     <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-      <div style="font-size:12px;color:#4a6080;"><span data-i18n="yourBalance">Your balance</span></div>
+      <div style="font-size:12px;color:#4a6080;">Your balance</div>
       <div style="font-family:Orbitron,monospace;font-size:13px;color:#FFD700;" id="wpBalance">0 XSPC</div>
     </div>
     <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
@@ -1340,7 +1330,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Your stats -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
     <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
-      <div style="font-size:11px;color:#4a6080;"><span data-i18n="yourReferrals">Your Referrals</span></div>
+      <div style="font-size:11px;color:#4a6080;">Your Referrals</div>
       <div style="font-family:Orbitron,monospace;font-size:22px;font-weight:700;color:var(--accent);" id="tournamentRefs">0</div>
     </div>
     <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
@@ -1364,7 +1354,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="font-size:12px;color:#4a6080;margin-top:2px;" id="seasonPageDays">29 days remaining</div>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:11px;color:#4a6080;"><span data-i18n="yourRank">YOUR RANK</span></div>
+        <div style="font-size:11px;color:#4a6080;">YOUR RANK</div>
         <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff9500;" id="seasonPageRank">#--</div>
       </div>
     </div>
@@ -1425,7 +1415,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Header -->
   <div style="background:linear-gradient(135deg,rgba(255,50,100,0.1),rgba(255,150,0,0.06));border:1px solid rgba(255,50,100,0.25);border-radius:18px;padding:14px;margin-bottom:14px;text-align:center;">
     <div style="font-size:11px;color:#ff3366;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:4px;">⚔️ TAP BATTLE</div>
-    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;" id="pvpOpponentName"><span data-i18n="chooseOpponent">Choose your opponent</span></div>
+    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;" id="pvpOpponentName">Choose your opponent</div>
     <div style="font-size:11px;color:#4a6080;margin-top:4px;">Tap faster and win XSPC!</div>
   </div>
 
@@ -1449,7 +1439,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div id="pvpArea" style="display:none;margin-bottom:14px;">
     <div onclick="pvpTap()" style="width:100%;height:160px;background:linear-gradient(135deg,rgba(255,50,100,0.08),rgba(255,150,0,0.06));border:2px solid rgba(255,50,100,0.3);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:all 0.1s;" id="pvpTapBtn" ontouchstart="pvpTap()">
       <div style="font-size:56px;">⚔️</div>
-      <div style="font-size:11px;color:#ff3366;font-family:Orbitron,monospace;margin-top:8px;letter-spacing:2px;"><span data-i18n="tapHere">TAP HERE!</span></div>
+      <div style="font-size:11px;color:#ff3366;font-family:Orbitron,monospace;margin-top:8px;letter-spacing:2px;">TAP HERE!</div>
     </div>
   </div>
 
@@ -1529,7 +1519,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         <div style="font-size:11px;color:#4a6080;" id="seasonDays">Loading...</div>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;"><span data-i18n="yourRank">YOUR RANK</span></div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">YOUR RANK</div>
         <div style="font-size:18px;font-weight:700;color:#FFD700;" id="seasonRank">#--</div>
       </div>
     </div>
@@ -1646,40 +1636,40 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;letter-spacing:2px;">🔑 EARN</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div class="hub-card" onclick="showPage('keys')">
-      <div class="hub-icon">🔑</div><div class="hub-name"><span data-i18n="keysAndChest">Keys & Chest</span></div>
+      <div class="hub-icon">🔑</div><div class="hub-name">Keys & Chest</div>
       <div class="hub-desc">Daily chest + XKEY balance</div>
       <div id="earnBadge2" style="display:none;" class="hub-badge">NEW</div>
     </div>
     <div class="hub-card" onclick="showPage('combo')">
-      <div class="hub-icon">⚡</div><div class="hub-name"><span data-i18n="dailyCombo">Daily Combo</span></div>
+      <div class="hub-icon">⚡</div><div class="hub-name">Daily Combo</div>
       <div class="hub-desc">Guess 3 cards, win jackpot</div>
       <div id="comboBadgeHub" class="hub-badge" style="display:none;">NEW</div>
     </div>
     <div class="hub-card" onclick="showPage('wheel')">
-      <div class="hub-icon">🎰</div><div class="hub-name"><span data-i18n="fortuneWheel">Fortune Wheel</span></div>
+      <div class="hub-icon">🎰</div><div class="hub-name">Fortune Wheel</div>
       <div class="hub-desc">Daily free spin</div>
-      <div id="wheelBadgeHub" class="hub-badge" style="display:none;"><span data-i18n="ready">READY</span></div>
+      <div id="wheelBadgeHub" class="hub-badge" style="display:none;">READY</div>
     </div>
 
     <div class="hub-card" onclick="showPage('tasks')">
-      <div class="hub-icon">🤝</div><div class="hub-name"><span data-i18n="earnTasks">Earn Tasks</span></div>
+      <div class="hub-icon">🤝</div><div class="hub-name">Earn Tasks</div>
       <div class="hub-desc">Complete & get XSPC</div>
     </div>
     <div class="hub-card" onclick="showPage('streak')">
-      <div class="hub-icon">🔥</div><div class="hub-name"><span data-i18n="dailyStreak">Daily Streak</span></div>
+      <div class="hub-icon">🔥</div><div class="hub-name">Daily Streak</div>
       <div class="hub-desc">Login every day for rewards</div>
     </div>
     <div class="hub-card" onclick="showPage('mini')" style="display:none;">
-      <div class="hub-icon">🎮</div><div class="hub-name"><span data-i18n="miniGame">Mini Game</span></div>
+      <div class="hub-icon">🎮</div><div class="hub-name">Mini Game</div>
       <div class="hub-desc">Guess number, win XSPC</div>
     </div>
     <div class="hub-card" onclick="showPage('promo')">
-      <div class="hub-icon">🎁</div><div class="hub-name"><span data-i18n="promoCode">Promo Code</span></div>
+      <div class="hub-icon">🎁</div><div class="hub-name">Promo Code</div>
       <div class="hub-desc">Enter code for bonus</div>
     </div>
     <div class="hub-card" onclick="showPage('top')">
-      <div class="hub-icon">🏆</div><div class="hub-name"><span data-i18n="leaderboard">Leaderboard</span></div>
-      <div class="hub-desc"><span data-i18n="topPlayersRanking">Top players ranking</span></div>
+      <div class="hub-icon">🏆</div><div class="hub-name">Leaderboard</div>
+      <div class="hub-desc">Top players ranking</div>
     </div>
   </div>
 </div>
@@ -1689,7 +1679,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;letter-spacing:2px;">⚡ UPGRADE</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div class="hub-card" onclick="showPage('boosts')">
-      <div class="hub-icon">⚡</div><div class="hub-name"><span data-i18n="tapBoosts">Tap Boosts</span></div>
+      <div class="hub-icon">⚡</div><div class="hub-name">Tap Boosts</div>
       <div class="hub-desc">Multitap, Energy, Crit</div>
     </div>
     <div class="hub-card" onclick="showPage('cards')">
@@ -1719,7 +1709,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="background:linear-gradient(135deg,rgba(123,47,255,0.12),rgba(0,245,255,0.06));border:1px solid rgba(123,47,255,0.3);border-radius:18px;padding:16px;margin-bottom:12px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
         <div style="font-size:28px;" id="myClanEmoji">🛸</div>
-        <div style="flex:1;"><div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#7b2fff;" id="myClanName"><span data-i18n="myClan">MY CLAN</span></div>
+        <div style="flex:1;"><div style="font-family:Orbitron,monospace;font-size:15px;font-weight:700;color:#7b2fff;" id="myClanName">MY CLAN</div>
         <div style="font-size:10px;color:#4a6080;">Level <span id="myClanLevel">1</span></div></div>
         <div style="text-align:right;"><div style="font-size:10px;color:#4a6080;">Treasury</div><div style="font-family:Orbitron,monospace;font-size:13px;color:#FFD700;" id="myClanTreasury">0 XSPC</div></div>
       </div>
@@ -1765,7 +1755,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
   <!-- Planet progress -->
   <div style="background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(123,47,255,0.05));border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;cursor:pointer;" onclick="showPage('mine')">
-    <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;"><span data-i18n="yourJourney">YOUR JOURNEY</span></div>
+    <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px;">YOUR JOURNEY</div>
     <div style="display:flex;align-items:center;gap:12px;">
       <div style="font-size:36px;" id="galaxyCurrentPlanet">🌍</div>
       <div style="flex:1;">
@@ -1776,7 +1766,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
         </div>
       </div>
       <div style="text-align:center;">
-        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;"><span data-i18n="goal">GOAL</span></div>
+        <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;">GOAL</div>
         <div style="font-size:20px;">☀️</div>
         <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;">SUN</div>
       </div>
@@ -1789,7 +1779,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div class="hub-card" onclick="showPage('achieve')">
-      <div class="hub-icon">🏅</div><div class="hub-name"><span data-i18n="achievements">Achievements</span></div>
+      <div class="hub-icon">🏅</div><div class="hub-name">Achievements</div>
       <div class="hub-desc" id="galaxyAchieveDesc">0/45 completed</div>
     </div>
     <div class="hub-card" onclick="showPage('stats')">
@@ -1797,27 +1787,27 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div class="hub-desc">Profile & records</div>
     </div>
     <div class="hub-card" onclick="showPage('cosmosmap')">
-      <div class="hub-icon">🗺️</div><div class="hub-name"><span data-i18n="cosmosMap">Cosmos Map</span></div>
+      <div class="hub-icon">🗺️</div><div class="hub-name">Cosmos Map</div>
       <div class="hub-desc">Your journey through space</div>
     </div>
     <div class="hub-card" onclick="showPage('staking')">
-      <div class="hub-icon">💰</div><div class="hub-name"><span data-i18n="staking">Staking</span></div>
+      <div class="hub-icon">💰</div><div class="hub-name">Staking</div>
       <div class="hub-desc">Earn up to 20%/day</div>
     </div>
     <div class="hub-card" onclick="showPage('clans')">
       <div class="hub-icon">🛸</div><div class="hub-name">Clans</div>
-      <div class="hub-desc"><span data-i18n="joinAClan">Join a clan</span></div>
+      <div class="hub-desc">Join a clan</div>
     </div>
     <div class="hub-card" onclick="forceExpedition()" style="border-color:rgba(0,245,255,0.3);">
       <div class="hub-icon">🛸</div><div class="hub-name">Expedition</div>
       <div class="hub-desc" id="expeditionStatus">Ready to explore!</div>
     </div>
     <div class="hub-card" onclick="showPage('rareplanets');renderRarePlanets();">
-      <div class="hub-icon">🌟</div><div class="hub-name"><span data-i18n="rarePlanets">Rare Planets</span></div>
+      <div class="hub-icon">🌟</div><div class="hub-name">Rare Planets</div>
       <div class="hub-desc">Collect rare planets</div>
     </div>
     <div class="hub-card" onclick="showPage('whitepaper')">
-      <div class="hub-icon">📄</div><div class="hub-name"><span data-i18n="whitepaper">Whitepaper</span></div>
+      <div class="hub-icon">📄</div><div class="hub-name">Whitepaper</div>
       <div class="hub-desc">Token & Roadmap</div>
     </div>
   </div>
@@ -1828,19 +1818,19 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff3366;margin-bottom:14px;letter-spacing:2px;">⚔️ BATTLE</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div class="hub-card" onclick="showPage('pvp')">
-      <div class="hub-icon">⚔️</div><div class="hub-name"><span data-i18n="pvpBattle">PvP Battle</span></div>
+      <div class="hub-icon">⚔️</div><div class="hub-name">PvP Battle</div>
       <div class="hub-desc">Tap faster than opponent</div>
     </div>
     <div class="hub-card" onclick="showPage('top')">
-      <div class="hub-icon">🏆</div><div class="hub-name"><span data-i18n="leaderboard">Leaderboard</span></div>
-      <div class="hub-desc"><span data-i18n="globalRanking">Global ranking</span></div>
+      <div class="hub-icon">🏆</div><div class="hub-name">Leaderboard</div>
+      <div class="hub-desc">Global ranking</div>
     </div>
     <div class="hub-card" onclick="showPage('season')">
-      <div class="hub-icon">🏅</div><div class="hub-name"><span data-i18n="season">Season</span></div>
+      <div class="hub-icon">🏅</div><div class="hub-name">Season</div>
       <div class="hub-desc" id="battleSeasonDesc">Season 6 · 29 days left</div>
     </div>
     <div class="hub-card" onclick="showPage('tournament')">
-      <div class="hub-icon">🥊</div><div class="hub-name"><span data-i18n="tournament">Tournament</span></div>
+      <div class="hub-icon">🥊</div><div class="hub-name">Tournament</div>
       <div class="hub-desc">Weekly referral contest</div>
     </div>
   </div>
@@ -1855,7 +1845,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="text-align:center;padding:20px 0;">
     <div style="font-size:48px;margin-bottom:10px;">🎁</div>
     <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#FFD700;margin-bottom:6px;">PROMO CODE</div>
-    <div style="font-size:12px;color:#4a6080;margin-bottom:20px;"><span data-i18n="enterCodeBonus">Enter code to get bonus XSPC or XKEY</span></div>
+    <div style="font-size:12px;color:#4a6080;margin-bottom:20px;">Enter code to get bonus XSPC or XKEY</div>
     <input id="promoInputPage" placeholder="ENTER CODE..." style="width:100%;padding:14px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,215,0,0.3);border-radius:14px;color:#FFD700;font-size:16px;outline:none;font-family:Orbitron,monospace;text-transform:uppercase;text-align:center;box-sizing:border-box;margin-bottom:10px;">
     <div id="promoResultPage" style="font-size:13px;text-align:center;min-height:20px;margin-bottom:14px;"></div>
     <button onclick="redeemPromoPage()" style="width:100%;padding:14px;background:linear-gradient(135deg,#cc9900,#FFD700);border:none;border-radius:14px;color:#000;font-weight:700;font-size:16px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px;">🎁 REDEEM</button>
@@ -1865,12 +1855,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <!-- STREAK PAGE -->
 <div class="page" id="pageStreak">
   <div style="text-align:center;padding:10px 0 20px;">
-    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;"><span data-i18n="dailyReward">DAILY REWARD</span></div>
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;">DAILY REWARD</div>
     <div style="font-size:22px;font-weight:900;font-family:Orbitron,monospace;color:#FFD700;margin-bottom:4px;">🔥 DAY STREAK</div>
-    <div style="font-size:12px;color:#4a6080;margin-bottom:16px;"><span data-i18n="comeBackEveryDay">Come back every day for bigger rewards!</span></div>
+    <div style="font-size:12px;color:#4a6080;margin-bottom:16px;">Come back every day for bigger rewards!</div>
     <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px;" id="streakGridPage"></div>
     <div style="background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);border-radius:14px;padding:14px;margin-bottom:16px;">
-      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;"><span data-i18n="todayReward">TODAY'S REWARD</span></div>
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;">TODAY'S REWARD</div>
       <div style="font-size:28px;margin-bottom:4px;" id="streakRewardIconPage">🪐</div>
       <div style="font-size:18px;font-weight:700;color:#FFD700;" id="streakRewardTextPage">+1,000 XSPC</div>
     </div>
@@ -1901,8 +1891,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="display:none;background:linear-gradient(135deg,rgba(0,136,204,0.1),rgba(0,170,255,0.05));border:1px solid rgba(0,136,204,0.25);border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openTon()">
     <div style="font-size:32px;">🌐</div>
     <div style="flex:1;">
-      <div style="font-size:14px;font-weight:700;color:#00aaff;"><span data-i18n="tonWallet">TON Wallet</span></div>
-      <div style="font-size:11px;color:#4a6080;margin-top:2px;" id="tonWalletStatus"><span data-i18n="connectTon">Connect to prepare for token withdrawal</span></div>
+      <div style="font-size:14px;font-weight:700;color:#00aaff;">TON Wallet</div>
+      <div style="font-size:11px;color:#4a6080;margin-top:2px;" id="tonWalletStatus">Connect to prepare for token withdrawal</div>
     </div>
     <div style="font-size:20px;">→</div>
   </div>
@@ -1911,32 +1901,32 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
     <div style="background:linear-gradient(135deg,rgba(123,47,255,0.1),rgba(0,245,255,0.05));border:1px solid rgba(123,47,255,0.25);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('wheel')">
       <div style="font-size:28px;margin-bottom:4px;">🎰</div>
-      <div style="font-size:12px;font-weight:700;color:var(--accent);"><span data-i18n="fortuneWheel">Fortune Wheel</span></div>
+      <div style="font-size:12px;font-weight:700;color:var(--accent);">Fortune Wheel</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;" id="wheelStatusInKeys">Ready!</div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(255,150,0,0.1),rgba(255,50,100,0.05));border:1px solid rgba(255,150,0,0.25);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('top')">
       <div style="font-size:28px;margin-bottom:4px;">🏆</div>
-      <div style="font-size:12px;font-weight:700;color:#ff9500;"><span data-i18n="leaderboard">Leaderboard</span></div>
+      <div style="font-size:12px;font-weight:700;color:#ff9500;">Leaderboard</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">Top players</div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,245,255,0.04));border:1px solid rgba(0,255,136,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('earn')">
       <div style="font-size:28px;margin-bottom:4px;">🤝</div>
-      <div style="font-size:12px;font-weight:700;color:#00ff88;"><span data-i18n="earnTasks">Earn Tasks</span></div>
+      <div style="font-size:12px;font-weight:700;color:#00ff88;">Earn Tasks</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">Get bonus XSPC</div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,100,0,0.04));border:1px solid rgba(255,215,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('achieve')">
       <div style="font-size:28px;margin-bottom:4px;">🏅</div>
-      <div style="font-size:12px;font-weight:700;color:#FFD700;"><span data-i18n="achievements">Achievements</span></div>
+      <div style="font-size:12px;font-weight:700;color:#FFD700;">Achievements</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;" id="achieveCountKeys">0/20 done</div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(123,47,255,0.04));border:1px solid rgba(0,245,255,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('whitepaper')">
       <div style="font-size:28px;margin-bottom:4px;">📄</div>
-      <div style="font-size:12px;font-weight:700;color:var(--accent);"><span data-i18n="whitepaper">Whitepaper</span></div>
+      <div style="font-size:12px;font-weight:700;color:var(--accent);">Whitepaper</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">Token & Roadmap</div>
     </div>
     <div style="display:none;background:linear-gradient(135deg,rgba(255,100,0,0.08),rgba(255,200,0,0.04));border:1px solid rgba(255,150,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('mini')">
       <div style="font-size:28px;margin-bottom:4px;">🎮</div>
-      <div style="font-size:12px;font-weight:700;color:#ff9500;"><span data-i18n="miniGame">Mini Game</span></div>
+      <div style="font-size:12px;font-weight:700;color:#ff9500;">Mini Game</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;" id="miniGamesLeftKeys">3 games left</div>
     </div>
     <div style="background:linear-gradient(135deg,rgba(123,47,255,0.08),rgba(0,245,255,0.04));border:1px solid rgba(123,47,255,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('stats')">
@@ -1946,8 +1936,8 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     </div>
     <div style="background:linear-gradient(135deg,rgba(255,50,100,0.1),rgba(255,150,0,0.04));border:1px solid rgba(255,50,100,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('pvp')">
       <div style="font-size:28px;margin-bottom:4px;">⚔️</div>
-      <div style="font-size:12px;font-weight:700;color:#ff3366;"><span data-i18n="pvpBattle">PvP Battle</span></div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="tapToWin">Tap to win!</span></div>
+      <div style="font-size:12px;font-weight:700;color:#ff3366;">PvP Battle</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">Tap to win!</div>
     </div>
     <div style="display:none;background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,100,0,0.04));border:2px solid rgba(255,215,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('vip')">
       <div style="font-size:28px;margin-bottom:4px;">👑</div>
@@ -1973,7 +1963,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
     <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
       <div style="font-size:28px;">📦</div>
-      <div style="flex:1;"><div style="font-size:13px;font-weight:700;"><span data-i18n="dailyChest">Daily Chest</span></div><div style="font-size:11px;color:#4a6080;">Open once per day — 1-3 keys</div></div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Daily Chest</div><div style="font-size:11px;color:#4a6080;">Open once per day — 1-3 keys</div></div>
       <div style="font-size:14px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;">1-3 🔑</div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
@@ -1983,7 +1973,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
       <div style="font-size:28px;">🎰</div>
-      <div style="flex:1;"><div style="font-size:13px;font-weight:700;"><span data-i18n="fortuneWheel">Fortune Wheel</span></div><div style="font-size:11px;color:#4a6080;">Spin daily — chance to get key</div></div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Fortune Wheel</div><div style="font-size:11px;color:#4a6080;">Spin daily — chance to get key</div></div>
       <div style="font-size:14px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;">0-1 🔑</div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;">
@@ -2005,13 +1995,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Passive income header -->
   <div style="background:linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,245,255,0.05));border:1px solid rgba(0,255,136,0.2);border-radius:14px;padding:12px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
     <div>
-      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;"><span data-i18n="passiveIncome">PASSIVE INCOME</span></div>
+      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;">PASSIVE INCOME</div>
       <div style="font-size:20px;font-weight:700;color:#00ff88;font-family:Orbitron,monospace;" id="cardsPassiveRate">0 XSPC/hr</div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;"><span data-i18n="readyToCollect">READY TO COLLECT</span></div>
+      <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:1px;">READY TO COLLECT</div>
       <div style="font-size:18px;font-weight:700;color:#FFD700;font-family:Orbitron,monospace;" id="cardsAccum">0</div>
-      <button onclick="collectPassive()" id="collectBtn3" style="display:none;margin-top:4px;padding:6px 16px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:12px;"><span data-i18n="collect">COLLECT</span></button>
+      <button onclick="collectPassive()" id="collectBtn3" style="display:none;margin-top:4px;padding:6px 16px;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#00cc66,#00ff88);color:#000;font-weight:700;font-size:12px;">COLLECT</button>
     </div>
   </div>
 
@@ -2037,13 +2027,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
   <div style="text-align:center;background:linear-gradient(135deg,rgba(255,50,50,0.1),rgba(123,47,255,0.08));border:1px solid rgba(255,50,50,0.3);border-radius:18px;padding:20px;margin-bottom:14px;">
     <div style="font-size:56px;margin-bottom:8px;" id="bossEmoji">💀</div>
-    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#ff3366;" id="bossName"><span data-i18n="spaceWorm">SPACE WORM</span></div>
+    <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:#ff3366;" id="bossName">SPACE WORM</div>
     <div style="font-size:12px;color:#4a6080;margin-top:4px;" id="bossDesc">Defeat it to unlock the next planet!</div>
 
     <!-- Boss HP bar -->
     <div style="margin:14px 0 6px;">
       <div style="display:flex;justify-content:space-between;font-size:10px;color:#4a6080;font-family:Orbitron,monospace;margin-bottom:4px;">
-        <span><span data-i18n="bossHp">BOSS HP</span></span><span id="bossHpText">10000/10000</span>
+        <span>BOSS HP</span><span id="bossHpText">10000/10000</span>
       </div>
       <div style="height:12px;background:rgba(0,0,0,0.3);border-radius:6px;overflow:hidden;">
         <div id="bossHpBar" style="height:100%;background:linear-gradient(90deg,#ff3366,#ff9500);border-radius:6px;width:100%;transition:width 0.3s;"></div>
@@ -2062,7 +2052,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   </div>
 
   <div style="padding:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;">
-    <div style="font-size:11px;color:#4a6080;"><span data-i18n="yourPower">YOUR POWER</span></div>
+    <div style="font-size:11px;color:#4a6080;">YOUR POWER</div>
     <div style="font-family:Orbitron,monospace;font-size:18px;font-weight:700;color:var(--accent);" id="bossMyPower">0</div>
   </div>
 </div>
@@ -2092,7 +2082,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#FFD700;margin-bottom:14px;letter-spacing:2px;">💰 STAKING</div>
 
   <div style="background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,149,0,0.06));border:1px solid rgba(255,215,0,0.3);border-radius:18px;padding:16px;margin-bottom:12px;text-align:center;">
-    <div style="font-size:12px;color:#4a6080;font-family:Orbitron,monospace;margin-bottom:6px;"><span data-i18n="yourStake">YOUR STAKE</span></div>
+    <div style="font-size:12px;color:#4a6080;font-family:Orbitron,monospace;margin-bottom:6px;">YOUR STAKE</div>
     <div style="font-family:Orbitron,monospace;font-size:28px;font-weight:700;color:#FFD700;" id="stakeAmount">0</div>
     <div style="font-size:11px;color:#4a6080;margin-top:4px;">XSPC staked</div>
     <div style="font-size:13px;color:#00ff88;margin-top:8px;" id="stakeRewards">Daily reward: 0 XSPC</div>
@@ -2103,25 +2093,25 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div><div style="font-size:13px;font-weight:700;">🟢 Basic Stake</div><div style="font-size:11px;color:#4a6080;">Stake 10,000 XSPC</div></div>
-        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#00ff88;">+5%/day</div><button onclick="stake(10000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,255,136,0.15);border:1px solid rgba(0,255,136,0.3);border-radius:8px;color:#00ff88;font-size:11px;cursor:pointer;"><span data-i18n="stake">STAKE</span></button></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#00ff88;">+5%/day</div><button onclick="stake(10000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,255,136,0.15);border:1px solid rgba(0,255,136,0.3);border-radius:8px;color:#00ff88;font-size:11px;cursor:pointer;">STAKE</button></div>
       </div>
     </div>
     <div style="padding:12px;background:var(--card);border:1px solid rgba(0,245,255,0.2);border-radius:12px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div><div style="font-size:13px;font-weight:700;">🔵 Pro Stake</div><div style="font-size:11px;color:#4a6080;">Stake 100,000 XSPC</div></div>
-        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:var(--accent);">+10%/day</div><button onclick="stake(100000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:8px;color:var(--accent);font-size:11px;cursor:pointer;"><span data-i18n="stake">STAKE</span></button></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:var(--accent);">+10%/day</div><button onclick="stake(100000)" style="margin-top:4px;padding:4px 12px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);border-radius:8px;color:var(--accent);font-size:11px;cursor:pointer;">STAKE</button></div>
       </div>
     </div>
     <div style="padding:12px;background:var(--card);border:1px solid rgba(123,47,255,0.3);border-radius:12px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div><div style="font-size:13px;font-weight:700;">🟣 Elite Stake</div><div style="font-size:11px;color:#4a6080;">Stake 1,000,000 XSPC</div></div>
-        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#7b2fff;">+20%/day</div><button onclick="stake(1000000)" style="margin-top:4px;padding:4px 12px;background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.3);border-radius:8px;color:#7b2fff;font-size:11px;cursor:pointer;"><span data-i18n="stake">STAKE</span></button></div>
+        <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#7b2fff;">+20%/day</div><button onclick="stake(1000000)" style="margin-top:4px;padding:4px 12px;background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.3);border-radius:8px;color:#7b2fff;font-size:11px;cursor:pointer;">STAKE</button></div>
       </div>
     </div>
   </div>
 
   <button onclick="collectStake()" id="collectStakeBtn" style="display:none;width:100%;padding:14px;background:linear-gradient(135deg,#FFD700,#ff9500);border:none;border-radius:16px;color:#000;font-weight:700;font-size:15px;cursor:pointer;font-family:Orbitron,monospace;margin-bottom:10px;">💰 COLLECT REWARDS</button>
-  <button onclick="unstake()" id="unstakeBtn" style="display:none;width:100%;padding:12px;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);border-radius:14px;color:#ff3366;font-weight:700;font-size:13px;cursor:pointer;"><span data-i18n="unstakeAll">Unstake All</span></button>
+  <button onclick="unstake()" id="unstakeBtn" style="display:none;width:100%;padding:12px;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);border-radius:14px;color:#ff3366;font-weight:700;font-size:13px;cursor:pointer;">Unstake All</button>
 </div>
 
 <!-- WHEEL -->
@@ -2130,7 +2120,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div class="wheel-container">
     <div class="wheel-wrap"><div class="wheel-arrow">▼</div><canvas class="wheel-canvas" id="wheelCanvas" width="260" height="260"></canvas><div class="wheel-center"></div></div>
     <div class="wheel-legend" id="wheelLegend"></div>
-    <div class="wheel-info">Daily free spin: <span class="spin-cost" id="spinStatus"><span data-i18n="ready">READY</span></span></div>
+    <div class="wheel-info">Daily free spin: <span class="spin-cost" id="spinStatus">READY</span></div>
     <button class="btn-accent" onclick="spinWheel()" id="spinBtn">🎰 SPIN — FREE</button>
   </div>
   <div class="section-title" style="margin-top:16px">📋 Daily Tasks</div>
@@ -2142,7 +2132,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 <div class="page" id="pageTop">
   <div class="section-title">🏆 Leaderboard</div>
-  <div id="topList"><div style="text-align:center;color:var(--muted);padding:30px;font-family:Orbitron,monospace;font-size:11px;letter-spacing:2px"><span data-i18n="loading">LOADING...</span></div></div>
+  <div id="topList"><div style="text-align:center;color:var(--muted);padding:30px;font-family:Orbitron,monospace;font-size:11px;letter-spacing:2px">LOADING...</div></div>
 </div>
 
 <!-- FRIENDS -->
@@ -2150,7 +2140,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <!-- Beautiful referral card -->
   <div style="background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(123,47,255,0.08));border:1px solid rgba(0,245,255,0.25);border-radius:20px;padding:20px;margin-bottom:14px;text-align:center;">
     <div style="font-size:40px;margin-bottom:8px;">👥</div>
-    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;"><span data-i18n="inviteEarn">INVITE & EARN</span></div>
+    <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;">INVITE & EARN</div>
     <div style="font-size:12px;color:#4a6080;margin-bottom:14px;">Share your link and earn together</div>
     <div style="display:flex;gap:12px;justify-content:center;margin-bottom:16px;">
       <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:14px;padding:12px 20px;text-align:center;">
@@ -2173,12 +2163,12 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:20px;margin-bottom:4px;">🪐</div>
       <div style="font-size:13px;font-weight:700;color:#FFD700;">+500 XSPC</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="perReferral">per referral</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">per referral</div>
     </div>
     <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:20px;margin-bottom:4px;">🔑</div>
       <div style="font-size:13px;font-weight:700;color:#FFD700;">+1 XKEY</div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="perReferral">per referral</span></div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;">per referral</div>
     </div>
     <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
       <div style="font-size:20px;margin-bottom:4px;">💰</div>
@@ -2232,7 +2222,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
   <div id="levelupParticles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;"></div>
   <div class="overlay-card">
     <div class="overlay-emoji" id="levelupEmoji">🎉</div>
-    <div class="overlay-title"><span data-i18n="levelUp">LEVEL UP!</span></div>
+    <div class="overlay-title">LEVEL UP!</div>
     <div class="overlay-sub" id="levelupSub">You reached level 2</div>
     <button class="btn-primary" onclick="closeLevelUp()">Continue 🚀</button>
   </div>
@@ -2241,7 +2231,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="planet-unlock-overlay" id="planetUnlockOverlay" onclick="closePlanetUnlock()">
   <div class="planet-unlock-card">
     <div class="planet-unlock-emoji" id="planetUnlockEmoji">🌍</div>
-    <div class="planet-unlock-title"><span data-i18n="newPlanetUnlocked">NEW PLANET UNLOCKED!</span></div>
+    <div class="planet-unlock-title">NEW PLANET UNLOCKED!</div>
     <div class="planet-unlock-name" id="planetUnlockName" style="color:#00f5ff">EARTH</div>
     <div class="planet-unlock-desc" id="planetUnlockDesc">Your journey begins here</div>
     <button class="btn-primary" onclick="closePlanetUnlock()">Explore! 🚀</button>
@@ -2251,7 +2241,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="overlay" id="wheelOverlay" onclick="closeWheelOverlay()">
   <div class="overlay-card">
     <div class="overlay-emoji" id="wheelWinEmoji">🎰</div>
-    <div class="overlay-title"><span data-i18n="youWon">YOU WON!</span></div>
+    <div class="overlay-title">YOU WON!</div>
     <div class="overlay-sub" id="wheelWinText">+500 XSPC</div>
     <button class="btn-primary" onclick="closeWheelOverlay()">Awesome! 🚀</button>
   </div>
@@ -2261,7 +2251,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="overlay" id="chestRewardOverlay" onclick="closeChestOverlay()">
   <div class="overlay-card">
     <div class="overlay-emoji">📦</div>
-    <div class="overlay-title"><span data-i18n="chestOpened">CHEST OPENED!</span></div>
+    <div class="overlay-title">CHEST OPENED!</div>
     <div style="font-size:22px;font-weight:700;color:#FFD700;margin-bottom:8px;" id="chestRewardKeys">+2 🔑 XKEY</div>
     <div style="font-size:18px;font-weight:700;color:#00ff88;margin-bottom:20px;" id="chestRewardXspc">+5000 🪐 XSPC</div>
     <button class="btn-primary" onclick="closeChestOverlay()">Awesome! 🔑</button>
@@ -2271,16 +2261,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <!-- DAILY STREAK OVERLAY -->
 <div class="overlay" id="streakOverlay">
   <div class="overlay-card" style="max-width:340px;">
-    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;"><span data-i18n="dailyReward">DAILY REWARD</span></div>
+    <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:6px;">DAILY REWARD</div>
     <div style="font-size:22px;font-weight:900;font-family:Orbitron,monospace;color:#FFD700;margin-bottom:4px;">🔥 DAY STREAK</div>
-    <div style="font-size:13px;color:#4a6080;margin-bottom:16px;"><span data-i18n="comeBackEveryDay">Come back every day for bigger rewards!</span></div>
+    <div style="font-size:13px;color:#4a6080;margin-bottom:16px;">Come back every day for bigger rewards!</div>
 
     <!-- 7 day grid -->
     <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px;" id="streakGrid"></div>
 
     <!-- Today reward -->
     <div style="background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);border-radius:14px;padding:14px;margin-bottom:16px;text-align:center;">
-      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;"><span data-i18n="todayReward">TODAY'S REWARD</span></div>
+      <div style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px;">TODAY'S REWARD</div>
       <div style="font-size:28px;margin-bottom:4px;" id="streakRewardIcon">🪐</div>
       <div style="font-size:18px;font-weight:700;color:#FFD700;" id="streakRewardText">+1,000 XSPC</div>
     </div>
@@ -2303,7 +2293,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <button onclick="saveTonWallet()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0088cc,#00aaff);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:8px;">💾 Save Wallet</button>
       <div id="tonSavedAddr" style="font-size:11px;color:#00ff88;text-align:center;"></div>
     </div>
-    <button onclick="closeTon()" style="width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:12px;color:#4a6080;font-size:13px;cursor:pointer;margin-top:8px;"><span data-i18n="close">Close</span></button>
+    <button onclick="closeTon()" style="width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:12px;color:#4a6080;font-size:13px;cursor:pointer;margin-top:8px;">Close</button>
   </div>
 </div>
 
@@ -2327,7 +2317,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="display:flex;justify-content:center;gap:24px;margin-bottom:24px;animation:fadeInUp 0.6s 1.4s both;">
       <div>
         <div style="font-size:18px;font-weight:700;color:#FFD700;" id="discoveryReward">+5,000 🪐</div>
-        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;"><span data-i18n="discoveryReward">DISCOVERY REWARD</span></div>
+        <div style="font-size:9px;color:#4a6080;font-family:Orbitron,monospace;margin-top:2px;">DISCOVERY REWARD</div>
       </div>
       <div>
         <div style="font-size:18px;font-weight:700;color:#FFD700;">+1 🔑</div>
@@ -2353,7 +2343,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
     <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#ff3366;margin:12px 0 6px;letter-spacing:2px;">⚠️ ASTEROID!</div>
     <div style="font-size:13px;color:#aaa;margin-bottom:16px;">Tap as fast as you can!</div>
     <div style="font-family:Orbitron,monospace;font-size:48px;font-weight:900;color:#FFD700;" id="asteroidTimer">30</div>
-    <div style="font-size:12px;color:#4a6080;margin-top:4px;font-family:Orbitron,monospace;"><span data-i18n="secondsLeft">SECONDS LEFT</span></div>
+    <div style="font-size:12px;color:#4a6080;margin-top:4px;font-family:Orbitron,monospace;">SECONDS LEFT</div>
     <div style="margin-top:16px;font-size:14px;color:#00ff88;font-family:Orbitron,monospace;" id="asteroidBonus">x5 COINS!</div>
   </div>
 </div>
@@ -2361,258 +2351,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="lucky-toast" id="luckyToast">🍀 LUCKY! +50 XSPC!</div>
 
 <script>
-
-// ═══ COMPLETE I18N SYSTEM ═══
-const TRANSLATIONS = {
-  "mine": {"en":"Mine","ru":"Майнинг","uk":"Майнінг","es":"Minar","zh":"挖矿","ar":"تعدين","pt":"Minerar"},
-  "earn": {"en":"Earn","ru":"Доход","uk":"Дохід","es":"Ganar","zh":"赚取","ar":"كسب","pt":"Ganhar"},
-  "upgrade": {"en":"Upgrade","ru":"Апгрейд","uk":"Апгрейд","es":"Mejorar","zh":"升级","ar":"ترقية","pt":"Melhorar"},
-  "galaxy": {"en":"Galaxy","ru":"Галактика","uk":"Галактика","es":"Galaxia","zh":"银河","ar":"مجرة","pt":"Galáxia"},
-  "battle": {"en":"Battle","ru":"Битва","uk":"Битва","es":"Batalla","zh":"战斗","ar":"معركة","pt":"Batalha"},
-  "friends": {"en":"Friends","ru":"Друзья","uk":"Друзі","es":"Amigos","zh":"好友","ar":"أصدقاء","pt":"Amigos"},
-  "energy": {"en":"ENERGY","ru":"ЭНЕРГИЯ","uk":"ЕНЕРГІЯ","es":"ENERGÍA","zh":"能量","ar":"طاقة","pt":"ENERGIA"},
-  "perTap": {"en":"Per Tap","ru":"За тап","uk":"За тап","es":"Por tap","zh":"每次点击","ar":"لكل نقر","pt":"Por toque"},
-  "taps": {"en":"Taps","ru":"Тапов","uk":"Тапів","es":"Taps","zh":"点击数","ar":"نقرات","pt":"Toques"},
-  "passiveIncome": {"en":"PASSIVE INCOME","ru":"ПАССИВНЫЙ ДОХОД","uk":"ПАСИВНИЙ ДОХІД","es":"INGRESOS PASIVOS","zh":"被动收入","ar":"الدخل السلبي","pt":"RENDA PASSIVA"},
-  "accumulated": {"en":"ACCUMULATED","ru":"НАКОПЛЕНО","uk":"НАКОПИЧЕНО","es":"ACUMULADO","zh":"已累积","ar":"متراكم","pt":"ACUMULADO"},
-  "collect": {"en":"COLLECT","ru":"СОБРАТЬ","uk":"ЗІБРАТИ","es":"RECOGER","zh":"收集","ar":"جمع","pt":"COLETAR"},
-  "conquestGoal": {"en":"🌌 CONQUER THE GALAXY","ru":"🌌 ПОКОРИТЬ ГАЛАКТИКУ","uk":"🌌 ПІДКОРИТИ ГАЛАКТИКУ","es":"🌌 CONQUISTAR LA GALAXIA","zh":"🌌 征服银河","ar":"🌌 اغزو المجرة","pt":"🌌 CONQUISTAR A GALÁXIA"},
-  "back": {"en":"BACK","ru":"НАЗАД","uk":"НАЗАД","es":"ATRÁS","zh":"返回","ar":"رجوع","pt":"VOLTAR"},
-  "loading": {"en":"LOADING...","ru":"ЗАГРУЗКА...","uk":"ЗАВАНТАЖЕННЯ...","es":"CARGANDO...","zh":"加载中...","ar":"جار التحميل...","pt":"CARREGANDO..."},
-  "levelUp": {"en":"LEVEL UP!","ru":"НОВЫЙ УРОВЕНЬ!","uk":"НОВИЙ РІВЕНЬ!","es":"¡SUBISTE DE NIVEL!","zh":"升级了！","ar":"ارتقيت مستوى!","pt":"SUBIU DE NÍVEL!"},
-  "claim": {"en":"CLAIM","ru":"ЗАБРАТЬ","uk":"ЗАБРАТИ","es":"RECLAMAR","zh":"领取","ar":"استلام","pt":"REIVINDICAR"},
-  "buy": {"en":"BUY","ru":"КУПИТЬ","uk":"КУПИТИ","es":"COMPRAR","zh":"购买","ar":"شراء","pt":"COMPRAR"},
-  "stake": {"en":"STAKE","ru":"СТЕЙК","uk":"СТЕЙК","es":"APOSTAR","zh":"质押","ar":"توقيع","pt":"APOSTAR"},
-  "days": {"en":"DAYS","ru":"ДНЕЙ","uk":"ДНІВ","es":"DÍAS","zh":"天","ar":"أيام","pt":"DIAS"},
-  "hours": {"en":"HOURS","ru":"ЧАСОВ","uk":"ГОДИН","es":"HORAS","zh":"小时","ar":"ساعات","pt":"HORAS"},
-  "mins": {"en":"MINS","ru":"МИНУТ","uk":"ХВИЛИН","es":"MINS","zh":"分钟","ar":"دقائق","pt":"MINS"},
-  "secs": {"en":"SECS","ru":"СЕКУНД","uk":"СЕКУНД","es":"SEGS","zh":"秒","ar":"ثانية","pt":"SEGS"},
-  "ready": {"en":"READY","ru":"ГОТОВО","uk":"ГОТОВО","es":"LISTO","zh":"准备好了","ar":"جاهز","pt":"PRONTO"},
-  "status": {"en":"STATUS","ru":"СТАТУС","uk":"СТАТУС","es":"ESTADO","zh":"状态","ar":"الحالة","pt":"STATUS"},
-  "reward": {"en":"REWARD","ru":"НАГРАДА","uk":"НАГОРОДА","es":"RECOMPENSA","zh":"奖励","ar":"مكافأة","pt":"RECOMPENSA"},
-  "goal": {"en":"GOAL","ru":"ЦЕЛЬ","uk":"ЦІЛЬ","es":"META","zh":"目标","ar":"الهدف","pt":"META"},
-  "close": {"en":"Close","ru":"Закрыть","uk":"Закрити","es":"Cerrar","zh":"关闭","ar":"إغلاق","pt":"Fechar"},
-  "players": {"en":"players","ru":"игроков","uk":"гравців","es":"jugadores","zh":"玩家","ar":"لاعبين","pt":"jogadores"},
-  "totalEarned": {"en":"TOTAL EARNED","ru":"ВСЕГО ЗАРАБОТАНО","uk":"ВСЬОГО ЗАРОБЛЕНО","es":"TOTAL GANADO","zh":"总计赚取","ar":"إجمالي المكتسب","pt":"TOTAL GANHO"},
-  "totalTaps": {"en":"TOTAL TAPS","ru":"ВСЕГО ТАПОВ","uk":"ВСЬОГО ТАПІВ","es":"TAPS TOTALES","zh":"总点击数","ar":"إجمالي النقرات","pt":"TOQUES TOTAIS"},
-  "pvpWins": {"en":"PVP WINS","ru":"ПОБЕД В PVP","uk":"ПЕРЕМОГ PVP","es":"VICTORIAS PVP","zh":"PVP胜利","ar":"انتصارات PvP","pt":"VITÓRIAS PVP"},
-  "yourRank": {"en":"YOUR RANK","ru":"ВАШ РАНГ","uk":"ВАШ РАНГ","es":"TU RANGO","zh":"您的排名","ar":"ترتيبك","pt":"SEU RANK"},
-  "earnTasks": {"en":"Earn Tasks","ru":"Задания","uk":"Завдання","es":"Tareas","zh":"赚取任务","ar":"مهام الكسب","pt":"Tarefas"},
-  "completeTasksDesc": {"en":"Complete tasks → get bonus XSPC","ru":"Выполняй задания → бонус XSPC","uk":"Виконуй завдання → бонус XSPC","es":"Completa tareas → bono XSPC","zh":"完成任务→获得XSPC","ar":"أكمل المهام←احصل على XSPC","pt":"Complete tarefas → bônus XSPC"},
-  "seeWhoLeads": {"en":"See who leads the galaxy","ru":"Кто ведёт галактику","uk":"Хто веде галактику","es":"Ver quién lidera la galaxia","zh":"查看银河领袖","ar":"انظر من يقود المجرة","pt":"Veja quem lidera a galáxia"},
-  "topPlayers": {"en":"Top Players","ru":"Лучшие игроки","uk":"Кращі гравці","es":"Mejores jugadores","zh":"顶级玩家","ar":"أفضل اللاعبين","pt":"Melhores jogadores"},
-  "topPlayersRanking": {"en":"Top players ranking","ru":"Рейтинг игроков","uk":"Рейтинг гравців","es":"Clasificación de jugadores","zh":"玩家排行榜","ar":"تصنيف اللاعبين","pt":"Classificação de jogadores"},
-  "globalRanking": {"en":"Global ranking","ru":"Глобальный рейтинг","uk":"Глобальний рейтинг","es":"Clasificación global","zh":"全球排名","ar":"التصنيف العالمي","pt":"Classificação global"},
-  "launchCountdown": {"en":"LAUNCH IN","ru":"ЗАПУСК ЧЕРЕЗ","uk":"ЗАПУСК ЧЕРЕЗ","es":"LANZAMIENTO EN","zh":"发布倒计时","ar":"الإطلاق في","pt":"LANÇAMENTO EM"},
-  "whitepaper": {"en":"Whitepaper","ru":"Документация","uk":"Документація","es":"Whitepaper","zh":"白皮书","ar":"الورقة البيضاء","pt":"Whitepaper"},
-  "tokenomicsRoadmap": {"en":"Tokenomics & Roadmap →","ru":"Токеномика и дорожная карта →","uk":"Токеноміка і дорожня карта →","es":"Tokenomics y hoja de ruta →","zh":"代币经济学与路线图 →","ar":"اقتصاديات الرمز وخارطة الطريق →","pt":"Tokenomics e roteiro →"},
-  "dailyCombo": {"en":"Daily Combo","ru":"Ежедневное комбо","uk":"Щоденне комбо","es":"Combo diario","zh":"每日组合","ar":"الكومبو اليومي","pt":"Combo diário"},
-  "dailyStreak": {"en":"Daily Streak","ru":"Серия входов","uk":"Серія входів","es":"Racha diaria","zh":"每日连胜","ar":"السلسلة اليومية","pt":"Sequência diária"},
-  "dailyChest": {"en":"Daily Chest","ru":"Ежедневный сундук","uk":"Щоденна скриня","es":"Cofre diario","zh":"每日宝箱","ar":"الصندوق اليومي","pt":"Baú diário"},
-  "fortuneWheel": {"en":"Fortune Wheel","ru":"Колесо удачи","uk":"Колесо удачі","es":"Rueda de la suerte","zh":"幸运轮","ar":"عجلة الحظ","pt":"Roda da fortuna"},
-  "promoCode": {"en":"Promo Code","ru":"Промокод","uk":"Промокод","es":"Código promo","zh":"优惠码","ar":"رمز ترويجي","pt":"Código promo"},
-  "miniGame": {"en":"Mini Game","ru":"Мини-игра","uk":"Міні-гра","es":"Mini juego","zh":"小游戏","ar":"لعبة صغيرة","pt":"Mini jogo"},
-  "inviteEarn": {"en":"INVITE & EARN","ru":"ПРИГЛАСИ И ЗАРАБАТЫВАЙ","uk":"ЗАПРОСИ І ЗАРОБЛЯЙ","es":"INVITA Y GANA","zh":"邀请赚钱","ar":"ادعُ واكسب","pt":"CONVIDE E GANHE"},
-  "shareFriends": {"en":"🚀 SHARE WITH FRIENDS","ru":"🚀 ПОДЕЛИТЬСЯ С ДРУЗЬЯМИ","uk":"🚀 ПОДІЛИТИСЯ З ДРУЗЬЯМИ","es":"🚀 COMPARTIR CON AMIGOS","zh":"🚀 与朋友分享","ar":"🚀 شارك مع الأصدقاء","pt":"🚀 COMPARTILHAR COM AMIGOS"},
-  "yourReferrals": {"en":"Your Referrals","ru":"Ваши рефералы","uk":"Ваші реферали","es":"Tus referidos","zh":"您的推荐人","ar":"إحالاتك","pt":"Seus indicados"},
-  "perReferral": {"en":"per referral","ru":"за реферала","uk":"за реферала","es":"por referido","zh":"每位推荐","ar":"لكل إحالة","pt":"por indicado"},
-  "cosmosMap": {"en":"Cosmos Map","ru":"Карта космоса","uk":"Карта космосу","es":"Mapa del cosmos","zh":"宇宙地图","ar":"خريطة الكون","pt":"Mapa do cosmos"},
-  "openCosmosMap": {"en":"Open Cosmos Map →","ru":"Открыть карту →","uk":"Відкрити карту →","es":"Abrir mapa →","zh":"打开宇宙地图 →","ar":"فتح خريطة الكون →","pt":"Abrir mapa →"},
-  "rarePlanets": {"en":"Rare Planets","ru":"Редкие планеты","uk":"Рідкісні планети","es":"Planetas raros","zh":"稀有星球","ar":"الكواكب النادرة","pt":"Planetas raros"},
-  "staking": {"en":"Staking","ru":"Стейкинг","uk":"Стейкінг","es":"Staking","zh":"质押","ar":"التوقيع","pt":"Staking"},
-  "clans": {"en":"Clans","ru":"Кланы","uk":"Клани","es":"Clanes","zh":"公会","ar":"العشائر","pt":"Clãs"},
-  "planetBosses": {"en":"Planet Bosses","ru":"Боссы планет","uk":"Боси планет","es":"Jefes de planeta","zh":"星球Boss","ar":"رؤساء الكواكب","pt":"Chefes de planeta"},
-  "pvpBattle": {"en":"PvP Battle","ru":"PvP Битва","uk":"PvP Битва","es":"Batalla PvP","zh":"PvP战斗","ar":"معركة PvP","pt":"Batalha PvP"},
-  "tournament": {"en":"Tournament","ru":"Турнир","uk":"Турнір","es":"Torneo","zh":"锦标赛","ar":"بطولة","pt":"Torneio"},
-  "season": {"en":"Season","ru":"Сезон","uk":"Сезон","es":"Temporada","zh":"赛季","ar":"موسم","pt":"Temporada"},
-  "leaderboard": {"en":"Leaderboard","ru":"Таблица лидеров","uk":"Таблиця лідерів","es":"Clasificación","zh":"排行榜","ar":"لوحة المتصدرين","pt":"Classificação"},
-  "keysAndChest": {"en":"Keys & Chest","ru":"Ключи и сундук","uk":"Ключі та скриня","es":"Llaves y cofre","zh":"钥匙与宝箱","ar":"المفاتيح والصندوق","pt":"Chaves e baú"},
-  "dayStreak": {"en":"DAY STREAK","ru":"СЕРИЯ ДНЕЙ","uk":"СЕРІЯ ДНІВ","es":"RACHA DE DÍAS","zh":"连续天数","ar":"سلسلة الأيام","pt":"SEQUÊNCIA DE DIAS"},
-  "dailyReward": {"en":"DAILY REWARD","ru":"ЕЖЕДНЕВНАЯ НАГРАДА","uk":"ЩОДЕННА НАГОРОДА","es":"RECOMPENSA DIARIA","zh":"每日奖励","ar":"المكافأة اليومية","pt":"RECOMPENSA DIÁRIA"},
-  "todayReward": {"en":"TODAY'S REWARD","ru":"НАГРАДА СЕГОДНЯ","uk":"НАГОРОДА СЬОГОДНІ","es":"RECOMPENSA DE HOY","zh":"今日奖励","ar":"مكافأة اليوم","pt":"RECOMPENSA DE HOJE"},
-  "comeBackEveryDay": {"en":"Come back every day for bigger rewards!","ru":"Заходи каждый день за большими наградами!","uk":"Заходь щодня за більшими нагородами!","es":"¡Vuelve cada día para mejores recompensas!","zh":"每天回来获得更多奖励！","ar":"عد كل يوم للحصول على مكافآت أكبر!","pt":"Volte todo dia para maiores recompensas!"},
-  "achievements": {"en":"Achievements","ru":"Достижения","uk":"Досягнення","es":"Logros","zh":"成就","ar":"الإنجازات","pt":"Conquistas"},
-  "completedAchievements": {"en":"Completed achievements","ru":"Выполненные достижения","uk":"Виконані досягнення","es":"Logros completados","zh":"已完成成就","ar":"الإنجازات المكتملة","pt":"Conquistas concluídas"},
-  "tapBoosts": {"en":"Tap Boosts","ru":"Бусты тапа","uk":"Бусти тапу","es":"Mejoras de toque","zh":"点击加速","ar":"تعزيزات النقر","pt":"Melhorias de toque"},
-  "passiveCards": {"en":"Passive Income Cards","ru":"Карты пассивного дохода","uk":"Карти пасивного доходу","es":"Cartas de ingresos pasivos","zh":"被动收入卡","ar":"بطاقات الدخل السلبي","pt":"Cartas de renda passiva"},
-  "multitap": {"en":"Multitap","ru":"Мультитап","uk":"Мультитап","es":"Multitoque","zh":"多点触控","ar":"نقر متعدد","pt":"Multitoque"},
-  "energyLimit": {"en":"Energy Limit","ru":"Лимит энергии","uk":"Ліміт енергії","es":"Límite de energía","zh":"能量上限","ar":"حد الطاقة","pt":"Limite de energia"},
-  "rechargeSpeed": {"en":"Recharge Speed","ru":"Скорость зарядки","uk":"Швидкість зарядки","es":"Velocidad de recarga","zh":"充能速度","ar":"سرعة الشحن","pt":"Velocidade de recarga"},
-  "turboMode": {"en":"Turbo Mode","ru":"Турбо режим","uk":"Турбо режим","es":"Modo turbo","zh":"涡轮模式","ar":"وضع توربو","pt":"Modo turbo"},
-  "fullEnergy": {"en":"Full Energy","ru":"Полная энергия","uk":"Повна енергія","es":"Energía completa","zh":"满能量","ar":"طاقة كاملة","pt":"Energia completa"},
-  "youWon": {"en":"YOU WON!","ru":"ВЫ ПОБЕДИЛИ!","uk":"ВИ ПЕРЕМОГЛИ!","es":"¡GANASTE!","zh":"你赢了！","ar":"فزت!","pt":"VOCÊ GANHOU!"},
-  "secondsLeft": {"en":"SECONDS LEFT","ru":"СЕКУНД ОСТАЛОСЬ","uk":"СЕКУНД ЗАЛИШИЛОСЬ","es":"SEGUNDOS RESTANTES","zh":"剩余秒数","ar":"ثوانٍ متبقية","pt":"SEGUNDOS RESTANTES"},
-  "yourStake": {"en":"YOUR STAKE","ru":"ВАШ СТЕЙК","uk":"ВАШ СТЕЙК","es":"TU APUESTA","zh":"您的质押","ar":"توقيعك","pt":"SUA APOSTA"},
-  "readyToCollect": {"en":"READY TO COLLECT","ru":"ГОТОВО К СБОРУ","uk":"ГОТОВО ДО ЗБОРУ","es":"LISTO PARA RECOGER","zh":"准备收集","ar":"جاهز للجمع","pt":"PRONTO PARA COLETAR"},
-  "myClan": {"en":"MY CLAN","ru":"МОЙ КЛАН","uk":"МІЙ КЛАН","es":"MI CLAN","zh":"我的公会","ar":"قبيلتي","pt":"MEU CLÃ"},
-  "joinAClan": {"en":"Join a clan","ru":"Вступить в клан","uk":"Приєднатися до клану","es":"Únete a un clan","zh":"加入公会","ar":"انضم إلى عشيرة","pt":"Entrar em um clã"},
-  "yourPower": {"en":"YOUR POWER","ru":"ВАША СИЛА","uk":"ВАША СИЛА","es":"TU PODER","zh":"您的力量","ar":"قوتك","pt":"SEU PODER"},
-  "yourJourney": {"en":"YOUR JOURNEY","ru":"ВАШ ПУТЬ","uk":"ВАШ ШЛЯХ","es":"TU VIAJE","zh":"您的旅程","ar":"رحلتك","pt":"SUA JORNADA"},
-  "totalXspc": {"en":"TOTAL XSPC","ru":"ВСЕГО XSPC","uk":"ВСЬОГО XSPC","es":"XSPC TOTAL","zh":"总XSPC","ar":"إجمالي XSPC","pt":"XSPC TOTAL"},
-  "totalXkey": {"en":"TOTAL XKEY","ru":"ВСЕГО XKEY","uk":"ВСЬОГО XKEY","es":"XKEY TOTAL","zh":"总XKEY","ar":"إجمالي XKEY","pt":"XKEY TOTAL"},
-  "totalPassive": {"en":"TOTAL PASSIVE","ru":"ПАССИВНЫЙ ИТОГО","uk":"ПАСИВНИЙ РАЗОМ","es":"PASIVO TOTAL","zh":"总被动","ar":"إجمالي السلبي","pt":"PASSIVO TOTAL"},
-  "bossesSlain": {"en":"BOSSES SLAIN","ru":"БОССОВ УБИТО","uk":"БОСІВ ВБИТО","es":"JEFES DERROTADOS","zh":"击败Boss数","ar":"الرؤساء المهزومون","pt":"CHEFES DERROTADOS"},
-  "spaceWorm": {"en":"SPACE WORM","ru":"КОСМИЧЕСКИЙ ЧЕРВЬ","uk":"КОСМІЧНИЙ ЧЕРВ'ЯК","es":"GUSANO ESPACIAL","zh":"太空虫","ar":"دودة الفضاء","pt":"VERME ESPACIAL"},
-  "bossHp": {"en":"BOSS HP","ru":"HP БОССА","uk":"HP БОСА","es":"HP DEL JEFE","zh":"Boss血量","ar":"نقاط حياة الرئيس","pt":"HP DO CHEFE"},
-  "tapHere": {"en":"TAP HERE!","ru":"ТАП СЮДА!","uk":"ТАП СЮДИ!","es":"¡TOCA AQUÍ!","zh":"点击这里！","ar":"انقر هنا!","pt":"TOQUE AQUI!"},
-  "chestOpened": {"en":"CHEST OPENED!","ru":"СУНДУК ОТКРЫТ!","uk":"СКРИНЯ ВІДКРИТА!","es":"¡COFRE ABIERTO!","zh":"宝箱已打开！","ar":"فُتح الصندوق!","pt":"BAÚ ABERTO!"},
-  "newPlanetUnlocked": {"en":"NEW PLANET UNLOCKED!","ru":"НОВАЯ ПЛАНЕТА ОТКРЫТА!","uk":"НОВА ПЛАНЕТА ВІДКРИТА!","es":"¡NUEVO PLANETA DESBLOQUEADO!","zh":"新星球解锁！","ar":"كوكب جديد مفتوح!","pt":"NOVO PLANETA DESBLOQUEADO!"},
-  "discoveryReward": {"en":"DISCOVERY REWARD","ru":"НАГРАДА ЗА ОТКРЫТИЕ","uk":"НАГОРОДА ЗА ВІДКРИТТЯ","es":"RECOMPENSA DE DESCUBRIMIENTO","zh":"发现奖励","ar":"مكافأة الاكتشاف","pt":"RECOMPENSA DE DESCOBERTA"},
-  "dailyChallenge": {"en":"DAILY CHALLENGE","ru":"ЕЖЕДНЕВНЫЙ ВЫЗОВ","uk":"ЩОДЕННИЙ ВИКЛИК","es":"DESAFÍO DIARIO","zh":"每日挑战","ar":"التحدي اليومي","pt":"DESAFIO DIÁRIO"},
-  "gamesLeftToday": {"en":"GAMES LEFT TODAY","ru":"ИГР ОСТАЛОСЬ","uk":"ІГОР ЗАЛИШИЛОСЬ","es":"JUEGOS HOY","zh":"今日剩余游戏","ar":"الألعاب المتبقية اليوم","pt":"JOGOS RESTANTES"},
-  "tonWallet": {"en":"TON Wallet","ru":"TON Кошелёк","uk":"TON Гаманець","es":"Billetera TON","zh":"TON钱包","ar":"محفظة TON","pt":"Carteira TON"},
-  "minWithdrawal": {"en":"MIN WITHDRAWAL","ru":"МИН. ВЫВОД","uk":"МІН. ВИВІД","es":"RETIRO MÍNIMO","zh":"最低提现","ar":"الحد الأدنى للسحب","pt":"RETIRADA MÍNIMA"},
-  "connectTon": {"en":"Connect to prepare for token withdrawal","ru":"Подключи для вывода токенов","uk":"Підключи для виведення токенів","es":"Conecta para retirar tokens","zh":"连接以准备提取代币","ar":"اتصل لسحب الرمز","pt":"Conecte para retirar tokens"},
-  "playersShare": {"en":"PLAYERS SHARE","ru":"ДОЛЯ ИГРОКОВ","uk":"ЧАСТКА ГРАВЦІВ","es":"PARTICIPACIÓN JUGADORES","zh":"玩家份额","ar":"حصة اللاعبين","pt":"PARTICIPAÇÃO DOS JOGADORES"},
-  "totalSupply": {"en":"TOTAL SUPPLY","ru":"ОБЩЕЕ ПРЕДЛОЖЕНИЕ","uk":"ЗАГАЛЬНА ПРОПОЗИЦІЯ","es":"SUMINISTRO TOTAL","zh":"总供应量","ar":"إجمالي العرض","pt":"OFERTA TOTAL"},
-  "blockchain": {"en":"BLOCKCHAIN","ru":"БЛОКЧЕЙН","uk":"БЛОКЧЕЙН","es":"BLOCKCHAIN","zh":"区块链","ar":"بلوكشين","pt":"BLOCKCHAIN"},
-  "skipForNow": {"en":"Skip for now","ru":"Пропустить","uk":"Пропустити","es":"Omitir por ahora","zh":"暂时跳过","ar":"تخطي الآن","pt":"Pular por agora"},
-  "earnMoreXspc": {"en":"EARN MORE XSPC","ru":"ЗАРАБОТАЙ БОЛЬШЕ XSPC","uk":"ЗАРОБИ БІЛЬШЕ XSPC","es":"GANA MÁS XSPC","zh":"赚取更多XSPC","ar":"اكسب المزيد من XSPC","pt":"GANHE MAIS XSPC"},
-  "completeTasksEarn": {"en":"Complete tasks to earn bonus coins","ru":"Выполняй задания для получения монет","uk":"Виконуй завдання для отримання монет","es":"Completa tareas para ganar monedas","zh":"完成任务赚取奖励币","ar":"أكمل المهام لكسب العملات","pt":"Complete tarefas para ganhar moedas"},
-  "enterCodeBonus": {"en":"Enter code to get bonus XSPC or XKEY","ru":"Введи код для бонуса XSPC или XKEY","uk":"Введи код для бонусу XSPC або XKEY","es":"Ingresa código para obtener XSPC o XKEY","zh":"输入代码获取XSPC或XKEY奖励","ar":"أدخل الرمز للحصول على XSPC أو XKEY","pt":"Insira código para obter XSPC ou XKEY"},
-  "chooseOpponent": {"en":"Choose your opponent","ru":"Выбери соперника","uk":"Обери суперника","es":"Elige tu oponente","zh":"选择对手","ar":"اختر خصمك","pt":"Escolha seu oponente"},
-  "tapToWin": {"en":"Tap to win!","ru":"Тапай чтобы победить!","uk":"Тапай щоб перемогти!","es":"¡Toca para ganar!","zh":"点击获胜！","ar":"انقر للفوز!","pt":"Toque para ganhar!"},
-  "unstakeAll": {"en":"Unstake All","ru":"Вывести всё","uk":"Вивести все","es":"Retirar todo","zh":"取消全部质押","ar":"إلغاء التوقيع","pt":"Retirar tudo"}
-};
-
-const ONBOARDING_T = {
-  en:[
-    {badge:"WELCOME",title:"Welcome to XSPACECOIN!",text:"Mine planets, earn XSPC tokens and conquer the galaxy. Token launches Q1 2027 on TON!",btn:"Let's go! 🚀",hint:null},
-    {badge:"STEP 1 OF 5",title:"Tap to Mine XSPC",text:"Tap the planet as fast as you can! Every tap earns XSPC. Bigger combos = bigger rewards!",btn:"Got it!",hint:"💡 Multi-touch = extra bonus"},
-    {badge:"STEP 2 OF 5",title:"Manage Your Energy",text:"Each tap uses 1 energy. It recharges over time. Upgrade energy in the UPGRADE tab!",btn:"Understood!",hint:"💡 Energy recharges even offline"},
-    {badge:"STEP 3 OF 5",title:"Upgrade & Earn Passively",text:"Buy Boost Cards in UPGRADE — they earn XSPC every hour automatically, even offline!",btn:"Nice!",hint:"💡 More cards = more passive income"},
-    {badge:"STEP 4 OF 5",title:"Collect XKEY Keys",text:"Keys unlock powerful artifacts. Earn them by leveling up, Daily Combo and quests!",btn:"Cool!",hint:"💡 Artifacts give permanent bonuses"},
-    {badge:"STEP 5 OF 5",title:"Conquer the Galaxy!",text:"20 planets · 200 levels · Bosses · Expeditions · PvP · Clans · Staking. All waiting!",btn:"🚀 Start Mining!",hint:null}
-  ],
-  ru:[
-    {badge:"ДОБРО ПОЖАЛОВАТЬ",title:"Добро пожаловать в XSPACECOIN!",text:"Майни планеты, зарабатывай XSPC и покоряй галактику. Запуск токена Q1 2027 на TON!",btn:"Поехали! 🚀",hint:null},
-    {badge:"ШАГ 1 ИЗ 5",title:"Тапай и майни XSPC",text:"Тапай по планете как можно быстрее! Каждый тап приносит XSPC. Комбо = больше наград!",btn:"Понял!",hint:"💡 Несколько пальцев = бонус"},
-    {badge:"ШАГ 2 ИЗ 5",title:"Следи за энергией",text:"Каждый тап тратит 1 энергию. Она восстанавливается. Прокачай энергию в АПГРЕЙД!",btn:"Понятно!",hint:"💡 Энергия восстанавливается офлайн"},
-    {badge:"ШАГ 3 ИЗ 5",title:"Апгрейды и пассивный доход",text:"Покупай карты буста в АПГРЕЙД — они зарабатывают XSPC каждый час, даже офлайн!",btn:"Отлично!",hint:"💡 Больше карт = больше дохода"},
-    {badge:"ШАГ 4 ИЗ 5",title:"Собирай ключи XKEY",text:"Ключи открывают артефакты. Получай их при повышении уровня, в Комбо и квестах!",btn:"Круто!",hint:"💡 Артефакты дают постоянные бонусы"},
-    {badge:"ШАГ 5 ИЗ 5",title:"Покоряй Галактику!",text:"20 планет · 200 уровней · Боссы · Экспедиции · PvP · Кланы · Стейкинг. Всё ждёт!",btn:"🚀 Начать майнинг!",hint:null}
-  ],
-  uk:[
-    {badge:"ЛАСКАВО ПРОСИМО",title:"Ласкаво просимо до XSPACECOIN!",text:"Майни планети, заробляй XSPC і підкоряй галактику. Запуск токена Q1 2027 на TON!",btn:"Поїхали! 🚀",hint:null},
-    {badge:"КРОК 1 З 5",title:"Тапай і майни XSPC",text:"Тапай по планеті якомога швидше! Кожен тап приносить XSPC. Комбо = більше нагород!",btn:"Зрозумів!",hint:"💡 Кілька пальців = бонус"},
-    {badge:"КРОК 2 З 5",title:"Стеж за енергією",text:"Кожен тап витрачає 1 енергію. Вона відновлюється. Прокачай енергію в АПГРЕЙД!",btn:"Зрозуміло!",hint:"💡 Енергія відновлюється офлайн"},
-    {badge:"КРОК 3 З 5",title:"Апгрейди і пасивний дохід",text:"Купуй карти бусту в АПГРЕЙД — вони заробляють XSPC щогодини, навіть офлайн!",btn:"Чудово!",hint:"💡 Більше карт = більше доходу"},
-    {badge:"КРОК 4 З 5",title:"Збирай ключі XKEY",text:"Ключі відкривають артефакти. Отримуй їх при підвищенні рівня, в Комбо та квестах!",btn:"Круто!",hint:"💡 Артефакти дають постійні бонуси"},
-    {badge:"КРОК 5 З 5",title:"Підкоряй Галактику!",text:"20 планет · 200 рівнів · Боси · Експедиції · PvP · Клани · Стейкінг. Все чекає!",btn:"🚀 Почати майнінг!",hint:null}
-  ],
-  es:[
-    {badge:"BIENVENIDO",title:"¡Bienvenido a XSPACECOIN!",text:"Mina planetas, gana XSPC y conquista la galaxia. ¡Lanzamiento del token Q1 2027 en TON!",btn:"¡Vamos! 🚀",hint:null},
-    {badge:"PASO 1 DE 5",title:"Toca para minar XSPC",text:"¡Toca el planeta lo más rápido posible! Cada toque gana XSPC. ¡Combos = más recompensas!",btn:"¡Entendido!",hint:"💡 Multi-toque = bono extra"},
-    {badge:"PASO 2 DE 5",title:"Gestiona tu Energía",text:"Cada toque usa 1 de energía. Se recarga con el tiempo. ¡Mejora la energía en MEJORAR!",btn:"¡Comprendido!",hint:"💡 La energía se recarga offline"},
-    {badge:"PASO 3 DE 5",title:"Mejoras e Ingresos Pasivos",text:"¡Compra Cartas de Impulso en MEJORAR — ganan XSPC cada hora, incluso offline!",btn:"¡Genial!",hint:"💡 Más cartas = más ingresos"},
-    {badge:"PASO 4 DE 5",title:"Colecciona llaves XKEY",text:"Las llaves desbloquean artefactos. ¡Gánalas subiendo de nivel, Combo Diario y misiones!",btn:"¡Perfecto!",hint:"💡 Los artefactos dan bonos permanentes"},
-    {badge:"PASO 5 DE 5",title:"¡Conquista la Galaxia!",text:"20 planetas · 200 niveles · Jefes · Expediciones · PvP · Clanes · Staking. ¡Todo espera!",btn:"🚀 ¡Empezar a minar!",hint:null}
-  ],
-  zh:[
-    {badge:"欢迎",title:"欢迎来到XSPACECOIN！",text:"挖掘星球，赚取XSPC代币，征服银河。代币将于2027年Q1在TON上发布！",btn:"出发！🚀",hint:null},
-    {badge:"第1步，共5步",title:"点击挖掘XSPC",text:"尽可能快地点击星球！每次点击赚取XSPC。连击越多 = 奖励越多！",btn:"明白了！",hint:"💡 多指触控 = 额外奖励"},
-    {badge:"第2步，共5步",title:"管理您的能量",text:"每次点击消耗1点能量。能量会恢复。在升级标签中提升能量！",btn:"了解了！",hint:"💡 离线时能量也会恢复"},
-    {badge:"第3步，共5步",title:"升级和被动收入",text:"在升级中购买加速卡——即使离线，它们每小时自动赚取XSPC！",btn:"太棒了！",hint:"💡 卡越多 = 被动收入越多"},
-    {badge:"第4步，共5步",title:"收集XKEY钥匙",text:"钥匙解锁强大文物。通过升级、每日组合和任务来获得它们！",btn:"很酷！",hint:"💡 文物给予永久加成"},
-    {badge:"第5步，共5步",title:"征服银河！",text:"20个星球·200级·Boss·探险·PvP·公会·质押。一切都在等你！",btn:"🚀 开始挖矿！",hint:null}
-  ],
-  ar:[
-    {badge:"مرحباً",title:"مرحباً بك في XSPACECOIN!",text:"اعدن الكواكب، اكسب XSPC واغزو المجرة. إطلاق الرمز Q1 2027 على TON!",btn:"هيا نبدأ! 🚀",hint:null},
-    {badge:"الخطوة 1 من 5",title:"انقر لتعدين XSPC",text:"انقر على الكوكب بأسرع ما يمكن! كل نقرة تكسب XSPC. التوليفات = مكافآت أكبر!",btn:"فهمت!",hint:"💡 اللمس المتعدد = مكافأة إضافية"},
-    {badge:"الخطوة 2 من 5",title:"أدر طاقتك",text:"كل نقرة تستخدم 1 طاقة. تتجدد مع الوقت. قم بترقية الطاقة في تبويب الترقية!",btn:"مفهوم!",hint:"💡 الطاقة تتجدد حتى دون اتصال"},
-    {badge:"الخطوة 3 من 5",title:"الترقيات والدخل السلبي",text:"اشتر بطاقات التعزيز في الترقية — تكسب XSPC كل ساعة تلقائياً، حتى دون اتصال!",btn:"رائع!",hint:"💡 المزيد من البطاقات = المزيد من الدخل"},
-    {badge:"الخطوة 4 من 5",title:"اجمع مفاتيح XKEY",text:"المفاتيح تفتح القطع الأثرية. اكسبها بالارتقاء والتحدي اليومي والمهام!",btn:"رائع!",hint:"💡 القطع الأثرية تعطي مكافآت دائمة"},
-    {badge:"الخطوة 5 من 5",title:"اغزو المجرة!",text:"20 كوكب · 200 مستوى · رؤساء · استكشافات · PvP · عشائر · توقيع. كل شيء ينتظرك!",btn:"🚀 ابدأ التعدين!",hint:null}
-  ],
-  pt:[
-    {badge:"BEM-VINDO",title:"Bem-vindo ao XSPACECOIN!",text:"Mine planetas, ganhe XSPC e conquiste a galáxia. Lançamento do token Q1 2027 na TON!",btn:"Vamos lá! 🚀",hint:null},
-    {badge:"PASSO 1 DE 5",title:"Toque para minerar XSPC",text:"Toque no planeta o mais rápido possível! Cada toque ganha XSPC. Combos = mais recompensas!",btn:"Entendido!",hint:"💡 Multi-toque = bônus extra"},
-    {badge:"PASSO 2 DE 5",title:"Gerencie sua Energia",text:"Cada toque usa 1 de energia. Ela recarrega com o tempo. Atualize em MELHORAR!",btn:"Compreendido!",hint:"💡 A energia recarrega offline"},
-    {badge:"PASSO 3 DE 5",title:"Melhorias e Renda Passiva",text:"Compre Cartas de Impulso em MELHORAR — ganham XSPC a cada hora, mesmo offline!",btn:"Ótimo!",hint:"💡 Mais cartas = mais renda passiva"},
-    {badge:"PASSO 4 DE 5",title:"Colecione chaves XKEY",text:"As chaves desbloqueiam artefatos. Ganhe-as subindo de nível, Combo Diário e missões!",btn:"Legal!",hint:"💡 Artefatos dão bônus permanentes"},
-    {badge:"PASSO 5 DE 5",title:"Conquiste a Galáxia!",text:"20 planetas · 200 níveis · Chefes · Expedições · PvP · Clãs · Staking. Tudo espera!",btn:"🚀 Começar a minerar!",hint:null}
-  ]
-};
-
-const LANG_META = {
-  en:{flag:"🇬🇧",name:"English"},ru:{flag:"🇷🇺",name:"Русский"},uk:{flag:"🇺🇦",name:"Українська"},
-  es:{flag:"🇪🇸",name:"Español"},zh:{flag:"🇨🇳",name:"中文"},ar:{flag:"🇸🇦",name:"العربية"},pt:{flag:"🇧🇷",name:"Português"}
-};
-const TG_LANG_MAP = {"ru":"ru","uk":"uk","be":"ru","kk":"ru","es":"es","zh":"zh","ar":"ar","pt":"pt","br":"pt","en":"en"};
-let currentLang = "en";
-
-function t(key){return(TRANSLATIONS[key]&&TRANSLATIONS[key][currentLang])||(TRANSLATIONS[key]&&TRANSLATIONS[key]["en"])||key;}
-function tOb(step,field){const ob=ONBOARDING_T[currentLang]||ONBOARDING_T["en"];return ob[step]&&ob[step][field]!==undefined?ob[step][field]:(ONBOARDING_T["en"][step]&&ONBOARDING_T["en"][step][field]);}
-
-function detectLang(){
-  const saved=localStorage.getItem("xspc_lang");
-  if(saved&&LANG_META[saved])return saved;
-  const tgLang=(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||"").toLowerCase().split("-")[0];
-  if(TG_LANG_MAP[tgLang])return TG_LANG_MAP[tgLang];
-  const bl=(navigator.language||"").toLowerCase().split("-")[0];
-  if(TG_LANG_MAP[bl])return TG_LANG_MAP[bl];
-  return"en";
-}
-
-function setLang(lang){if(!LANG_META[lang])return;currentLang=lang;localStorage.setItem("xspc_lang",lang);applyLang();if(typeof saveGame==="function")saveGame();}
-
-function applyLang(){
-  const L=currentLang;
-  document.documentElement.setAttribute("lang",L);
-  document.body.style.direction=L==="ar"?"rtl":"ltr";
-  // All data-i18n elements
-  document.querySelectorAll("[data-i18n]").forEach(el=>{
-    const k=el.getAttribute("data-i18n");
-    const tr=t(k);
-    if(tr&&tr!==k)el.textContent=tr;
-  });
-  // Nav labels
-  const nav={menuMine:"mine",menuEarn:"earn",menuUpgrade:"upgrade",menuGalaxy:"galaxy",menuBattle:"battle",menuFriends:"friends"};
-  Object.entries(nav).forEach(([id,k])=>{const el=document.getElementById(id);if(el){const s=el.querySelector("span:last-child");if(s)s.textContent=t(k);}});
-  // Special IDs
-  const idm={"i18n-energy":()=>"⚡ "+t("energy"),"i18n-perTap":()=>"⛏️ "+t("perTap"),"i18n-taps":()=>"🔥 "+t("taps"),"i18n-passiveIncome":()=>t("passiveIncome"),"i18n-accumulated":()=>t("accumulated"),"galaxyGoal":()=>t("conquestGoal")};
-  Object.entries(idm).forEach(([id,fn])=>{const el=document.getElementById(id);if(el)el.textContent=fn();});
-  // COLLECT buttons
-  document.querySelectorAll("[data-i18n-collect]").forEach(el=>{el.textContent=t("collect");});
-  // Back button
-  const bb=document.getElementById("globalBackBtn");if(bb){const s=bb.querySelector("span:last-child");if(s)s.textContent=t("back");}
-  // Loading
-  const ld=document.querySelector("#loadingOverlay div:last-child");if(ld)ld.textContent=t("loading");
-  // Promo
-  const pi=document.getElementById("promoInputPage");
-  if(pi)pi.placeholder={"ru":"ВВЕДИТЕ КОД...","uk":"ВВЕДІТЬ КОД...","es":"INGRESA CÓDIGO...","zh":"输入代码...","ar":"أدخل الرمز...","pt":"INSIRA O CÓDIGO..."}[L]||"ENTER CODE...";
-  const rb=document.querySelector('button[onclick="redeemPromoPage()"]');
-  if(rb)rb.textContent={"ru":"🎁 АКТИВИРОВАТЬ","uk":"🎁 АКТИВУВАТИ","es":"🎁 CANJEAR","zh":"🎁 兑换","ar":"🎁 استرداد","pt":"🎁 RESGATAR"}[L]||"🎁 REDEEM";
-  // Share
-  const sb=document.querySelector('button[onclick="shareRefLink()"]');if(sb)sb.textContent=t("shareFriends");
-  // Lang buttons
-  document.querySelectorAll(".lang-btn").forEach(btn=>{
-    const a=btn.dataset.lang===L;
-    btn.style.background=a?"rgba(0,245,255,0.15)":"rgba(255,255,255,0.04)";
-    btn.style.borderColor=a?"rgba(0,245,255,0.5)":"rgba(255,255,255,0.1)";
-    const ns=btn.querySelector("span:last-child");if(ns)ns.style.color=a?"#00f5ff":"#fff";
-  });
-}
-
-function showLangPicker(){
-  const ex=document.getElementById("langPickerOverlay");if(ex){ex.remove();return;}
-  const ov=document.createElement("div");ov.id="langPickerOverlay";
-  ov.style.cssText="position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.75);display:flex;align-items:flex-end;justify-content:center;";
-  ov.onclick=e=>{if(e.target===ov)ov.remove();};
-  const card=document.createElement("div");
-  card.style.cssText="background:#0a0f1e;border-top:1px solid rgba(0,245,255,0.2);border-radius:20px 20px 0 0;padding:20px 20px 36px;width:100%;max-width:420px;";
-  card.innerHTML="<div style='text-align:center;font-family:Orbitron,monospace;font-size:13px;color:#00f5ff;letter-spacing:2px;margin-bottom:16px;'>🌐 LANGUAGE</div>"
-    +"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;'>"
-    +Object.entries(LANG_META).map(([code,m])=>{
-      const a=currentLang===code;
-      return`<button class="lang-btn" data-lang="${code}" onclick="setLang('${code}');document.getElementById('langPickerOverlay').remove();" style="display:flex;align-items:center;gap:8px;padding:12px 14px;background:${a?"rgba(0,245,255,0.15)":"rgba(255,255,255,0.04)"};border:1px solid ${a?"rgba(0,245,255,0.5)":"rgba(255,255,255,0.1)"};border-radius:12px;cursor:pointer;color:#fff;font-size:13px;"><span style="font-size:20px;">${m.flag}</span><span style="font-weight:${a?700:400};color:${a?"#00f5ff":"#fff"};">${m.name}</span>${a?"<span style='margin-left:auto;color:#00f5ff;'>✓</span>":""}</button>`;
-    }).join("")
-    +"</div>"
-    +"<button onclick=\"document.getElementById('langPickerOverlay').remove();\" style='width:100%;margin-top:12px;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#4a6080;font-size:13px;cursor:pointer;'>✕ Close</button>";
-  ov.appendChild(card);document.body.appendChild(ov);
-}
-
-
 const API_URL='https://coinfarm-production.up.railway.app';
 
 // ═══ ЧИТАЕМ user_id ИЗ URL СРАЗУ — до любой инициализации ═══
@@ -4039,6 +3777,17 @@ function updatePerfCache() {
 }
 setManagedInterval("perfCache", updatePerfCache, 5000);
 
+// Prevent double-tap zoom on planet
+(function(){
+  let _lastTap = 0;
+  const btn = document.getElementById('coinBtn');
+  if(btn) btn.addEventListener('touchend', function(e){
+    const now = Date.now();
+    if(now - _lastTap < 300) e.preventDefault();
+    _lastTap = now;
+  }, {passive: false});
+})();
+
 // ═══ CLICK HANDLER — оптимизирован для мобильного ═══
 // Кэшируем DOM элементы один раз
 let _coinCountEl=null, _energyFillEl=null, _comboDisplayEl=null;
@@ -4500,7 +4249,7 @@ function renderTasks(){
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
         <div class="task-reward">+${t.reward} <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNDAlIiBjeT0iMzUlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzRmYzNmNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE1NjVjMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIxNzEiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDBmNWZmIiBzdG9wLW9wYWNpdHk9IjAuNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMGY1ZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iY2lyY2xlLWNsaXAiPgogICAgICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPCEtLSBHbG93IC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBQbGFuZXQgYmFzZSAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0idXJsKCNiZykiLz4KICA8IS0tIENvbnRpbmVudHMgLS0+CiAgPGVsbGlwc2UgY3g9IjM4IiBjeT0iNDQiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IiMyZTdkMzIiIG9wYWNpdHk9IjAuODUiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA0NCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNTgiIGN5PSI0MiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iIzJlN2QzMiIgb3BhY2l0eT0iMC44IiB0cmFuc2Zvcm09InJvdGF0ZSgxMCA1OCA0MikiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI1NSIgcng9IjciIHJ5PSI4IiBmaWxsPSIjMzg4ZTNjIiBvcGFjaXR5PSIwLjc1IiBjbGlwLXBhdGg9InVybCgjY2lyY2xlLWNsaXApIi8+CiAgPCEtLSBDbG91ZHMgLS0+CiAgPGVsbGlwc2UgY3g9IjQ0IiBjeT0iMzYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDQ0IDM2KSIgY2xpcC1wYXRoPSJ1cmwoI2NpcmNsZS1jbGlwKSIvPgogIDwhLS0gU2hpbmUgLS0+CiAgPGVsbGlwc2UgY3g9IjM2IiBjeT0iMzgiIHJ4PSIxMCIgcnk9IjciIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xOCkiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAzNiAzOCkiIGNsaXAtcGF0aD0idXJsKCNjaXJjbGUtY2xpcCkiLz4KICA8IS0tIEJvcmRlciAtLT4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGZjM2Y3IiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNyIvPgogIDwhLS0gWCBzeW1ib2wgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iMzMiIHgyPSIzMyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBYIGdsb3cgLS0+CiAgPGxpbmUgeDE9IjMzIiB5MT0iMzMiIHgyPSI2NyIgeTI9IjY3IiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC4xNSIvPgogIDxsaW5lIHgxPSI2NyIgeTE9IjMzIiB4Mj0iMzMiIHkyPSI2NyIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjE0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTUiLz4KICA8IS0tIE91dGVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZjVmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNCIvPgo8L3N2Zz4K" style="width:14px;height:14px;vertical-align:middle;border-radius:50%;"></div>
-        ${canClaim?`<button class="claim-btn" onclick="claimTask('${t.id}',${t.reward})"><span data-i18n="claim">CLAIM</span></button>`:''}
+        ${canClaim?`<button class="claim-btn" onclick="claimTask('${t.id}',${t.reward})">CLAIM</button>`:''}
         ${done?'<span style="color:var(--accent);font-size:18px">✅</span>':''}
       </div>
     </div>`;
@@ -4622,7 +4371,7 @@ async function loadFriends(userId){
   
   // Show loading state
   const listEl = document.getElementById('friendsList');
-  if(listEl) listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;font-family:Orbitron,monospace;font-size:11px;"><span data-i18n="loading">LOADING...</span></div>';
+  if(listEl) listEl.innerHTML = '<div style="text-align:center;color:#4a6080;padding:20px;font-family:Orbitron,monospace;font-size:11px;">LOADING...</div>';
 
   try{
     const controller = new AbortController();
@@ -6200,7 +5949,7 @@ function renderPartnerTasks() {
         ${isDone
           ? '<span style="color:#00ff88;font-size:20px;">✅</span>'
           : canClaim
-            ? `<button onclick="claimPartnerTask('${t.id}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;font-weight:700;font-size:12px;"><span data-i18n="claim">CLAIM</span></button>`
+            ? `<button onclick="claimPartnerTask('${t.id}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;font-weight:700;font-size:12px;">CLAIM</button>`
             : t.type==='telegram'||t.type==='share'
               ? `<button onclick="doPartnerTask('${t.id}','${t.url}')" style="padding:6px 14px;border-radius:20px;border:none;cursor:pointer;background:rgba(0,245,255,0.1);border:1px solid var(--border);color:var(--text);font-weight:700;font-size:12px;">GO →</button>`
               : `<span style="font-size:11px;color:#4a6080;font-family:Orbitron,monospace;">${t.type==='referral'?`${g.friends||0}/${t.need}`:`Lv${g.level}/${t.need}`}</span>`
@@ -6952,7 +6701,7 @@ const ONBOARDING_STEPS = [
   {
     icon:'💰',
     title:'Passive Income',
-    text:'Buy Boost Cards in UPGRADE → they earn XSPC automatically every hour even when you\'re offline!',
+    text:'Buy Boost Cards in UPGRADE → they earn XSPC automatically every hour even when you’re offline!',
     btn:'Show me →',
     action: () => { closeOnboarding(); showPage('upgrade'); }
   },
@@ -6995,14 +6744,17 @@ function renderOnboardStep() {
   }
   const isLast = onboardStep === ONBOARDING_STEPS.length - 1;
 
-  const badge=tOb(onboardStep,'badge')||'';
-  const title=tOb(onboardStep,'title')||step.title;
-  const text=tOb(onboardStep,'text')||step.text;
-  const btn=tOb(onboardStep,'btn')||step.btn;
-  const hint=tOb(onboardStep,'hint')||null;
-  const skipLbl={'ru':'Пропустить','uk':'Пропустити','es':'Omitir','zh':'跳过','ar':'تخطي','pt':'Pular'}[currentLang]||'Skip';
-  const dots=ONBOARDING_STEPS.map((_,i)=>'<div style="width:'+(i===onboardStep?'20px':'8px')+';height:8px;border-radius:4px;background:'+(i<onboardStep?'#00ff88':i===onboardStep?'#FFD700':'rgba(255,255,255,0.15)')+';transition:all 0.3s;"></div>').join('');
-  content.innerHTML='<div style="display:flex;gap:6px;justify-content:center;margin-bottom:20px;">'+dots+'</div>'+(badge?'<div style="display:inline-block;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:20px;padding:3px 12px;font-size:10px;color:#00f5ff;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:14px;">'+badge+'</div><br>':'')+'<div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:12px;line-height:1.3;">'+title+'</div>'+'<div style="font-size:14px;color:#aaa;line-height:1.7;margin-bottom:'+(hint?'14px':'24px')+';">'+text+'</div>'+(hint?'<div style="font-size:12px;color:#4a6080;margin-bottom:22px;padding:8px 14px;background:rgba(255,255,255,0.03);border-radius:10px;">'+hint+'</div>':'')+'<button onclick="nextOnboardStep()" style="width:100%;padding:16px;background:linear-gradient(135deg,#7b2fff,#00f5ff);border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px;">'+btn+'</button>'+(onboardStep>0?'<button onclick="closeOnboarding()" style="width:100%;padding:10px;background:transparent;border:none;color:#4a6080;font-size:12px;cursor:pointer;margin-top:6px;">'+skipLbl+'</button>':'');
+  content.innerHTML = `
+    <div style="font-size:10px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:3px;margin-bottom:16px;">${step.subtitle}</div>
+    <div style="font-size:80px;margin-bottom:16px;animation:planetReveal 0.5s ease;">${step.emoji}</div>
+    <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:10px;">${step.title}</div>
+    <div style="font-size:14px;color:#aaa;line-height:1.6;margin-bottom:24px;">${step.text}</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;">
+      ${ONBOARDING_STEPS.map((_,i) => `<div style="width:${i===onboardStep?'20px':'8px'};height:8px;border-radius:4px;background:${i===onboardStep?'#FFD700':'rgba(255,255,255,0.2)'};transition:all 0.3s;"></div>`).join('')}
+    </div>
+    <button onclick="nextOnboardStep()" style="width:100%;padding:16px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:16px;color:#000;font-weight:700;font-size:16px;cursor:pointer;font-family:Orbitron,monospace;letter-spacing:1px;">${step.btn}</button>
+    ${onboardStep > 0 ? `<button onclick="closeOnboarding()" style="width:100%;padding:10px;background:transparent;border:none;color:#4a6080;font-size:12px;cursor:pointer;margin-top:8px;">Skip</button>` : ''}
+  `;
 }
 
 function nextOnboardStep() {
@@ -7323,8 +7075,6 @@ setManagedInterval("apiSave", ()=>{ if(g.telegramId) apiSave(); }, 30000);
 
 // ═══ START ═══
 loadGame();
-currentLang = detectLang();
-applyLang();
 
 checkDailyLogin();
 // Restore friends from cache immediately
@@ -7415,37 +7165,12 @@ renderBoostCards();
 renderQuest();
 updatePassive();
 
-// Prevent page jitter on tap
-document.addEventListener('touchmove', function(e) {
-  // Allow scroll in scrollable elements, prevent everywhere else
-  let el = e.target;
-  let allowScroll = false;
-  while(el && el !== document.body) {
-    const style = window.getComputedStyle(el);
-    const overflow = style.overflow + style.overflowY;
-    if(overflow.includes('scroll') || overflow.includes('auto')) {
-      allowScroll = true;
-      break;
-    }
-    el = el.parentElement;
-  }
-  if(!allowScroll) e.preventDefault();
-}, {passive: false});
-
-// Prevent double-tap zoom
-let lastTap = 0;
-document.addEventListener('touchend', function(e) {
-  const now = Date.now();
-  if(now - lastTap < 300) e.preventDefault();
-  lastTap = now;
-}, {passive: false});
-
 if(window.Telegram?.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();}
 initUser();
-setTimeout(()=>{const lo=document.getElementById('loadingOverlay');if(lo){lo.style.transition='opacity 0.5s';lo.style.opacity='0';setTimeout(()=>{if(lo)lo.style.display='none';},500);}},800);
-if(!localStorage.getItem('xspc_onboarding_done')&&!g.onboardingDone){setTimeout(showOnboarding,1000);}
-else{setTimeout(showStreakOverlay,1500);}
-setTimeout(checkExpedition,3000);
+
+// Show daily streak after short delay
+setTimeout(showStreakOverlay, 1500);
+setTimeout(checkExpedition, 3000);
 // ═══ ARTIFACTS ═══
 
 // ═══ ARTIFACT BONUSES ═══
