@@ -7175,8 +7175,22 @@ updatePassive();
 if(window.Telegram?.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();}
 initUser();
 
-// Show daily streak after short delay
-setTimeout(showStreakOverlay, 1500);
+// Hide loading overlay — always, regardless of Telegram ID
+setTimeout(() => {
+  const lo = document.getElementById('loadingOverlay');
+  if(lo) {
+    lo.style.transition = 'opacity 0.5s';
+    lo.style.opacity = '0';
+    setTimeout(() => { if(lo) lo.style.display = 'none'; }, 500);
+  }
+}, 800);
+
+// Show onboarding for new players, streak for returning
+if(!localStorage.getItem('xspc_onboarding_done') && !g.onboardingDone) {
+  setTimeout(showOnboarding, 1000);
+} else {
+  setTimeout(showStreakOverlay, 1500);
+}
 setTimeout(checkExpedition, 3000);
 // ═══ ARTIFACTS ═══
 
