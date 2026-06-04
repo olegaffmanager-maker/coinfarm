@@ -1411,13 +1411,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 </div>
 
 <div class="page" id="pagePvp">
-  <div style="background:linear-gradient(135deg,rgba(255,150,0,0.1),rgba(255,50,100,0.05));border:1px solid rgba(255,150,0,0.3);border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
-    <div style="font-size:20px;">🚧</div>
-    <div>
-      <div style="font-size:12px;font-weight:700;color:#ff9500;font-family:Orbitron,monospace;">REAL PvP COMING SOON</div>
-      <div style="font-size:11px;color:#4a6080;margin-top:2px;">Currently playing vs AI bots. Multiplayer in next update!</div>
-    </div>
-  </div>
 
   <!-- Header -->
   <div style="background:linear-gradient(135deg,rgba(255,50,100,0.1),rgba(255,150,0,0.06));border:1px solid rgba(255,50,100,0.25);border-radius:18px;padding:14px;margin-bottom:14px;text-align:center;">
@@ -1824,10 +1817,9 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <div class="page" id="pageBattle">
   <div style="font-family:Orbitron,monospace;font-size:16px;font-weight:700;color:#ff3366;margin-bottom:14px;letter-spacing:2px;">⚔️ BATTLE</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-    <div class="hub-card" style="position:relative;opacity:0.7;" onclick="showToast('🚧 Real PvP coming soon! Play vs Bot for now.')">
-      <div style="position:absolute;top:6px;right:6px;background:rgba(255,150,0,0.2);border:1px solid rgba(255,150,0,0.4);border-radius:8px;padding:2px 6px;font-size:9px;color:#ff9500;font-family:Orbitron,monospace;">SOON</div>
+    <div class="hub-card" onclick="showPage('pvp')">
       <div class="hub-icon">⚔️</div><div class="hub-name"><span data-i18n="pvpBattle">PvP Battle</span></div>
-      <div class="hub-desc">Real multiplayer coming soon</div>
+      <div class="hub-desc">Tap faster than opponent</div>
     </div>
     <div class="hub-card" onclick="showPage('top')">
       <div class="hub-icon">🏆</div><div class="hub-name"><span data-i18n="leaderboard">Leaderboard</span></div>
@@ -1942,11 +1934,10 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
       <div style="font-size:12px;font-weight:700;color:var(--accent2);">My Stats</div>
       <div style="font-size:10px;color:#4a6080;margin-top:2px;">Profile & records</div>
     </div>
-    <div style="position:relative;background:linear-gradient(135deg,rgba(255,50,100,0.1),rgba(255,150,0,0.04));border:1px solid rgba(255,50,100,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('pvp')">
-      <div style="position:absolute;top:6px;right:6px;background:rgba(255,150,0,0.2);border:1px solid rgba(255,150,0,0.4);border-radius:8px;padding:2px 6px;font-size:9px;color:#ff9500;font-family:Orbitron,monospace;">BOT ONLY</div>
+    <div style="background:linear-gradient(135deg,rgba(255,50,100,0.1),rgba(255,150,0,0.04));border:1px solid rgba(255,50,100,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('pvp')">
       <div style="font-size:28px;margin-bottom:4px;">⚔️</div>
       <div style="font-size:12px;font-weight:700;color:#ff3366;"><span data-i18n="pvpBattle">PvP Battle</span></div>
-      <div style="font-size:10px;color:#4a6080;margin-top:2px;">vs Bot · Real PvP soon</div>
+      <div style="font-size:10px;color:#4a6080;margin-top:2px;"><span data-i18n="tapToWin">Tap to win!</span></div>
     </div>
     <div style="display:none;background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,100,0,0.04));border:2px solid rgba(255,215,0,0.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;" onclick="showPage('vip')">
       <div style="font-size:28px;margin-bottom:4px;">👑</div>
@@ -2476,20 +2467,24 @@ const TRANSLATIONS = {
 
 const ONBOARDING_T = {
   en:[
-    {badge:"WELCOME",title:"Welcome to XSPACECOIN!",text:"Mine planets, earn XSPC tokens and conquer the galaxy. Token launches Q1 2027 on TON!",btn:"Let's go! 🚀",hint:null},
-    {badge:"STEP 1 OF 5",title:"Tap to Mine XSPC",text:"Tap the planet as fast as you can! Every tap earns XSPC. Bigger combos = bigger rewards!",btn:"Got it!",hint:"💡 Multi-touch = extra bonus"},
-    {badge:"STEP 2 OF 5",title:"Manage Your Energy",text:"Each tap uses 1 energy. It recharges over time. Upgrade energy in the UPGRADE tab!",btn:"Understood!",hint:"💡 Energy recharges even offline"},
-    {badge:"STEP 3 OF 5",title:"Upgrade & Earn Passively",text:"Buy Boost Cards in UPGRADE — they earn XSPC every hour automatically, even offline!",btn:"Nice!",hint:"💡 More cards = more passive income"},
-    {badge:"STEP 4 OF 5",title:"Collect XKEY Keys",text:"Keys unlock powerful artifacts. Earn them by leveling up, Daily Combo and quests!",btn:"Cool!",hint:"💡 Artifacts give permanent bonuses"},
-    {badge:"STEP 5 OF 5",title:"Conquer the Galaxy!",text:"20 planets · 200 levels · Bosses · Expeditions · PvP · Clans · Staking. All waiting!",btn:"🚀 Start Mining!",hint:null}
+    {badge:"WELCOME",title:"Welcome to XSPACECOIN!",text:"Mine planets, earn XSPC tokens and conquer the galaxy. Token launches Q1 2027 on TON blockchain!",btn:"Let's go! 🚀",hint:null},
+    {badge:"STEP 1 OF 7",title:"Tap the Planet to Mine",text:"Tap the planet as fast as you can! Every tap earns XSPC coins. Build combos for bonus multipliers!",btn:"Got it!",hint:"💡 Multi-touch earns more per second"},
+    {badge:"STEP 2 OF 7",title:"Watch Your Energy",text:"Each tap uses 1 energy. Energy recharges over time — even offline! Upgrade it in the UPGRADE tab.",btn:"Understood!",hint:"💡 Full energy = max mining speed"},
+    {badge:"STEP 3 OF 7",title:"Earn Tab — Free Daily Rewards",text:"Open EARN every day! Daily Combo gives XKEY keys, Fortune Wheel gives coins, Streak rewards grow daily!",btn:"Nice!",hint:"💡 Don't miss your daily streak!"},
+    {badge:"STEP 4 OF 7",title:"Upgrade — Passive Income",text:"Buy Boost Cards in UPGRADE. They mine XSPC automatically every hour, even when you're offline!",btn:"Cool!",hint:"💡 More cards = more coins while sleeping"},
+    {badge:"STEP 5 OF 7",title:"Galaxy — Explore the Cosmos",text:"Visit GALAXY for the Cosmos Map, Expeditions for rare planets, and Staking to earn passive rewards!",btn:"Got it!",hint:"💡 Expeditions give rare items"},
+    {badge:"STEP 6 OF 7",title:"Invite Friends & Earn Together",text:"Share your link from FRIENDS tab. You earn +5,000 XSPC per friend who joins — plus 5% of their mining!",btn:"Awesome!",hint:"💡 More friends = more passive income"},
+    {badge:"STEP 7 OF 7",title:"Conquer the Galaxy!",text:"20 planets · 200 levels · Bosses · Expeditions · PvP · Clans · Staking. Your space journey starts now!",btn:"🚀 Start Mining!",hint:null}
   ],
   ru:[
     {badge:"ДОБРО ПОЖАЛОВАТЬ",title:"Добро пожаловать в XSPACECOIN!",text:"Майни планеты, зарабатывай XSPC и покоряй галактику. Запуск токена Q1 2027 на TON!",btn:"Поехали! 🚀",hint:null},
-    {badge:"ШАГ 1 ИЗ 5",title:"Тапай и майни XSPC",text:"Тапай по планете как можно быстрее! Каждый тап приносит XSPC. Комбо = больше наград!",btn:"Понял!",hint:"💡 Несколько пальцев = бонус"},
-    {badge:"ШАГ 2 ИЗ 5",title:"Следи за энергией",text:"Каждый тап тратит 1 энергию. Она восстанавливается. Прокачай энергию в АПГРЕЙД!",btn:"Понятно!",hint:"💡 Энергия восстанавливается офлайн"},
-    {badge:"ШАГ 3 ИЗ 5",title:"Апгрейды и пассивный доход",text:"Покупай карты буста в АПГРЕЙД — они зарабатывают XSPC каждый час, даже офлайн!",btn:"Отлично!",hint:"💡 Больше карт = больше дохода"},
-    {badge:"ШАГ 4 ИЗ 5",title:"Собирай ключи XKEY",text:"Ключи открывают артефакты. Получай их при повышении уровня, в Комбо и квестах!",btn:"Круто!",hint:"💡 Артефакты дают постоянные бонусы"},
-    {badge:"ШАГ 5 ИЗ 5",title:"Покоряй Галактику!",text:"20 планет · 200 уровней · Боссы · Экспедиции · PvP · Кланы · Стейкинг. Всё ждёт!",btn:"🚀 Начать майнинг!",hint:null}
+    {badge:"ШАГ 1 ИЗ 7",title:"Тапай планету для майнинга",text:"Тапай по планете как можно быстрее! Каждый тап приносит XSPC. Комбо даёт множитель бонусов!",btn:"Понял!",hint:"💡 Несколько пальцев = больше монет"},
+    {badge:"ШАГ 2 ИЗ 7",title:"Следи за энергией",text:"Каждый тап тратит 1 энергию. Она восстанавливается даже офлайн! Прокачай её в АПГРЕЙД.",btn:"Понятно!",hint:"💡 Полная энергия = максимальный майнинг"},
+    {badge:"ШАГ 3 ИЗ 7",title:"ЗАРАБОТОК — бесплатные награды",text:"Открывай ЗАРАБОТОК каждый день! Дейли Комбо даёт XKEY, Колесо удачи — монеты, Серия растёт!",btn:"Отлично!",hint:"💡 Не пропускай серию входов!"},
+    {badge:"ШАГ 4 ИЗ 7",title:"Апгрейд — пассивный доход",text:"Покупай карты буста в АПГРЕЙД. Они майнят XSPC автоматически каждый час, даже офлайн!",btn:"Круто!",hint:"💡 Больше карт = монеты пока спишь"},
+    {badge:"ШАГ 5 ИЗ 7",title:"Галактика — исследуй космос",text:"Загляни в ГАЛАКТИКУ! Карта космоса, Экспедиции за редкими планетами и Стейкинг для дохода!",btn:"Понял!",hint:"💡 Экспедиции дают редкие предметы"},
+    {badge:"ШАГ 6 ИЗ 7",title:"Приглашай друзей и зарабатывай",text:"Поделись ссылкой из вкладки ДРУЗЬЯ. +5,000 XSPC за каждого друга + 5% от их майнинга тебе!",btn:"Отлично!",hint:"💡 Больше друзей = больше пассивного дохода"},
+    {badge:"ШАГ 7 ИЗ 7",title:"Покоряй Галактику!",text:"20 планет · 200 уровней · Боссы · Экспедиции · PvP · Кланы · Стейкинг. Твой путь начинается!",btn:"🚀 Начать майнинг!",hint:null}
   ],
   uk:[
     {badge:"ЛАСКАВО ПРОСИМО",title:"Ласкаво просимо до XSPACECOIN!",text:"Майни планети, заробляй XSPC і підкоряй галактику. Запуск токена Q1 2027 на TON!",btn:"Поїхали! 🚀",hint:null},
@@ -4790,6 +4785,118 @@ function showFeatureTip(key, title, text) {
   setTimeout(() => { if(tip.parentElement) tip.remove(); }, 8000);
 }
 
+
+// ═══ TIP SYSTEM — подсказки до 10 уровня ═══
+const PAGE_TIPS = {
+  earn: {
+    en: "💡 EARN tab — get free XSPC daily! Daily Combo gives up to 5 XKEY, Fortune Wheel spins for coins, Streak rewards grow every day!",
+    ru: "💡 ЗАРАБОТОК — получай XSPC каждый день! Дейли Комбо даёт до 5 XKEY, Колесо удачи крутится бесплатно, Серия наград растёт каждый день!",
+    uk: "💡 ДОХІД — отримуй XSPC щодня! Щоденне Комбо дає до 5 XKEY, Колесо удачі крутиться безкоштовно, Серія нагород зростає щодня!",
+    es: "💡 GANAR — ¡obtén XSPC gratis cada día! El Combo Diario da hasta 5 XKEY, la Rueda de la Suerte gira gratis, ¡las recompensas de racha crecen!",
+    zh: "💡 赚取 — 每天免费获取XSPC！每日组合最多给5个XKEY，幸运轮免费转，连续奖励每天增长！",
+    ar: "💡 كسب — احصل على XSPC مجاناً كل يوم! الكومبو اليومي يعطي حتى 5 XKEY، عجلة الحظ تدور مجاناً!",
+    pt: "💡 GANHAR — ganhe XSPC grátis todo dia! Combo Diário dá até 5 XKEY, Roda da Sorte gira grátis, recompensas de sequência crescem!"
+  },
+  upgrade: {
+    en: "💡 UPGRADE tab — buy Boost Cards for passive income! They earn XSPC every hour even when you're offline. More cards = more coins!",
+    ru: "💡 АПГРЕЙД — покупай карты для пассивного дохода! Они зарабатывают XSPC каждый час даже офлайн. Больше карт = больше монет!",
+    uk: "💡 АПГРЕЙД — купуй карти для пасивного доходу! Вони заробляють XSPC щогодини навіть офлайн. Більше карт = більше монет!",
+    es: "💡 MEJORAR — ¡compra Cartas de Impulso para ingresos pasivos! Ganan XSPC cada hora incluso offline. ¡Más cartas = más monedas!",
+    zh: "💡 升级 — 购买加速卡获得被动收入！即使离线也能每小时赚取XSPC。卡越多 = 收入越多！",
+    ar: "💡 ترقية — اشتر بطاقات التعزيز للدخل السلبي! تكسب XSPC كل ساعة حتى دون اتصال. المزيد من البطاقات = المزيد من العملات!",
+    pt: "💡 MELHORAR — compre Cartas de Impulso para renda passiva! Ganham XSPC a cada hora mesmo offline. Mais cartas = mais moedas!"
+  },
+  galaxy: {
+    en: "💡 GALAXY tab — explore the cosmos! Open Cosmos Map to see all 20 planets, start Expeditions for rare rewards, and stake XSPC for passive income!",
+    ru: "💡 ГАЛАКТИКА — исследуй космос! Карта космоса показывает все 20 планет, Экспедиции дают редкие награды, Стейкинг приносит пассивный доход!",
+    uk: "💡 ГАЛАКТИКА — досліджуй космос! Карта космосу показує всі 20 планет, Експедиції дають рідкісні нагороди, Стейкінг приносить пасивний дохід!",
+    es: "💡 GALAXIA — ¡explora el cosmos! El Mapa del Cosmos muestra los 20 planetas, las Expediciones dan recompensas raras, ¡el Staking genera ingresos pasivos!",
+    zh: "💡 银河 — 探索宇宙！宇宙地图显示全部20个星球，探险获得稀有奖励，质押XSPC赚取被动收入！",
+    ar: "💡 مجرة — استكشف الكون! خريطة الكون تُظهر جميع 20 كوكباً، الاستكشافات تعطي مكافآت نادرة، التوقيع يولّد دخلاً سلبياً!",
+    pt: "💡 GALÁXIA — explore o cosmos! O Mapa do Cosmos mostra todos os 20 planetas, Expedições dão recompensas raras, Staking gera renda passiva!"
+  },
+  battle: {
+    en: "💡 BATTLE tab — compete with others! Play PvP vs bots to earn coins, climb the Tournament ranking, and win Season prizes every month!",
+    ru: "💡 БИТВА — соревнуйся с другими! PvP против ботов приносит монеты, Турнир даёт рейтинг, Сезон — ежемесячные призы!",
+    uk: "💡 БИТВА — змагайся з іншими! PvP проти ботів приносить монети, Турнір дає рейтинг, Сезон — щомісячні призи!",
+    es: "💡 BATALLA — ¡compite con otros! PvP vs bots gana monedas, el Torneo da ranking, ¡la Temporada ofrece premios mensuales!",
+    zh: "💡 战斗 — 与他人竞争！PvP对抗机器人赚取金币，锦标赛提升排名，赛季每月有奖励！",
+    ar: "💡 معركة — تنافس مع الآخرين! PvP ضد الروبوتات يكسب عملات، البطولة تعطي تصنيفاً، الموسم يقدم جوائز شهرية!",
+    pt: "💡 BATALHA — compete com outros! PvP vs bots ganha moedas, o Torneio dá ranking, a Temporada oferece prêmios mensais!"
+  },
+  friends: {
+    en: "💡 FRIENDS tab — invite friends and earn together! You get +5,000 XSPC for each friend who joins. They also earn 5% of your mining as bonus!",
+    ru: "💡 ДРУЗЬЯ — приглашай друзей и зарабатывай вместе! +5,000 XSPC за каждого приглашённого. Они получают 5% от твоего майнинга как бонус!",
+    uk: "💡 ДРУЗІ — запрошуй друзів та заробляй разом! +5,000 XSPC за кожного запрошеного. Вони отримують 5% від твого майнінгу як бонус!",
+    es: "💡 AMIGOS — ¡invita amigos y gana juntos! +5,000 XSPC por cada amigo que se una. ¡También ganan el 5% de tu minería como bono!",
+    zh: "💡 好友 — 邀请朋友一起赚！每邀请一位朋友获得+5,000 XSPC。他们还能获得你挖矿的5%作为奖励！",
+    ar: "💡 أصدقاء — ادعُ أصدقاء واكسب معاً! +5,000 XSPC لكل صديق ينضم. يحصلون أيضاً على 5% من تعدينك كمكافأة!",
+    pt: "💡 AMIGOS — convide amigos e ganhe juntos! +5.000 XSPC por cada amigo que entrar. Eles também ganham 5% da sua mineração como bônus!"
+  },
+  keys: {
+    en: "💡 XKEY Keys unlock powerful Artifacts! Solve Daily Combo to earn keys. Each artifact gives permanent bonuses to your mining!",
+    ru: "💡 Ключи XKEY открывают мощные Артефакты! Решай Дейли Комбо чтобы получать ключи. Каждый артефакт даёт постоянные бонусы!",
+    uk: "💡 Ключі XKEY відкривають потужні Артефакти! Вирішуй Щоденне Комбо щоб отримувати ключі. Кожен артефакт дає постійні бонуси!",
+    es: "💡 ¡Las llaves XKEY desbloquean Artefactos poderosos! Resuelve el Combo Diario para ganar llaves. ¡Cada artefacto da bonos permanentes!",
+    zh: "💡 XKEY钥匙解锁强大的神器！完成每日组合获取钥匙。每个神器都能给你永久加成！",
+    ar: "💡 مفاتيح XKEY تفتح القطع الأثرية القوية! أكمل الكومبو اليومي لكسب المفاتيح. كل قطعة أثرية تعطي مكافآت دائمة!",
+    pt: "💡 Chaves XKEY desbloqueiam Artefatos poderosos! Resolva o Combo Diário para ganhar chaves. Cada artefato dá bônus permanentes!"
+  },
+  staking: {
+    en: "💡 STAKING — lock your XSPC to earn passive rewards! Stake 100K+ for 10% APY, 1M+ for 20% APY. Rewards collect every 24 hours!",
+    ru: "💡 СТЕЙКИНГ — заблокируй XSPC для пассивных наград! 100K+ = 10% годовых, 1M+ = 20% годовых. Награды каждые 24 часа!",
+    uk: "💡 СТЕЙКІНГ — заблокуй XSPC для пасивних нагород! 100K+ = 10% річних, 1M+ = 20% річних. Нагороди кожні 24 години!",
+    es: "💡 STAKING — ¡bloquea tu XSPC para ganar recompensas pasivas! 100K+ = 10% APY, 1M+ = 20% APY. ¡Recompensas cada 24 horas!",
+    zh: "💡 质押 — 锁定你的XSPC赚取被动奖励！质押100K+ = 10%年化，1M+ = 20%年化。奖励每24小时收取！",
+    ar: "💡 التوقيع — اقفل XSPC الخاص بك لكسب مكافآت سلبية! 100K+ = 10% عائد سنوي، 1M+ = 20% عائد سنوي. المكافآت كل 24 ساعة!",
+    pt: "💡 STAKING — bloqueie seu XSPC para ganhar recompensas passivas! 100K+ = 10% APY, 1M+ = 20% APY. Recompensas a cada 24 horas!"
+  },
+  combo: {
+    en: "💡 DAILY COMBO — guess 3 correct cards to win XKEY! New combo every day at midnight. Wrong guesses cost nothing — keep trying!",
+    ru: "💡 ДЕЙЛИ КОМБО — угадай 3 правильные карты и получи XKEY! Новое комбо каждый день в полночь. Неверные ответы ничего не стоят!",
+    uk: "💡 ЩОДЕННЕ КОМБО — вгадай 3 правильні карти і отримай XKEY! Нове комбо щодня опівночі. Неправильні відповіді нічого не коштують!",
+    es: "💡 COMBO DIARIO — ¡adivina 3 cartas correctas para ganar XKEY! Nuevo combo cada día a medianoche. ¡Los errores no cuestan nada!",
+    zh: "💡 每日组合 — 猜对3张牌赢取XKEY！每天午夜更新新组合。猜错不扣分——继续试！",
+    ar: "💡 الكومبو اليومي — خمّن 3 بطاقات صحيحة لتربح XKEY! كومبو جديد كل يوم منتصف الليل. الأخطاء لا تكلف شيئاً!",
+    pt: "💡 COMBO DIÁRIO — adivinhe 3 cartas corretas para ganhar XKEY! Novo combo todo dia à meia-noite. Erros não custam nada!"
+  }
+};
+
+function showPageTip(page) {
+  // Only show tips for players under level 10
+  if((g.level || 1) > 10) return;
+  
+  const tip = PAGE_TIPS[page];
+  if(!tip) return;
+  
+  // Check if already shown this session
+  const key = 'tip_' + page;
+  if(localStorage.getItem(key)) return;
+  localStorage.setItem(key, '1');
+  
+  // Get tip in current language
+  const lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
+  const text = tip[lang] || tip['en'];
+  
+  // Show as a styled toast
+  setTimeout(() => {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:90px;left:12px;right:12px;z-index:9000;'
+      + 'background:linear-gradient(135deg,rgba(10,15,30,0.97),rgba(5,10,20,0.97));'
+      + 'border:1px solid rgba(0,245,255,0.3);border-radius:16px;padding:12px 16px;'
+      + 'font-size:12px;color:#ccc;line-height:1.5;'
+      + 'box-shadow:0 4px 20px rgba(0,0,0,0.5);'
+      + 'animation:slideUp 0.3s ease-out;';
+    toast.innerHTML = text
+      + '<div style="margin-top:8px;text-align:right;">'
+      + '<button onclick="this.parentElement.parentElement.remove()" '
+      + 'style="padding:4px 14px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);'
+      + 'border-radius:8px;color:#00f5ff;font-size:11px;cursor:pointer;">Got it ✓</button></div>';
+    document.body.appendChild(toast);
+    setTimeout(() => { if(toast.parentElement) toast.remove(); }, 8000);
+  }, 600);
+}
+
 function showPage(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
@@ -4808,10 +4915,10 @@ function showPage(page){
 
   // Hub-specific logic
   if(page==='mine'){initMinePageEffects();if(activeDailyEvent)showDailyEventBanner();}
-  if(page==='earn'){updateEarnHub();}
-  if(page==='staking'){updateStakingUI();clearInterval(window._stakingTimer);window._stakingTimer=setInterval(updateStakingUI,60000);}
-  if(page==='upgrade'){updateUpgradeHub();}
-  if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();updateExpeditionStatus();}
+  if(page==='earn'){updateEarnHub();showPageTip('earn');}
+  if(page==='staking'){updateStakingUI();showPageTip('staking');clearInterval(window._stakingTimer);window._stakingTimer=setInterval(updateStakingUI,60000);}
+  if(page==='upgrade'){updateUpgradeHub();showPageTip('upgrade');}
+  if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();updateExpeditionStatus();showPageTip('galaxy');}
   if(page==='cosmosmap'){renderCosmosMap();}
   if(page==='clans'){updateClanUI();}
   if(page==='boss'){updateBossUI();}
@@ -4839,11 +4946,11 @@ function showPage(page){
     const sw=document.getElementById('seasonWins'); if(sw) sw.textContent=(g.pvpWins||0);
     const se=document.getElementById('seasonPageEnd'); if(se) se.textContent=s.end.toLocaleDateString();
   }
-  if(page==='keys'){updateKeysUI();}
+  if(page==='keys'){showPageTip('keys');updateKeysUI();}
   if(page==='cards'){renderFullCards();}
   if(page==='artifacts'){renderArtifacts();}
-  if(page==='combo'){comboSelected=[];renderCombo();}
-  if(page==='friends'){
+  if(page==='combo'){showPageTip('combo');comboSelected=[];renderCombo();}
+  if(page==='friends'){showPageTip('friends');
     const _fid = g.telegramId 
       || parseInt(localStorage.getItem('xspc_telegram_id')||'0')
       || parseInt(new URLSearchParams(window.location.search).get('user_id')||'0');
