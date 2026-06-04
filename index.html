@@ -611,6 +611,24 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <body>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+<div id="nickPickerOverlay" style="display:none;position:fixed;inset:0;z-index:9995;background:linear-gradient(180deg,#010308,#020b1a);flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:380px;text-align:center;">
+    <div style="font-size:56px;margin-bottom:12px;">🚀</div>
+    <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:8px;" id="nickPickerTitle">CHOOSE YOUR NICKNAME</div>
+    <div style="font-size:13px;color:#4a6080;margin-bottom:24px;" id="nickPickerDesc">Your unique identity in the galaxy.<br>Other commanders will see this name.</div>
+    <input id="nickInput" maxlength="18" placeholder="e.g. SpaceMiner99"
+      style="width:100%;padding:16px;background:rgba(0,245,255,0.06);border:2px solid rgba(0,245,255,0.3);border-radius:16px;color:#fff;font-size:18px;font-family:Orbitron,monospace;text-align:center;outline:none;box-sizing:border-box;margin-bottom:8px;"
+      oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'').slice(0,18);nickCheckAvail()">
+    <div id="nickStatus" style="font-size:12px;min-height:18px;margin-bottom:16px;"></div>
+    <div style="font-size:11px;color:#4a6080;margin-bottom:20px;">3–18 characters · letters, numbers, _<br>No spaces · Must be unique</div>
+    <button id="nickConfirmBtn" onclick="confirmNickname()" disabled
+      style="width:100%;padding:16px;background:linear-gradient(135deg,#333,#444);border:none;border-radius:16px;color:#888;font-weight:700;font-size:16px;cursor:not-allowed;font-family:Rajdhani,sans-serif;letter-spacing:1px;transition:all 0.3s;">
+      ✓ CONFIRM
+    </button>
+    <button id="nickSkipBtn" onclick="skipNickname()" style="display:none;width:100%;padding:10px;background:transparent;border:none;color:#4a6080;font-size:12px;cursor:pointer;margin-top:8px;"><span data-i18n="skipForNow">Skip for now</span></button>
+  </div>
+</div>
+
 <div class="header">
   <div class="header-left">
     <div class="header-level">LEVEL <span id="headerLevel">1</span></div>
@@ -2353,6 +2371,114 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 <script>
 
+// ═══ NICKNAME SYSTEM ═══
+let _nickCheckTimer = null;
+let _nickIsChange = false;
+
+function showNickPicker(isChange) {
+  _nickIsChange = !!isChange;
+  const overlay = document.getElementById('nickPickerOverlay');
+  const title = document.getElementById('nickPickerTitle');
+  const desc = document.getElementById('nickPickerDesc');
+  const skipBtn = document.getElementById('nickSkipBtn');
+  const inp = document.getElementById('nickInput');
+  const status = document.getElementById('nickStatus');
+  const btn = document.getElementById('nickConfirmBtn');
+  if(!overlay) return;
+  if(isChange) {
+    if(title) title.textContent = 'CHANGE NICKNAME';
+    if(desc) desc.textContent = 'Choose a new unique nickname for your profile.';
+    if(skipBtn) skipBtn.style.display = 'block';
+    if(inp) inp.value = g.nickname || localStorage.getItem('xspc_nickname') || '';
+  } else {
+    if(title) title.textContent = 'CHOOSE YOUR NICKNAME';
+    if(desc) desc.innerHTML = 'Your unique identity in the galaxy.<br>Other commanders will see this name.';
+    if(skipBtn) skipBtn.style.display = 'none';
+    if(inp) inp.value = '';
+  }
+  if(status) { status.textContent = ''; }
+  if(btn) { btn.disabled = true; btn.style.background='linear-gradient(135deg,#333,#444)'; btn.style.color='#888'; btn.style.cursor='not-allowed'; }
+  overlay.style.display = 'flex';
+  overlay.style.opacity = '1';
+  setTimeout(() => { if(inp) inp.focus(); }, 300);
+}
+
+function changeNickname() {
+  showNickPicker(true);
+}
+
+function skipNickname() {
+  const overlay = document.getElementById('nickPickerOverlay');
+  if(overlay) { overlay.style.opacity='0'; overlay.style.transition='opacity 0.3s'; setTimeout(()=>{overlay.style.display='none';overlay.style.opacity='';},300); }
+}
+
+function nickCheckAvail() {
+  const inp = document.getElementById('nickInput');
+  const status = document.getElementById('nickStatus');
+  const btn = document.getElementById('nickConfirmBtn');
+  const val = inp ? inp.value.trim() : '';
+  if(!status || !btn) return;
+  if(val.length < 3) {
+    status.textContent = val.length > 0 ? '⚠️ Min 3 characters' : '';
+    status.style.color = '#ff9500';
+    btn.disabled = true; btn.style.background='linear-gradient(135deg,#333,#444)'; btn.style.color='#888'; btn.style.cursor='not-allowed';
+    return;
+  }
+  // If same as current nick - allow
+  const currentNick = localStorage.getItem('xspc_nickname') || '';
+  if(val.toLowerCase() === currentNick.toLowerCase() && _nickIsChange) {
+    status.textContent = '✅ Your current nickname'; status.style.color = '#00f5ff';
+    btn.disabled = false; btn.style.background='linear-gradient(135deg,#7b2fff,#00f5ff)'; btn.style.color='#fff'; btn.style.cursor='pointer';
+    return;
+  }
+  status.textContent = '⏳ Checking...'; status.style.color = '#4a6080';
+  if(_nickCheckTimer) clearTimeout(_nickCheckTimer);
+  _nickCheckTimer = setTimeout(async () => {
+    try {
+      const resp = await fetch(API_URL + '/user/check_nickname?nickname=' + encodeURIComponent(val));
+      const data = await resp.json();
+      if(data.available) {
+        status.textContent = '✅ Available!'; status.style.color = '#00ff88';
+        btn.disabled = false; btn.style.background='linear-gradient(135deg,#7b2fff,#00f5ff)'; btn.style.color='#fff'; btn.style.cursor='pointer';
+      } else {
+        status.textContent = '❌ Already taken, try another'; status.style.color = '#ff3366';
+        btn.disabled = true; btn.style.background='linear-gradient(135deg,#333,#444)'; btn.style.color='#888'; btn.style.cursor='not-allowed';
+      }
+    } catch(e) {
+      status.textContent = '✅ Looks good!'; status.style.color = '#00ff88';
+      btn.disabled = false; btn.style.background='linear-gradient(135deg,#7b2fff,#00f5ff)'; btn.style.color='#fff'; btn.style.cursor='pointer';
+    }
+  }, 500);
+}
+
+async function confirmNickname() {
+  const inp = document.getElementById('nickInput');
+  const val = inp ? inp.value.trim() : '';
+  if(val.length < 3) return;
+  g.nickname = val; g.full_name = val;
+  localStorage.setItem('xspc_nickname', val);
+  saveGame();
+  const overlay = document.getElementById('nickPickerOverlay');
+  if(overlay) { overlay.style.transition='opacity 0.4s'; overlay.style.opacity='0'; setTimeout(()=>{overlay.style.display='none';overlay.style.opacity='';},400); }
+  // Update display name
+  const statsName = document.getElementById('statsName');
+  if(statsName) statsName.textContent = val;
+  showToast(_nickIsChange ? '✅ Nickname changed to ' + val + '!' : '🚀 Welcome to the galaxy, ' + val + '!');
+  if(g.telegramId) { await apiRegister(g.telegramId, val, val, null); }
+  // Show onboarding after first nickname selection
+  if(!_nickIsChange && !localStorage.getItem('xspc_onboarding_done') && !g.onboardingDone) {
+    setTimeout(showOnboarding, 600);
+  }
+}
+
+// ═══ DEBOUNCED API SAVE ═══
+let _apiSaveTimer = null;
+function apiSaveDebounced() {
+  if(_apiSaveTimer) clearTimeout(_apiSaveTimer);
+  _apiSaveTimer = setTimeout(() => { if(typeof apiSave==='function') apiSave(); _apiSaveTimer=null; }, 10000);
+}
+
+
 // ═══ COMPLETE I18N SYSTEM ═══
 const TRANSLATIONS = {
   "mine": {"en":"Mine","ru":"Майнинг","uk":"Майнінг","es":"Minar","zh":"挖矿","ar":"تعدين","pt":"Minerar"},
@@ -2666,11 +2792,6 @@ async function apiRegister(u,un,fn,r){
       if(d.referrals > 0) localStorage.setItem('xspc_friends_cache', d.referrals);
     }
   } catch(e) { console.log('[XSPC] Register failed:', e); }
-}
-let _apiSaveTimer = null;
-function apiSaveDebounced() {
-  if(_apiSaveTimer) clearTimeout(_apiSaveTimer);
-  _apiSaveTimer = setTimeout(() => { if(typeof apiSave==='function') apiSave(); _apiSaveTimer=null; }, 10000);
 }
 async function apiSave(){
   // Берём ID из всех источников
@@ -4562,7 +4683,7 @@ async function renderTop(){
     const isMe = p.user_id == myId;
     const isFriend = friendIds.includes(p.user_id);
     const medal = medals[i] || ('#'+(i+1));
-    const name = p.full_name || 'Player';
+    const name = p.nickname || p.full_name || 'Commander';
     const initials = name.slice(0,2).toUpperCase();
     const planet = getPlanetForLevel(p.level||1);
     const coins = Math.floor(p.coins);
@@ -5239,7 +5360,7 @@ function collectPassive() {
   }
 
   // Flash the passive income block
-  const block = document.querySelector('[id="passiveAccum"]')?.closest('div[style*="border"]');
+  const block = document.querySelector('[id="passiveAccum2"]')?.closest('div[style*="border"]');
   if(block) {
     block.style.transition = 'box-shadow 0.3s';
     block.style.boxShadow = '0 0 20px rgba(0,255,136,0.6)';
@@ -6145,16 +6266,9 @@ async function updatePlayerCounter() {
   }
 }
 
-// Update player count every 5 minutes with smooth animation
+setTimeout(updatePlayerCounter, 500);
 setManagedInterval("playerCounter", updatePlayerCounter, 300000);
-
 setManagedInterval("countdown", updateCountdown, 1000);
-setInterval(updatePlayerCounter, 600000); // update every 10 min
-setInterval(() => {
-  // Live update counter every 10 minutes in real time
-  const el = document.getElementById('playerCounter');
-  if(el) el.textContent = getGrowingPlayerCount().toLocaleString();
-}, 600000);
 
 // ═══ PARTNER TASKS ═══
 const PARTNER_TASKS = [
@@ -6348,6 +6462,16 @@ function saveTonWallet() {
 
 // ═══ MINI GAME ═══
 let miniSecret = 0, miniAttempts = 0, miniMaxAttempts = 7, miniGameOver = false;
+
+function updateMiniGamesCounter() {
+  const today = new Date().toDateString();
+  if(g.miniGamesDate !== today) { g.miniGamesDate = today; g.miniGamesUsed = 0; }
+  const left = Math.max(0, 3 - (g.miniGamesUsed||0));
+  const el1 = document.getElementById('miniGamesLeft');
+  const el2 = document.getElementById('miniGamesLeftKeys');
+  if(el1) { el1.textContent = left; el1.style.color = left===0?'#ff3366':'#FFD700'; }
+  if(el2) { el2.textContent = left+' game'+(left!==1?'s':'')+' left'; el2.style.color = left===0?'#ff3366':'#4a6080'; }
+}
 
 function startMiniGame() {
   const today = new Date().toDateString();
@@ -7253,7 +7377,8 @@ async function initUser(){
   localStorage.setItem('xspc_telegram_id', String(userId));
   saveGame();
   console.log('[XSPC] initUser:', userId, 'ref:', referrerId);
-  await apiRegister(userId,username,fullName,referrerId);
+  const savedNick = localStorage.getItem('xspc_nickname') || g.nickname || fullName;
+  await apiRegister(userId, savedNick, savedNick, referrerId);
   // Update ref link after we have the ID
   const refEl = document.getElementById('refLink');
   if(refEl) refEl.textContent = getRefLink();
@@ -7420,8 +7545,13 @@ updatePassive();
 if(window.Telegram?.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();}
 initUser();
 setTimeout(()=>{const lo=document.getElementById('loadingOverlay');if(lo){lo.style.transition='opacity 0.5s';lo.style.opacity='0';setTimeout(()=>{if(lo)lo.style.display='none';},500);}},800);
-if(!localStorage.getItem('xspc_onboarding_done')&&!g.onboardingDone){setTimeout(showOnboarding,1000);}
-else{setTimeout(showStreakOverlay,1500);}
+if(!localStorage.getItem('xspc_nickname') && !g.nickname) {
+  setTimeout(() => showNickPicker(false), 1000);
+} else if(!localStorage.getItem('xspc_onboarding_done')&&!g.onboardingDone) {
+  setTimeout(showOnboarding,1000);
+} else {
+  setTimeout(showStreakOverlay,1500);
+}
 setTimeout(checkExpedition,3000);
 // ═══ ARTIFACTS ═══
 
