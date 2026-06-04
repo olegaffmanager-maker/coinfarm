@@ -46,7 +46,6 @@ def init_db():
             coins FLOAT DEFAULT 0,
             clicks INTEGER DEFAULT 0,
             level INTEGER DEFAULT 1,
-            nickname TEXT DEFAULT NULL,
             referrer_id BIGINT DEFAULT NULL,
             joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             keys INTEGER DEFAULT 0,
@@ -139,61 +138,6 @@ def q(sql):
         return sql.replace('?', '%s')
     return sql
 
-# ═══ FAKE PLAYERS for leaderboard (removed when real players > 50) ═══
-FAKE_PLAYERS = [
-    {"user_id": -1,  "nickname": "CosmicAce",    "full_name": "CosmicAce",    "coins": 9500000, "level": 95, "last_save": 0},
-    {"user_id": -2,  "nickname": "StarMiner88",   "full_name": "StarMiner88",  "coins": 8200000, "level": 88, "last_save": 0},
-    {"user_id": -3,  "nickname": "GalaxyQueen",   "full_name": "GalaxyQueen", "coins": 7100000, "level": 82, "last_save": 0},
-    {"user_id": -4,  "nickname": "XSpaceKing",    "full_name": "XSpaceKing",   "coins": 6300000, "level": 78, "last_save": 0},
-    {"user_id": -5,  "nickname": "NebulaCraft",   "full_name": "NebulaCraft",  "coins": 5800000, "level": 74, "last_save": 0},
-    {"user_id": -6,  "nickname": "OrbitRider",    "full_name": "OrbitRider",   "coins": 5200000, "level": 70, "last_save": 0},
-    {"user_id": -7,  "nickname": "AsteroidHuntr", "full_name": "AsteroidHuntr","coins": 4700000, "level": 66, "last_save": 0},
-    {"user_id": -8,  "nickname": "PulsarPro",     "full_name": "PulsarPro",    "coins": 4100000, "level": 62, "last_save": 0},
-    {"user_id": -9,  "nickname": "VoidWalker",    "full_name": "VoidWalker",   "coins": 3600000, "level": 58, "last_save": 0},
-    {"user_id": -10, "nickname": "DarkMatter99",  "full_name": "DarkMatter99", "coins": 3100000, "level": 54, "last_save": 0},
-    {"user_id": -11, "nickname": "QuasarX",       "full_name": "QuasarX",      "coins": 2700000, "level": 50, "last_save": 0},
-    {"user_id": -12, "nickname": "TONHodler",     "full_name": "TONHodler",    "coins": 2300000, "level": 46, "last_save": 0},
-    {"user_id": -13, "nickname": "CryptoNova",    "full_name": "CryptoNova",   "coins": 1900000, "level": 42, "last_save": 0},
-    {"user_id": -14, "nickname": "SpaceWhale",    "full_name": "SpaceWhale",   "coins": 1500000, "level": 38, "last_save": 0},
-    {"user_id": -15, "nickname": "MoonMiner",     "full_name": "MoonMiner",    "coins": 1200000, "level": 34, "last_save": 0},
-]
-
-import time
-import math
-
-def get_fake_players_with_growth():
-    """Fake players grow coins slowly over time to look realistic"""
-    now = int(time.time())
-    result = []
-    for p in FAKE_PLAYERS:
-        # Coins grow ~500/hour with some randomness based on user_id
-        hours = now / 3600
-        growth = int(abs(p["user_id"]) * 47 * math.sin(hours * 0.1 + abs(p["user_id"])) * 100)
-        fake = dict(p)
-        fake["coins"] = p["coins"] + growth
-        result.append(fake)
-    return result
-
-@app.get("/user/check_nickname")
-def check_nickname(nickname: str):
-    """Check if nickname is available"""
-    if not nickname or len(nickname) < 3 or len(nickname) > 18:
-        return {"available": False, "reason": "invalid length"}
-    # Check against fake players
-    fake_nicks = [p["nickname"].lower() for p in FAKE_PLAYERS]
-    if nickname.lower() in fake_nicks:
-        return {"available": False, "reason": "taken"}
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute(q("SELECT 1 FROM users WHERE LOWER(nickname)=LOWER(?) OR LOWER(full_name)=LOWER(?)"), (nickname, nickname))
-        taken = c.fetchone() is not None
-        conn.close()
-        return {"available": not taken}
-    except Exception as e:
-        logging.error(f"Check nickname error: {e}")
-        return {"available": True}
-
 @app.get("/")
 def root():
     return {"status": "XSPACECOIN API running 🪐", "db": "postgresql" if USE_PG else "sqlite"}
@@ -254,7 +198,6 @@ async def register_user(request: dict):
     user_id = request.get("telegram_id") or request.get("user_id")
     username = request.get("username", "")
     full_name = request.get("full_name", "")
-    nickname = request.get("nickname", "") or full_name or username or "Commander"
     referrer_id = request.get("ref_id") or request.get("referrer_id")
     coins = request.get("coins", 0)
     level = request.get("level", 1)
@@ -275,9 +218,10 @@ async def register_user(request: dict):
 
     if existing:
         existing_coins = existing['coins']
-        if nickname and nickname != "Commander":
+        upd_nick = nickname if nickname and nickname != "Commander" else None
+        if upd_nick:
             c.execute(q("UPDATE users SET coins=?, clicks=?, level=?, username=?, full_name=?, nickname=? WHERE user_id=?"),
-                      (max(coins, existing_coins), clicks, level, username, full_name, nickname, user_id))
+                      (max(coins, existing_coins), clicks, level, username, full_name, upd_nick, user_id))
         else:
             c.execute(q("UPDATE users SET coins=?, clicks=?, level=?, username=?, full_name=? WHERE user_id=?"),
                       (max(coins, existing_coins), clicks, level, username, full_name, user_id))
@@ -295,8 +239,8 @@ async def register_user(request: dict):
         return {"status": "exists", "referrals": refs, "coins": max(coins, existing_coins)}
 
     # New user
-    c.execute(q("INSERT INTO users (user_id, username, full_name, nickname, coins, clicks, level, referrer_id) VALUES (?,?,?,?,?,?,?,?)"),
-              (user_id, username, full_name, nickname, coins, clicks, level, referrer_id))
+    c.execute(q("INSERT INTO users (user_id, username, full_name, coins, clicks, level, referrer_id) VALUES (?,?,?,?,?,?,?)"),
+              (user_id, username, full_name, coins, clicks, level, referrer_id))
 
     if referrer_id and referrer_id != user_id:
         c.execute(q("SELECT 1 FROM referrals WHERE referrer_id=? AND referred_id=?"), (referrer_id, user_id))
