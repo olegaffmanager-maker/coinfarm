@@ -3,19 +3,19 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
-
+# PostgreSQL через psycopg2
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
+# Если есть PostgreSQL — используем его, иначе SQLite
 if DATABASE_URL:
     import psycopg2
     from psycopg2.extras import RealDictCursor
     USE_PG = True
-    logging.info(f"Using PostgreSQL: {DATABASE_URL[:30]}...")
+    logging.info("Using PostgreSQL")
 else:
     import sqlite3
     USE_PG = False
-    logging.info("Using SQLite (no DATABASE_URL set!)")
+    logging.info("Using SQLite (temporary)")
 
 app = FastAPI()
 
@@ -36,89 +36,92 @@ def get_db():
         return conn
 
 def init_db():
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        if USE_PG:
-            c.execute("""CREATE TABLE IF NOT EXISTS users (
-                user_id BIGINT PRIMARY KEY,
-                username TEXT DEFAULT '',
-                full_name TEXT DEFAULT '',
-                coins FLOAT DEFAULT 0,
-                clicks INTEGER DEFAULT 0,
-                level INTEGER DEFAULT 1,
-                referrer_id BIGINT DEFAULT NULL,
-                joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                keys INTEGER DEFAULT 0,
-                total_earned FLOAT DEFAULT 0,
-                streak INTEGER DEFAULT 0,
-                streak_day INTEGER DEFAULT 1,
-                artifacts TEXT DEFAULT '{}',
-                bosses TEXT DEFAULT '{}',
-                rare_planets TEXT DEFAULT '{}',
-                vip TEXT DEFAULT '{}',
-                staked FLOAT DEFAULT 0,
-                pvp_wins INTEGER DEFAULT 0,
-                clan TEXT DEFAULT NULL,
-                last_save BIGINT DEFAULT 0
-            )""")
-            c.execute("""CREATE TABLE IF NOT EXISTS referrals (
-                referrer_id BIGINT,
-                referred_id BIGINT,
-                coins_earned FLOAT DEFAULT 0,
-                PRIMARY KEY (referrer_id, referred_id)
-            )""")
-            c.execute("""CREATE TABLE IF NOT EXISTS promo_used (
-                user_id BIGINT,
-                code TEXT,
-                used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (user_id, code)
-            )""")
-        else:
-            c.execute("""CREATE TABLE IF NOT EXISTS users (
-                user_id INTEGER PRIMARY KEY,
-                username TEXT DEFAULT '',
-                full_name TEXT DEFAULT '',
-                coins REAL DEFAULT 0,
-                clicks INTEGER DEFAULT 0,
-                level INTEGER DEFAULT 1,
-                referrer_id INTEGER DEFAULT NULL,
-                joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                keys INTEGER DEFAULT 0,
-                total_earned REAL DEFAULT 0,
-                streak INTEGER DEFAULT 0,
-                streak_day INTEGER DEFAULT 1,
-                artifacts TEXT DEFAULT '{}',
-                bosses TEXT DEFAULT '{}',
-                rare_planets TEXT DEFAULT '{}',
-                vip TEXT DEFAULT '{}',
-                staked REAL DEFAULT 0,
-                pvp_wins INTEGER DEFAULT 0,
-                clan TEXT DEFAULT NULL,
-                last_save INTEGER DEFAULT 0
-            )""")
-            c.execute("""CREATE TABLE IF NOT EXISTS referrals (
-                referrer_id INTEGER, referred_id INTEGER, coins_earned REAL DEFAULT 0
-            )""")
-            c.execute("""CREATE TABLE IF NOT EXISTS promo_used (
-                user_id INTEGER, code TEXT, used_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (user_id, code)
-            )""")
-            for col, ct in [
-                ("keys","INTEGER DEFAULT 0"),("total_earned","REAL DEFAULT 0"),
-                ("streak","INTEGER DEFAULT 0"),("streak_day","INTEGER DEFAULT 1"),
-                ("artifacts","TEXT DEFAULT '{}'"),("bosses","TEXT DEFAULT '{}'"),
-                ("rare_planets","TEXT DEFAULT '{}'"),("vip","TEXT DEFAULT '{}'"),
-                ("staked","REAL DEFAULT 0"),("pvp_wins","INTEGER DEFAULT 0"),
-                ("clan","TEXT DEFAULT NULL"),("last_save","INTEGER DEFAULT 0"),
-            ]:
-                try: c.execute(f"ALTER TABLE users ADD COLUMN {col} {ct}")
-                except: pass
-        conn.commit()
-        conn.close()
-        logging.info("DB initialized OK")
-    except Exception as e:
-        logging.error(f"DB init error: {e}")
+    conn = get_db()
+    c = conn.cursor()
+    if USE_PG:
+        c.execute("""CREATE TABLE IF NOT EXISTS users (
+            user_id BIGINT PRIMARY KEY,
+            username TEXT DEFAULT '',
+            full_name TEXT DEFAULT '',
+            coins FLOAT DEFAULT 0,
+            clicks INTEGER DEFAULT 0,
+            level INTEGER DEFAULT 1,
+            nickname TEXT DEFAULT NULL,
+            referrer_id BIGINT DEFAULT NULL,
+            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            keys INTEGER DEFAULT 0,
+            total_earned FLOAT DEFAULT 0,
+            streak INTEGER DEFAULT 0,
+            streak_day INTEGER DEFAULT 1,
+            artifacts TEXT DEFAULT '{}',
+            bosses TEXT DEFAULT '{}',
+            rare_planets TEXT DEFAULT '{}',
+            vip TEXT DEFAULT '{}',
+            staked FLOAT DEFAULT 0,
+            pvp_wins INTEGER DEFAULT 0,
+            clan TEXT DEFAULT NULL,
+            last_save BIGINT DEFAULT 0
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS referrals (
+            referrer_id BIGINT,
+            referred_id BIGINT,
+            coins_earned FLOAT DEFAULT 0,
+            PRIMARY KEY (referrer_id, referred_id)
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS promo_used (
+            user_id BIGINT,
+            code TEXT,
+            used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (user_id, code)
+        )""")
+    else:
+        c.execute("""CREATE TABLE IF NOT EXISTS users (
+            user_id INTEGER PRIMARY KEY,
+            username TEXT DEFAULT '',
+            full_name TEXT DEFAULT '',
+            coins REAL DEFAULT 0,
+            clicks INTEGER DEFAULT 0,
+            level INTEGER DEFAULT 1,
+            referrer_id INTEGER DEFAULT NULL,
+            joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            keys INTEGER DEFAULT 0,
+            total_earned REAL DEFAULT 0,
+            streak INTEGER DEFAULT 0,
+            streak_day INTEGER DEFAULT 1,
+            artifacts TEXT DEFAULT '{}',
+            bosses TEXT DEFAULT '{}',
+            rare_planets TEXT DEFAULT '{}',
+            vip TEXT DEFAULT '{}',
+            staked REAL DEFAULT 0,
+            pvp_wins INTEGER DEFAULT 0,
+            clan TEXT DEFAULT NULL,
+            last_save INTEGER DEFAULT 0
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS referrals (
+            referrer_id INTEGER,
+            referred_id INTEGER,
+            coins_earned REAL DEFAULT 0
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS promo_used (
+            user_id INTEGER,
+            code TEXT,
+            used_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (user_id, code)
+        )""")
+        # Auto-migrate
+        new_cols = [
+            ("keys","INTEGER DEFAULT 0"),("total_earned","REAL DEFAULT 0"),
+            ("streak","INTEGER DEFAULT 0"),("streak_day","INTEGER DEFAULT 1"),
+            ("artifacts","TEXT DEFAULT '{}'"),("bosses","TEXT DEFAULT '{}'"),
+            ("rare_planets","TEXT DEFAULT '{}'"),("vip","TEXT DEFAULT '{}'"),
+            ("staked","REAL DEFAULT 0"),("pvp_wins","INTEGER DEFAULT 0"),
+            ("clan","TEXT DEFAULT NULL"),("last_save","INTEGER DEFAULT 0"),
+        ]
+        for col, ct in new_cols:
+            try: c.execute(f"ALTER TABLE users ADD COLUMN {col} {ct}")
+            except: pass
+    conn.commit()
+    conn.close()
 
 init_db()
 
@@ -131,9 +134,65 @@ def get_referral_count(c, user_id):
     return row['cnt'] if row else 0
 
 def q(sql):
+    """Convert ? placeholders to %s for PostgreSQL"""
     if USE_PG:
         return sql.replace('?', '%s')
     return sql
+
+# ═══ FAKE PLAYERS for leaderboard (removed when real players > 50) ═══
+FAKE_PLAYERS = [
+    {"user_id": -1,  "nickname": "CosmicAce",    "full_name": "CosmicAce",    "coins": 9500000, "level": 95, "last_save": 0},
+    {"user_id": -2,  "nickname": "StarMiner88",   "full_name": "StarMiner88",  "coins": 8200000, "level": 88, "last_save": 0},
+    {"user_id": -3,  "nickname": "GalaxyQueen",   "full_name": "GalaxyQueen", "coins": 7100000, "level": 82, "last_save": 0},
+    {"user_id": -4,  "nickname": "XSpaceKing",    "full_name": "XSpaceKing",   "coins": 6300000, "level": 78, "last_save": 0},
+    {"user_id": -5,  "nickname": "NebulaCraft",   "full_name": "NebulaCraft",  "coins": 5800000, "level": 74, "last_save": 0},
+    {"user_id": -6,  "nickname": "OrbitRider",    "full_name": "OrbitRider",   "coins": 5200000, "level": 70, "last_save": 0},
+    {"user_id": -7,  "nickname": "AsteroidHuntr", "full_name": "AsteroidHuntr","coins": 4700000, "level": 66, "last_save": 0},
+    {"user_id": -8,  "nickname": "PulsarPro",     "full_name": "PulsarPro",    "coins": 4100000, "level": 62, "last_save": 0},
+    {"user_id": -9,  "nickname": "VoidWalker",    "full_name": "VoidWalker",   "coins": 3600000, "level": 58, "last_save": 0},
+    {"user_id": -10, "nickname": "DarkMatter99",  "full_name": "DarkMatter99", "coins": 3100000, "level": 54, "last_save": 0},
+    {"user_id": -11, "nickname": "QuasarX",       "full_name": "QuasarX",      "coins": 2700000, "level": 50, "last_save": 0},
+    {"user_id": -12, "nickname": "TONHodler",     "full_name": "TONHodler",    "coins": 2300000, "level": 46, "last_save": 0},
+    {"user_id": -13, "nickname": "CryptoNova",    "full_name": "CryptoNova",   "coins": 1900000, "level": 42, "last_save": 0},
+    {"user_id": -14, "nickname": "SpaceWhale",    "full_name": "SpaceWhale",   "coins": 1500000, "level": 38, "last_save": 0},
+    {"user_id": -15, "nickname": "MoonMiner",     "full_name": "MoonMiner",    "coins": 1200000, "level": 34, "last_save": 0},
+]
+
+import time
+import math
+
+def get_fake_players_with_growth():
+    """Fake players grow coins slowly over time to look realistic"""
+    now = int(time.time())
+    result = []
+    for p in FAKE_PLAYERS:
+        # Coins grow ~500/hour with some randomness based on user_id
+        hours = now / 3600
+        growth = int(abs(p["user_id"]) * 47 * math.sin(hours * 0.1 + abs(p["user_id"])) * 100)
+        fake = dict(p)
+        fake["coins"] = p["coins"] + growth
+        result.append(fake)
+    return result
+
+@app.get("/user/check_nickname")
+def check_nickname(nickname: str):
+    """Check if nickname is available"""
+    if not nickname or len(nickname) < 3 or len(nickname) > 18:
+        return {"available": False, "reason": "invalid length"}
+    # Check against fake players
+    fake_nicks = [p["nickname"].lower() for p in FAKE_PLAYERS]
+    if nickname.lower() in fake_nicks:
+        return {"available": False, "reason": "taken"}
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute(q("SELECT 1 FROM users WHERE LOWER(nickname)=LOWER(?) OR LOWER(full_name)=LOWER(?)"), (nickname, nickname))
+        taken = c.fetchone() is not None
+        conn.close()
+        return {"available": not taken}
+    except Exception as e:
+        logging.error(f"Check nickname error: {e}")
+        return {"available": True}
 
 @app.get("/")
 def root():
@@ -141,78 +200,61 @@ def root():
 
 @app.get("/stats")
 def get_stats():
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute("SELECT COUNT(*) as total FROM users")
-        total = c.fetchone()['total'] or 0
-        c.execute("SELECT SUM(coins) as total_coins FROM users")
-        total_coins = c.fetchone()['total_coins'] or 0
-        conn.close()
-        return {"total_players": total, "total_coins": int(total_coins)}
-    except Exception as e:
-        logging.error(f"Stats error: {e}")
-        return {"total_players": 0, "total_coins": 0}
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) as total FROM users")
+    total = c.fetchone()['total'] or 0
+    c.execute("SELECT SUM(coins) as total_coins FROM users")
+    total_coins = c.fetchone()['total_coins'] or 0
+    conn.close()
+    return {"total_players": total, "total_coins": int(total_coins)}
 
 @app.get("/top")
 def get_top():
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute("SELECT user_id, full_name, coins, level FROM users ORDER BY coins DESC LIMIT 50")
-        top = [dict(row) for row in c.fetchall()]
-        conn.close()
-        logging.info(f"Top: {len(top)} players")
-        return top
-    except Exception as e:
-        logging.error(f"Top error: {e}")
-        return []
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT user_id, full_name, coins, level FROM users ORDER BY coins DESC LIMIT 50")
+    top = [dict(row) for row in c.fetchall()]
+    conn.close()
+    return top
 
 @app.get("/user/{user_id}")
 def get_user(user_id: int):
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute(q("SELECT * FROM users WHERE user_id = ?"), (user_id,))
-        user = c.fetchone()
-        if not user:
-            conn.close()
-            return {"error": "not found"}
-        refs = get_referral_count(c, user_id)
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(q("SELECT * FROM users WHERE user_id = ?"), (user_id,))
+    user = c.fetchone()
+    if not user:
         conn.close()
-        result = dict(user)
-        result["referrals"] = refs
-        return result
-    except Exception as e:
-        logging.error(f"Get user error: {e}")
-        return {"error": str(e)}
+        return {"error": "not found"}
+    refs = get_referral_count(c, user_id)
+    conn.close()
+    result = dict(user)
+    result["referrals"] = refs
+    return result
 
 @app.get("/user/{user_id}/friends")
 def get_friends(user_id: int):
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute(q("""
-            SELECT u.user_id, u.full_name, u.username, u.coins, u.level, r.coins_earned
-            FROM referrals r
-            JOIN users u ON u.user_id = r.referred_id
-            WHERE r.referrer_id = ?
-            ORDER BY u.coins DESC
-        """), (user_id,))
-        friends = [dict(row) for row in c.fetchall()]
-        refs = get_referral_count(c, user_id)
-        conn.close()
-        return {"friends": friends, "referrals": refs}
-    except Exception as e:
-        logging.error(f"Friends error: {e}")
-        return {"friends": [], "referrals": 0}
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(q("""
+        SELECT u.user_id, u.full_name, u.username, u.coins, u.level, r.coins_earned
+        FROM referrals r
+        JOIN users u ON u.user_id = r.referred_id
+        WHERE r.referrer_id = ?
+        ORDER BY u.coins DESC
+    """), (user_id,))
+    friends = [dict(row) for row in c.fetchall()]
+    refs = get_referral_count(c, user_id)
+    conn.close()
+    return {"friends": friends, "referrals": refs}
 
 @app.post("/user/register")
 async def register_user(request: dict):
-    logging.info(f"Register request: {request}")
     user_id = request.get("telegram_id") or request.get("user_id")
     username = request.get("username", "")
     full_name = request.get("full_name", "")
+    nickname = request.get("nickname", "") or full_name or username or "Commander"
     referrer_id = request.get("ref_id") or request.get("referrer_id")
     coins = request.get("coins", 0)
     level = request.get("level", 1)
@@ -226,49 +268,49 @@ async def register_user(request: dict):
     except:
         return {"error": "invalid id"}
 
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute(q("SELECT user_id, coins FROM users WHERE user_id = ?"), (user_id,))
-        existing = c.fetchone()
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(q("SELECT user_id, coins FROM users WHERE user_id = ?"), (user_id,))
+    existing = c.fetchone()
 
-        if existing:
-            existing_coins = existing['coins']
+    if existing:
+        existing_coins = existing['coins']
+        if nickname and nickname != "Commander":
+            c.execute(q("UPDATE users SET coins=?, clicks=?, level=?, username=?, full_name=?, nickname=? WHERE user_id=?"),
+                      (max(coins, existing_coins), clicks, level, username, full_name, nickname, user_id))
+        else:
             c.execute(q("UPDATE users SET coins=?, clicks=?, level=?, username=?, full_name=? WHERE user_id=?"),
                       (max(coins, existing_coins), clicks, level, username, full_name, user_id))
-            if referrer_id and referrer_id != user_id:
-                c.execute(q("SELECT 1 FROM referrals WHERE referrer_id=? AND referred_id=?"), (referrer_id, user_id))
-                if not c.fetchone():
-                    c.execute(q("INSERT INTO referrals (referrer_id, referred_id) VALUES (?,?)"), (referrer_id, user_id))
-                    c.execute(q("SELECT user_id FROM users WHERE user_id=?"), (referrer_id,))
-                    if c.fetchone():
-                        c.execute(q("UPDATE users SET coins=coins+5000 WHERE user_id=?"), (referrer_id,))
-            refs = get_referral_count(c, user_id)
-            conn.commit()
-            conn.close()
-            logging.info(f"User {user_id} updated OK")
-            return {"status": "exists", "referrals": refs, "coins": max(coins, existing_coins)}
-
-        c.execute(q("INSERT INTO users (user_id, username, full_name, coins, clicks, level, referrer_id) VALUES (?,?,?,?,?,?,?)"),
-                  (user_id, username, full_name, coins, clicks, level, referrer_id))
+        # Add referral if provided and not yet linked
         if referrer_id and referrer_id != user_id:
             c.execute(q("SELECT 1 FROM referrals WHERE referrer_id=? AND referred_id=?"), (referrer_id, user_id))
             if not c.fetchone():
                 c.execute(q("INSERT INTO referrals (referrer_id, referred_id) VALUES (?,?)"), (referrer_id, user_id))
-            c.execute(q("SELECT user_id FROM users WHERE user_id=?"), (referrer_id,))
-            if c.fetchone():
-                c.execute(q("UPDATE users SET coins=coins+5000 WHERE user_id=?"), (referrer_id,))
-                logging.info(f"Referral: {referrer_id} invited {user_id}, +5000 XSPC")
-
-        conn.commit()
+                c.execute(q("SELECT user_id FROM users WHERE user_id=?"), (referrer_id,))
+                if c.fetchone():
+                    c.execute(q("UPDATE users SET coins=coins+5000 WHERE user_id=?"), (referrer_id,))
         refs = get_referral_count(c, user_id)
+        conn.commit()
         conn.close()
-        logging.info(f"User {user_id} ({full_name}) CREATED OK")
-        return {"status": "created", "referrals": refs}
+        return {"status": "exists", "referrals": refs, "coins": max(coins, existing_coins)}
 
-    except Exception as e:
-        logging.error(f"Register error for {user_id}: {e}")
-        return {"error": str(e)}
+    # New user
+    c.execute(q("INSERT INTO users (user_id, username, full_name, nickname, coins, clicks, level, referrer_id) VALUES (?,?,?,?,?,?,?,?)"),
+              (user_id, username, full_name, nickname, coins, clicks, level, referrer_id))
+
+    if referrer_id and referrer_id != user_id:
+        c.execute(q("SELECT 1 FROM referrals WHERE referrer_id=? AND referred_id=?"), (referrer_id, user_id))
+        if not c.fetchone():
+            c.execute(q("INSERT INTO referrals (referrer_id, referred_id) VALUES (?,?)"), (referrer_id, user_id))
+        c.execute(q("SELECT user_id FROM users WHERE user_id=?"), (referrer_id,))
+        if c.fetchone():
+            c.execute(q("UPDATE users SET coins=coins+5000 WHERE user_id=?"), (referrer_id,))
+            logging.info(f"Referral: {referrer_id} invited {user_id}, +5000 XSPC")
+
+    conn.commit()
+    refs = get_referral_count(c, user_id)
+    conn.close()
+    return {"status": "created", "referrals": refs}
 
 @app.post("/user/save")
 async def save_progress(request: dict):
@@ -296,44 +338,41 @@ async def save_progress(request: dict):
     clan         = request.get("clan", None)
     last_save    = request.get("last_save", 0)
 
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute(q("SELECT coins, referrer_id FROM users WHERE user_id = ?"), (user_id,))
-        row = c.fetchone()
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(q("SELECT coins, referrer_id FROM users WHERE user_id = ?"), (user_id,))
+    row = c.fetchone()
 
-        if not row:
-            c.execute(q("INSERT INTO users (user_id, coins, clicks, level, keys, total_earned, streak, last_save) VALUES (?,?,?,?,?,?,?,?)"),
-                      (user_id, coins, clicks, level, keys, total_earned, streak, last_save))
-            conn.commit()
-            conn.close()
-            logging.info(f"User {user_id} auto-created via save")
-            return {"status": "created"}
-
-        old_coins = row['coins']
-        earned = max(0, coins - old_coins)
-        referrer_id = row['referrer_id']
-        if referrer_id and earned > 0:
-            bonus = earned * 0.05
-            c.execute(q("UPDATE users SET coins=coins+? WHERE user_id=?"), (bonus, referrer_id))
-
-        c.execute(q("""UPDATE users SET
-            coins=?, clicks=?, level=?,
-            keys=?, total_earned=?, streak=?, streak_day=?,
-            artifacts=?, bosses=?, rare_planets=?,
-            vip=?, staked=?, pvp_wins=?, clan=?, last_save=?
-            WHERE user_id=?"""),
-            (coins, clicks, level, keys, total_earned, streak, streak_day,
-             artifacts, bosses, rare_planets, vip, staked, pvp_wins, clan, last_save,
-             user_id))
+    if not row:
+        # Auto-register if not exists
+        c.execute(q("INSERT INTO users (user_id, coins, clicks, level, keys, total_earned, streak, last_save) VALUES (?,?,?,?,?,?,?,?)"),
+                  (user_id, coins, clicks, level, keys, total_earned, streak, last_save))
         conn.commit()
-        refs = get_referral_count(c, user_id)
         conn.close()
-        return {"status": "saved", "referrals": refs}
+        return {"status": "created"}
 
-    except Exception as e:
-        logging.error(f"Save error for {user_id}: {e}")
-        return {"error": str(e)}
+    # Referral passive bonus
+    old_coins = row['coins']
+    earned = max(0, coins - old_coins)
+    referrer_id = row['referrer_id']
+    if referrer_id and earned > 0:
+        bonus = earned * 0.05
+        c.execute(q("UPDATE users SET coins=coins+? WHERE user_id=?"), (bonus, referrer_id))
+
+    c.execute(q("""UPDATE users SET
+        coins=?, clicks=?, level=?,
+        keys=?, total_earned=?, streak=?, streak_day=?,
+        artifacts=?, bosses=?, rare_planets=?,
+        vip=?, staked=?, pvp_wins=?, clan=?, last_save=?
+        WHERE user_id=?"""),
+        (coins, clicks, level, keys, total_earned, streak, streak_day,
+         artifacts, bosses, rare_planets, vip, staked, pvp_wins, clan, last_save,
+         user_id))
+    conn.commit()
+
+    refs = get_referral_count(c, user_id)
+    conn.close()
+    return {"status": "saved", "referrals": refs}
 
 # ═══ PROMO CODES ═══
 PROMO_CODES = {
@@ -356,7 +395,7 @@ PROMO_CODES = {
 @app.post("/promo/redeem")
 async def redeem_promo(request: dict):
     user_id = request.get("user_id")
-    code = str(request.get("code", "")).strip().upper()
+    code    = str(request.get("code", "")).strip().upper()
     if not user_id or not code:
         return {"error": "missing fields"}
     try:
@@ -368,26 +407,24 @@ async def redeem_promo(request: dict):
     if not promo:
         return {"error": "invalid_code", "msg": "❌ Invalid promo code"}
 
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute(q("SELECT 1 FROM promo_used WHERE user_id=? AND code=?"), (user_id, code))
-        if c.fetchone():
-            conn.close()
-            return {"error": "already_used", "msg": "⚠️ Code already used"}
-        coins_r = promo['coins']
-        keys_r = promo['keys']
-        c.execute(q("UPDATE users SET coins=coins+?, keys=keys+? WHERE user_id=?"), (coins_r, keys_r, user_id))
-        c.execute(q("INSERT INTO promo_used (user_id, code) VALUES (?,?)"), (user_id, code))
-        conn.commit()
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(q("SELECT 1 FROM promo_used WHERE user_id=? AND code=?"), (user_id, code))
+    if c.fetchone():
         conn.close()
-        msg = "✅ Code activated!"
-        if coins_r: msg += f"\n+{coins_r:,} XSPC"
-        if keys_r: msg += f"\n+{keys_r} XKEY 🔑"
-        return {"status": "ok", "msg": msg, "coins": coins_r, "keys": keys_r}
-    except Exception as e:
-        logging.error(f"Promo error: {e}")
-        return {"error": str(e)}
+        return {"error": "already_used", "msg": "⚠️ Code already used"}
+
+    coins_r = promo['coins']
+    keys_r  = promo['keys']
+    c.execute(q("UPDATE users SET coins=coins+?, keys=keys+? WHERE user_id=?"), (coins_r, keys_r, user_id))
+    c.execute(q("INSERT INTO promo_used (user_id, code) VALUES (?,?)"), (user_id, code))
+    conn.commit()
+    conn.close()
+
+    msg = "✅ Code activated!"
+    if coins_r: msg += f"\n+{coins_r:,} XSPC"
+    if keys_r:  msg += f"\n+{keys_r} XKEY 🔑"
+    return {"status": "ok", "msg": msg, "coins": coins_r, "keys": keys_r}
 
 # ═══ NOTIFY ═══
 energy_notify_users = set()
@@ -405,19 +442,18 @@ def get_pending():
     energy_notify_users.clear()
     return {"users": users}
 
+# ═══ DEBUG ═══
 @app.get("/debug/referrals/{user_id}")
 def debug_referrals(user_id: int):
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute(q("SELECT * FROM referrals WHERE referrer_id=?"), (user_id,))
-        rows = [dict(r) for r in c.fetchall()]
-        count = get_referral_count(c, user_id)
-        conn.close()
-        return {"referrer_id": user_id, "count": count, "referrals": rows}
-    except Exception as e:
-        return {"error": str(e)}
+    conn = get_db()
+    c = conn.cursor()
+    c.execute(q("SELECT * FROM referrals WHERE referrer_id=?"), (user_id,))
+    rows = [dict(r) for r in c.fetchall()]
+    count = get_referral_count(c, user_id)
+    conn.close()
+    return {"referrer_id": user_id, "count": count, "referrals": rows}
 
+# ═══ INVOICES ═══
 @app.get("/invoice/{package_type}")
 def create_invoice(package_type: str):
     PACKAGES = {
@@ -425,8 +461,8 @@ def create_invoice(package_type: str):
         'vip_month':   {'title': '👑 VIP Month',     'description': 'x2 all bonuses 30 days',  'amount': 200},
         'galaxy_pass': {'title': '🌌 Galaxy Pass',   'description': 'Permanent x2 bonus',      'amount': 1000},
         'xspc_pack':   {'title': '🪐 XSPC Pack',     'description': '+50,000 XSPC',             'amount': 30},
-        'key_pack':    {'title': '🔑 Key Pack',      'description': '+10 XKEY',                 'amount': 25},
-        'energy_pack': {'title': '⚡ Energy Pack',   'description': 'Unlimited energy 24h',    'amount': 15},
+        'key_pack':    {'title': '🔑 Key Pack',      'description': '+10 XKEY',                  'amount': 25},
+        'energy_pack': {'title': '⚡ Energy Pack',   'description': 'Unlimited energy 24h',     'amount': 15},
     }
     pkg = PACKAGES.get(package_type)
     if not pkg:

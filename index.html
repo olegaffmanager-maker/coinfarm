@@ -611,6 +611,24 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 <body>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+<!-- NICKNAME PICKER -->
+<div id="nickPickerOverlay" style="display:none;position:fixed;inset:0;z-index:9995;background:linear-gradient(180deg,#010308 0%,#020b1a 100%);flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:380px;text-align:center;">
+    <div style="font-size:56px;margin-bottom:12px;">🚀</div>
+    <div style="font-family:Orbitron,monospace;font-size:20px;font-weight:700;color:#FFD700;margin-bottom:8px;">CHOOSE YOUR NICKNAME</div>
+    <div style="font-size:13px;color:#4a6080;margin-bottom:24px;">Your unique identity in the galaxy.<br>Other commanders will see this name.</div>
+    <input id="nickInput" maxlength="18" placeholder="e.g. SpaceMiner99"
+      style="width:100%;padding:16px;background:rgba(0,245,255,0.06);border:2px solid rgba(0,245,255,0.3);border-radius:16px;color:#fff;font-size:18px;font-family:Orbitron,monospace;text-align:center;outline:none;box-sizing:border-box;margin-bottom:8px;"
+      oninput="this.value=this.value.replace(/[^a-zA-Z0-9_Ѐ-ӿ]/g,'').slice(0,18);nickCheckAvail()">
+    <div id="nickStatus" style="font-size:12px;min-height:18px;margin-bottom:16px;"></div>
+    <div style="font-size:11px;color:#4a6080;margin-bottom:20px;">3–18 characters · letters, numbers, _<br>No spaces · Must be unique</div>
+    <button id="nickConfirmBtn" onclick="confirmNickname()" disabled
+      style="width:100%;padding:16px;background:linear-gradient(135deg,#333,#444);border:none;border-radius:16px;color:#888;font-weight:700;font-size:16px;cursor:not-allowed;font-family:Rajdhani,sans-serif;letter-spacing:1px;transition:all 0.3s;">
+      ✓ CONFIRM
+    </button>
+  </div>
+</div>
+
 <div class="header">
   <div class="header-left">
     <div class="header-level">LEVEL <span id="headerLevel">1</span></div>
@@ -2352,6 +2370,103 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-lin
 
 <script>
 
+// ═══ NICKNAME SYSTEM ═══
+let _nickCheckTimer = null;
+
+function showNickPicker() {
+  const overlay = document.getElementById('nickPickerOverlay');
+  if(overlay) {
+    overlay.style.display = 'flex';
+    setTimeout(() => { const inp = document.getElementById('nickInput'); if(inp) inp.focus(); }, 300);
+  }
+}
+
+function nickCheckAvail() {
+  const inp = document.getElementById('nickInput');
+  const status = document.getElementById('nickStatus');
+  const btn = document.getElementById('nickConfirmBtn');
+  const val = inp ? inp.value.trim() : '';
+
+  if(!status || !btn) return;
+
+  if(val.length < 3) {
+    status.textContent = val.length > 0 ? '⚠️ Min 3 characters' : '';
+    status.style.color = '#ff9500';
+    btn.disabled = true;
+    btn.style.background = 'linear-gradient(135deg,#333,#444)';
+    btn.style.color = '#888';
+    btn.style.cursor = 'not-allowed';
+    return;
+  }
+
+  status.textContent = '⏳ Checking...';
+  status.style.color = '#4a6080';
+
+  if(_nickCheckTimer) clearTimeout(_nickCheckTimer);
+  _nickCheckTimer = setTimeout(async () => {
+    try {
+      const resp = await fetch(API_URL + '/user/check_nickname?nickname=' + encodeURIComponent(val));
+      const data = await resp.json();
+      if(data.available) {
+        status.textContent = '✅ Available!';
+        status.style.color = '#00ff88';
+        btn.disabled = false;
+        btn.style.background = 'linear-gradient(135deg,#7b2fff,#00f5ff)';
+        btn.style.color = '#fff';
+        btn.style.cursor = 'pointer';
+      } else {
+        status.textContent = '❌ Already taken, try another';
+        status.style.color = '#ff3366';
+        btn.disabled = true;
+        btn.style.background = 'linear-gradient(135deg,#333,#444)';
+        btn.style.color = '#888';
+        btn.style.cursor = 'not-allowed';
+      }
+    } catch(e) {
+      // If server unavailable, allow any nickname
+      status.textContent = '✅ Looks good!';
+      status.style.color = '#00ff88';
+      btn.disabled = false;
+      btn.style.background = 'linear-gradient(135deg,#7b2fff,#00f5ff)';
+      btn.style.color = '#fff';
+      btn.style.cursor = 'pointer';
+    }
+  }, 500);
+}
+
+async function confirmNickname() {
+  const inp = document.getElementById('nickInput');
+  const val = inp ? inp.value.trim() : '';
+  if(val.length < 3) return;
+
+  g.nickname = val;
+  g.full_name = val;
+  localStorage.setItem('xspc_nickname', val);
+  saveGame();
+
+  const overlay = document.getElementById('nickPickerOverlay');
+  if(overlay) {
+    overlay.style.transition = 'opacity 0.4s';
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; overlay.style.opacity = ''; }, 400);
+  }
+
+  // Update name display
+  const nameEl = document.getElementById('levelName');
+  if(nameEl) {
+    const planetName = nameEl.textContent.split(' ')[0];
+    nameEl.textContent = planetName + ' ' + val;
+  }
+
+  showToast('🚀 Welcome to the galaxy, ' + val + '!');
+
+  // Register with nickname
+  if(g.telegramId) {
+    await apiRegister(g.telegramId, val, val, null);
+  }
+}
+
+
 // ═══ COMPLETE I18N SYSTEM ═══
 const TRANSLATIONS = {
   "mine": {"en":"Mine","ru":"Майнинг","uk":"Майнінг","es":"Minar","zh":"挖矿","ar":"تعدين","pt":"Minerar"},
@@ -2671,7 +2786,6 @@ function apiSaveDebounced() {
   if(_apiSaveTimer) clearTimeout(_apiSaveTimer);
   _apiSaveTimer = setTimeout(() => { if(typeof apiSave==='function') apiSave(); _apiSaveTimer=null; }, 10000);
 }
-
 async function apiSave(){
   // Берём ID из всех источников
   if(!g.telegramId) {
@@ -4562,7 +4676,7 @@ async function renderTop(){
     const isMe = p.user_id == myId;
     const isFriend = friendIds.includes(p.user_id);
     const medal = medals[i] || ('#'+(i+1));
-    const name = p.full_name || 'Player';
+    const name = p.nickname || p.full_name || 'Commander';
     const initials = name.slice(0,2).toUpperCase();
     const planet = getPlanetForLevel(p.level||1);
     const coins = Math.floor(p.coins);
@@ -4785,118 +4899,6 @@ function showFeatureTip(key, title, text) {
   setTimeout(() => { if(tip.parentElement) tip.remove(); }, 8000);
 }
 
-
-// ═══ TIP SYSTEM — подсказки до 10 уровня ═══
-const PAGE_TIPS = {
-  earn: {
-    en: "💡 EARN tab — get free XSPC daily! Daily Combo gives up to 5 XKEY, Fortune Wheel spins for coins, Streak rewards grow every day!",
-    ru: "💡 ЗАРАБОТОК — получай XSPC каждый день! Дейли Комбо даёт до 5 XKEY, Колесо удачи крутится бесплатно, Серия наград растёт каждый день!",
-    uk: "💡 ДОХІД — отримуй XSPC щодня! Щоденне Комбо дає до 5 XKEY, Колесо удачі крутиться безкоштовно, Серія нагород зростає щодня!",
-    es: "💡 GANAR — ¡obtén XSPC gratis cada día! El Combo Diario da hasta 5 XKEY, la Rueda de la Suerte gira gratis, ¡las recompensas de racha crecen!",
-    zh: "💡 赚取 — 每天免费获取XSPC！每日组合最多给5个XKEY，幸运轮免费转，连续奖励每天增长！",
-    ar: "💡 كسب — احصل على XSPC مجاناً كل يوم! الكومبو اليومي يعطي حتى 5 XKEY، عجلة الحظ تدور مجاناً!",
-    pt: "💡 GANHAR — ganhe XSPC grátis todo dia! Combo Diário dá até 5 XKEY, Roda da Sorte gira grátis, recompensas de sequência crescem!"
-  },
-  upgrade: {
-    en: "💡 UPGRADE tab — buy Boost Cards for passive income! They earn XSPC every hour even when you're offline. More cards = more coins!",
-    ru: "💡 АПГРЕЙД — покупай карты для пассивного дохода! Они зарабатывают XSPC каждый час даже офлайн. Больше карт = больше монет!",
-    uk: "💡 АПГРЕЙД — купуй карти для пасивного доходу! Вони заробляють XSPC щогодини навіть офлайн. Більше карт = більше монет!",
-    es: "💡 MEJORAR — ¡compra Cartas de Impulso para ingresos pasivos! Ganan XSPC cada hora incluso offline. ¡Más cartas = más monedas!",
-    zh: "💡 升级 — 购买加速卡获得被动收入！即使离线也能每小时赚取XSPC。卡越多 = 收入越多！",
-    ar: "💡 ترقية — اشتر بطاقات التعزيز للدخل السلبي! تكسب XSPC كل ساعة حتى دون اتصال. المزيد من البطاقات = المزيد من العملات!",
-    pt: "💡 MELHORAR — compre Cartas de Impulso para renda passiva! Ganham XSPC a cada hora mesmo offline. Mais cartas = mais moedas!"
-  },
-  galaxy: {
-    en: "💡 GALAXY tab — explore the cosmos! Open Cosmos Map to see all 20 planets, start Expeditions for rare rewards, and stake XSPC for passive income!",
-    ru: "💡 ГАЛАКТИКА — исследуй космос! Карта космоса показывает все 20 планет, Экспедиции дают редкие награды, Стейкинг приносит пассивный доход!",
-    uk: "💡 ГАЛАКТИКА — досліджуй космос! Карта космосу показує всі 20 планет, Експедиції дають рідкісні нагороди, Стейкінг приносить пасивний дохід!",
-    es: "💡 GALAXIA — ¡explora el cosmos! El Mapa del Cosmos muestra los 20 planetas, las Expediciones dan recompensas raras, ¡el Staking genera ingresos pasivos!",
-    zh: "💡 银河 — 探索宇宙！宇宙地图显示全部20个星球，探险获得稀有奖励，质押XSPC赚取被动收入！",
-    ar: "💡 مجرة — استكشف الكون! خريطة الكون تُظهر جميع 20 كوكباً، الاستكشافات تعطي مكافآت نادرة، التوقيع يولّد دخلاً سلبياً!",
-    pt: "💡 GALÁXIA — explore o cosmos! O Mapa do Cosmos mostra todos os 20 planetas, Expedições dão recompensas raras, Staking gera renda passiva!"
-  },
-  battle: {
-    en: "💡 BATTLE tab — compete with others! Play PvP vs bots to earn coins, climb the Tournament ranking, and win Season prizes every month!",
-    ru: "💡 БИТВА — соревнуйся с другими! PvP против ботов приносит монеты, Турнир даёт рейтинг, Сезон — ежемесячные призы!",
-    uk: "💡 БИТВА — змагайся з іншими! PvP проти ботів приносить монети, Турнір дає рейтинг, Сезон — щомісячні призи!",
-    es: "💡 BATALLA — ¡compite con otros! PvP vs bots gana monedas, el Torneo da ranking, ¡la Temporada ofrece premios mensuales!",
-    zh: "💡 战斗 — 与他人竞争！PvP对抗机器人赚取金币，锦标赛提升排名，赛季每月有奖励！",
-    ar: "💡 معركة — تنافس مع الآخرين! PvP ضد الروبوتات يكسب عملات، البطولة تعطي تصنيفاً، الموسم يقدم جوائز شهرية!",
-    pt: "💡 BATALHA — compete com outros! PvP vs bots ganha moedas, o Torneio dá ranking, a Temporada oferece prêmios mensais!"
-  },
-  friends: {
-    en: "💡 FRIENDS tab — invite friends and earn together! You get +5,000 XSPC for each friend who joins. They also earn 5% of your mining as bonus!",
-    ru: "💡 ДРУЗЬЯ — приглашай друзей и зарабатывай вместе! +5,000 XSPC за каждого приглашённого. Они получают 5% от твоего майнинга как бонус!",
-    uk: "💡 ДРУЗІ — запрошуй друзів та заробляй разом! +5,000 XSPC за кожного запрошеного. Вони отримують 5% від твого майнінгу як бонус!",
-    es: "💡 AMIGOS — ¡invita amigos y gana juntos! +5,000 XSPC por cada amigo que se una. ¡También ganan el 5% de tu minería como bono!",
-    zh: "💡 好友 — 邀请朋友一起赚！每邀请一位朋友获得+5,000 XSPC。他们还能获得你挖矿的5%作为奖励！",
-    ar: "💡 أصدقاء — ادعُ أصدقاء واكسب معاً! +5,000 XSPC لكل صديق ينضم. يحصلون أيضاً على 5% من تعدينك كمكافأة!",
-    pt: "💡 AMIGOS — convide amigos e ganhe juntos! +5.000 XSPC por cada amigo que entrar. Eles também ganham 5% da sua mineração como bônus!"
-  },
-  keys: {
-    en: "💡 XKEY Keys unlock powerful Artifacts! Solve Daily Combo to earn keys. Each artifact gives permanent bonuses to your mining!",
-    ru: "💡 Ключи XKEY открывают мощные Артефакты! Решай Дейли Комбо чтобы получать ключи. Каждый артефакт даёт постоянные бонусы!",
-    uk: "💡 Ключі XKEY відкривають потужні Артефакти! Вирішуй Щоденне Комбо щоб отримувати ключі. Кожен артефакт дає постійні бонуси!",
-    es: "💡 ¡Las llaves XKEY desbloquean Artefactos poderosos! Resuelve el Combo Diario para ganar llaves. ¡Cada artefacto da bonos permanentes!",
-    zh: "💡 XKEY钥匙解锁强大的神器！完成每日组合获取钥匙。每个神器都能给你永久加成！",
-    ar: "💡 مفاتيح XKEY تفتح القطع الأثرية القوية! أكمل الكومبو اليومي لكسب المفاتيح. كل قطعة أثرية تعطي مكافآت دائمة!",
-    pt: "💡 Chaves XKEY desbloqueiam Artefatos poderosos! Resolva o Combo Diário para ganhar chaves. Cada artefato dá bônus permanentes!"
-  },
-  staking: {
-    en: "💡 STAKING — lock your XSPC to earn passive rewards! Stake 100K+ for 10% APY, 1M+ for 20% APY. Rewards collect every 24 hours!",
-    ru: "💡 СТЕЙКИНГ — заблокируй XSPC для пассивных наград! 100K+ = 10% годовых, 1M+ = 20% годовых. Награды каждые 24 часа!",
-    uk: "💡 СТЕЙКІНГ — заблокуй XSPC для пасивних нагород! 100K+ = 10% річних, 1M+ = 20% річних. Нагороди кожні 24 години!",
-    es: "💡 STAKING — ¡bloquea tu XSPC para ganar recompensas pasivas! 100K+ = 10% APY, 1M+ = 20% APY. ¡Recompensas cada 24 horas!",
-    zh: "💡 质押 — 锁定你的XSPC赚取被动奖励！质押100K+ = 10%年化，1M+ = 20%年化。奖励每24小时收取！",
-    ar: "💡 التوقيع — اقفل XSPC الخاص بك لكسب مكافآت سلبية! 100K+ = 10% عائد سنوي، 1M+ = 20% عائد سنوي. المكافآت كل 24 ساعة!",
-    pt: "💡 STAKING — bloqueie seu XSPC para ganhar recompensas passivas! 100K+ = 10% APY, 1M+ = 20% APY. Recompensas a cada 24 horas!"
-  },
-  combo: {
-    en: "💡 DAILY COMBO — guess 3 correct cards to win XKEY! New combo every day at midnight. Wrong guesses cost nothing — keep trying!",
-    ru: "💡 ДЕЙЛИ КОМБО — угадай 3 правильные карты и получи XKEY! Новое комбо каждый день в полночь. Неверные ответы ничего не стоят!",
-    uk: "💡 ЩОДЕННЕ КОМБО — вгадай 3 правильні карти і отримай XKEY! Нове комбо щодня опівночі. Неправильні відповіді нічого не коштують!",
-    es: "💡 COMBO DIARIO — ¡adivina 3 cartas correctas para ganar XKEY! Nuevo combo cada día a medianoche. ¡Los errores no cuestan nada!",
-    zh: "💡 每日组合 — 猜对3张牌赢取XKEY！每天午夜更新新组合。猜错不扣分——继续试！",
-    ar: "💡 الكومبو اليومي — خمّن 3 بطاقات صحيحة لتربح XKEY! كومبو جديد كل يوم منتصف الليل. الأخطاء لا تكلف شيئاً!",
-    pt: "💡 COMBO DIÁRIO — adivinhe 3 cartas corretas para ganhar XKEY! Novo combo todo dia à meia-noite. Erros não custam nada!"
-  }
-};
-
-function showPageTip(page) {
-  // Only show tips for players under level 10
-  if((g.level || 1) > 10) return;
-  
-  const tip = PAGE_TIPS[page];
-  if(!tip) return;
-  
-  // Check if already shown this session
-  const key = 'tip_' + page;
-  if(localStorage.getItem(key)) return;
-  localStorage.setItem(key, '1');
-  
-  // Get tip in current language
-  const lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
-  const text = tip[lang] || tip['en'];
-  
-  // Show as a styled toast
-  setTimeout(() => {
-    const toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;bottom:90px;left:12px;right:12px;z-index:9000;'
-      + 'background:linear-gradient(135deg,rgba(10,15,30,0.97),rgba(5,10,20,0.97));'
-      + 'border:1px solid rgba(0,245,255,0.3);border-radius:16px;padding:12px 16px;'
-      + 'font-size:12px;color:#ccc;line-height:1.5;'
-      + 'box-shadow:0 4px 20px rgba(0,0,0,0.5);'
-      + 'animation:slideUp 0.3s ease-out;';
-    toast.innerHTML = text
-      + '<div style="margin-top:8px;text-align:right;">'
-      + '<button onclick="this.parentElement.parentElement.remove()" '
-      + 'style="padding:4px 14px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);'
-      + 'border-radius:8px;color:#00f5ff;font-size:11px;cursor:pointer;">Got it ✓</button></div>';
-    document.body.appendChild(toast);
-    setTimeout(() => { if(toast.parentElement) toast.remove(); }, 8000);
-  }, 600);
-}
-
 function showPage(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
@@ -4915,10 +4917,10 @@ function showPage(page){
 
   // Hub-specific logic
   if(page==='mine'){initMinePageEffects();if(activeDailyEvent)showDailyEventBanner();}
-  if(page==='earn'){updateEarnHub();showPageTip('earn');}
-  if(page==='staking'){updateStakingUI();showPageTip('staking');clearInterval(window._stakingTimer);window._stakingTimer=setInterval(updateStakingUI,60000);}
-  if(page==='upgrade'){updateUpgradeHub();showPageTip('upgrade');}
-  if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();updateExpeditionStatus();showPageTip('galaxy');}
+  if(page==='earn'){updateEarnHub();}
+  if(page==='staking'){updateStakingUI();clearInterval(window._stakingTimer);window._stakingTimer=setInterval(updateStakingUI,60000);}
+  if(page==='upgrade'){updateUpgradeHub();}
+  if(page==='galaxy'){updateGalaxyHub();renderPlanetMap();updateExpeditionStatus();}
   if(page==='cosmosmap'){renderCosmosMap();}
   if(page==='clans'){updateClanUI();}
   if(page==='boss'){updateBossUI();}
@@ -4946,11 +4948,11 @@ function showPage(page){
     const sw=document.getElementById('seasonWins'); if(sw) sw.textContent=(g.pvpWins||0);
     const se=document.getElementById('seasonPageEnd'); if(se) se.textContent=s.end.toLocaleDateString();
   }
-  if(page==='keys'){showPageTip('keys');updateKeysUI();}
+  if(page==='keys'){updateKeysUI();}
   if(page==='cards'){renderFullCards();}
   if(page==='artifacts'){renderArtifacts();}
-  if(page==='combo'){showPageTip('combo');comboSelected=[];renderCombo();}
-  if(page==='friends'){showPageTip('friends');
+  if(page==='combo'){comboSelected=[];renderCombo();}
+  if(page==='friends'){
     const _fid = g.telegramId 
       || parseInt(localStorage.getItem('xspc_telegram_id')||'0')
       || parseInt(new URLSearchParams(window.location.search).get('user_id')||'0');
@@ -7365,7 +7367,8 @@ async function initUser(){
   localStorage.setItem('xspc_telegram_id', String(userId));
   saveGame();
   console.log('[XSPC] initUser:', userId, 'ref:', referrerId);
-  await apiRegister(userId,username,fullName,referrerId);
+  const savedNick = localStorage.getItem('xspc_nickname') || g.nickname || fullName;
+  await apiRegister(userId, savedNick, savedNick, referrerId);
   // Update ref link after we have the ID
   const refEl = document.getElementById('refLink');
   if(refEl) refEl.textContent = getRefLink();
