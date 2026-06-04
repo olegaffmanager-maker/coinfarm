@@ -18,6 +18,100 @@ bot = Bot(token=BOT_TOKEN)
 dp  = Dispatcher()
 
 users = set()
+user_langs = {}  # user_id -> language code
+
+# Translations for bot messages
+BOT_TRANSLATIONS = {
+    "welcome": {
+        "en": "🪐 <b>Welcome to XSPACECOIN!</b>\n\n🌌 <b>Conquer the Galaxy!</b>\n⛏️ Mine planets · 🔑 Earn XKEY · 🏆 Reach the Sun\n💰 XSPC token launches Q1 2027 on TON!\n\n🔔 <b>Notifications enabled!</b> You will get reminders about energy, rewards and events.\n\n👇 Tap to start!",
+        "ru": "🪐 <b>Добро пожаловать в XSPACECOIN!</b>\n\n🌌 <b>Покоряй Галактику!</b>\n⛏️ Майни планеты · 🔑 Получай XKEY · 🏆 Достигни Солнца\n💰 Токен XSPC запускается Q1 2027 на TON!\n\n🔔 <b>Уведомления включены!</b> Ты будешь получать напоминания об энергии, наградах и событиях.\n\n👇 Нажми чтобы начать!",
+        "uk": "🪐 <b>Ласкаво просимо до XSPACECOIN!</b>\n\n🌌 <b>Підкоряй Галактику!</b>\n⛏️ Майни планети · 🔑 Отримуй XKEY · 🏆 Досягни Сонця\n💰 Токен XSPC запускається Q1 2027 на TON!\n\n🔔 <b>Сповіщення увімкнено!</b> Ти будеш отримувати нагадування.\n\n👇 Натисни щоб розпочати!",
+        "es": "🪐 <b>¡Bienvenido a XSPACECOIN!</b>\n\n🌌 <b>¡Conquista la Galaxia!</b>\n⛏️ Mina planetas · 🔑 Gana XKEY · 🏆 Llega al Sol\n💰 ¡Token XSPC se lanza Q1 2027 en TON!\n\n🔔 <b>¡Notificaciones activadas!</b> Recibirás recordatorios.\n\n👇 ¡Toca para comenzar!",
+        "zh": "🪐 <b>欢迎来到XSPACECOIN！</b>\n\n🌌 <b>征服银河！</b>\n⛏️ 挖掘星球 · 🔑 赚取XKEY · 🏆 到达太阳\n💰 XSPC代币将于2027年Q1在TON上发布！\n\n🔔 <b>通知已启用！</b>您将收到提醒。\n\n👇 点击开始！",
+        "ar": "🪐 <b>مرحباً بك في XSPACECOIN!</b>\n\n🌌 <b>اغزو المجرة!</b>\n⛏️ اعدن الكواكب · 🔑 اكسب XKEY · 🏆 ابلغ الشمس\n💰 يُطلق رمز XSPC في Q1 2027 على TON!\n\n🔔 <b>تم تفعيل الإشعارات!</b>\n\n👇 اضغط للبدء!",
+        "pt": "🪐 <b>Bem-vindo ao XSPACECOIN!</b>\n\n🌌 <b>Conquiste a Galáxia!</b>\n⛏️ Mine planetas · 🔑 Ganhe XKEY · 🏆 Alcance o Sol\n💰 Token XSPC lança Q1 2027 na TON!\n\n🔔 <b>Notificações ativadas!</b> Você receberá lembretes.\n\n👇 Toque para começar!",
+    },
+    "play_btn": {
+        "en": "🚀 Play XSPACECOIN!", "ru": "🚀 Играть в XSPACECOIN!",
+        "uk": "🚀 Грати в XSPACECOIN!", "es": "🚀 ¡Jugar XSPACECOIN!",
+        "zh": "🚀 玩XSPACECOIN！", "ar": "🚀 العب XSPACECOIN!", "pt": "🚀 Jogar XSPACECOIN!",
+    },
+    "invite_btn": {
+        "en": "👥 Invite Friends & Earn", "ru": "👥 Пригласить друзей",
+        "uk": "👥 Запросити друзів", "es": "👥 Invitar amigos",
+        "zh": "👥 邀请朋友", "ar": "👥 دعوة الأصدقاء", "pt": "👥 Convidar amigos",
+    },
+    "energy_full": {
+        "en": "⚡ <b>Energy is FULL!</b>\n\nYour mining energy has fully restored! Come tap now! 🪐",
+        "ru": "⚡ <b>Энергия ПОЛНАЯ!</b>\n\nТвоя энергия восстановилась! Заходи майнить! 🪐",
+        "uk": "⚡ <b>Енергія ПОВНА!</b>\n\nТвоя енергія відновилась! Заходь майнити! 🪐",
+        "es": "⚡ <b>¡Energía LLENA!</b>\n\n¡Tu energía se ha restaurado completamente! 🪐",
+        "zh": "⚡ <b>能量已满！</b>\n\n您的挖矿能量已完全恢复！快来点击吧！🪐",
+        "ar": "⚡ <b>الطاقة ممتلئة!</b>\n\nاستُعيدت طاقة التعدين بالكامل! تعال للنقر! 🪐",
+        "pt": "⚡ <b>Energia CHEIA!</b>\n\nSua energia foi totalmente restaurada! Venha jogar! 🪐",
+    },
+    "passive_ready": {
+        "en": "🪐 <b>Passive Income Ready!</b>\n\nYour mines worked hard! Come collect your XSPC! 💰",
+        "ru": "🪐 <b>Пассивный доход готов!</b>\n\nТвои шахты поработали! Заходи собирать XSPC! 💰",
+        "uk": "🪐 <b>Пасивний дохід готовий!</b>\n\nТвої шахти попрацювали! Заходь збирати XSPC! 💰",
+        "es": "🪐 <b>¡Ingresos pasivos listos!</b>\n\n¡Tus minas trabajaron duro! ¡Ven a recoger tu XSPC! 💰",
+        "zh": "🪐 <b>被动收入已就绪！</b>\n\n您的矿场一直在努力工作！来收集XSPC吧！💰",
+        "ar": "🪐 <b>الدخل السلبي جاهز!</b>\n\nعملت مناجمك بجد! تعال لجمع XSPC! 💰",
+        "pt": "🪐 <b>Renda passiva pronta!</b>\n\nSuas minas trabalharam! Venha coletar seu XSPC! 💰",
+    },
+    "daily_reminder": {
+        "en": "📦 <b>Daily Rewards Waiting!</b>\n\n✅ Daily chest ready\n✅ Free wheel spin\n✅ Combo challenge open\n\nDon\'t break your streak! 🔥",
+        "ru": "📦 <b>Ежедневные награды ждут!</b>\n\n✅ Дневной сундук готов\n✅ Бесплатное вращение\n✅ Комбо открыто\n\nНе прерывай серию! 🔥",
+        "uk": "📦 <b>Щоденні нагороди чекають!</b>\n\n✅ Скриня готова\n✅ Безкоштовне обертання\n✅ Комбо відкрито\n\nНе переривай серію! 🔥",
+        "es": "📦 <b>¡Recompensas diarias esperando!</b>\n\n✅ Cofre listo\n✅ Giro gratis\n✅ Combo abierto\n\n¡No rompas tu racha! 🔥",
+        "zh": "📦 <b>每日奖励等待领取！</b>\n\n✅ 宝箱已就绪\n✅ 免费转轮\n✅ 组合挑战开放\n\n不要断开连续！🔥",
+        "ar": "📦 <b>المكافآت اليومية تنتظر!</b>\n\n✅ الصندوق جاهز\n✅ دوران مجاني\n✅ الكومبو مفتوح\n\nلا تكسر سلسلتك! 🔥",
+        "pt": "📦 <b>Recompensas diárias esperando!</b>\n\n✅ Baú pronto\n✅ Giro grátis\n✅ Combo aberto\n\nNão quebre sua sequência! 🔥",
+    },
+    "comeback_1d": {
+        "en": "👋 <b>We miss you, Commander!</b>\n\nYour planets wait to be mined! Come back and collect passive income! 🚀",
+        "ru": "👋 <b>Мы скучаем, Командир!</b>\n\nПланеты ждут майнинга! Вернись и забери доход! 🚀",
+        "uk": "👋 <b>Ми сумуємо, Командире!</b>\n\nПланети чекають! Повернись і забери дохід! 🚀",
+        "es": "👋 <b>¡Te extrañamos, Comandante!</b>\n\n¡Tus planetas esperan! ¡Vuelve a recoger tus ingresos! 🚀",
+        "zh": "👋 <b>我们想念您，指挥官！</b>\n\n星球等待挖掘！回来收集被动收入吧！🚀",
+        "ar": "👋 <b>نشتاق إليك يا قائد!</b>\n\nكواكبك تنتظر! عد واجمع دخلك! 🚀",
+        "pt": "👋 <b>Sentimos sua falta, Comandante!</b>\n\nSeus planetas esperam! Volte e colete sua renda! 🚀",
+    },
+    "comeback_3d": {
+        "en": "🆘 <b>Your Mines Are Idle!</b>\n\n3 days offline! Use code <code>COMEBACK</code> for +5,000 XSPC! 🎁",
+        "ru": "🆘 <b>Шахты простаивают!</b>\n\n3 дня офлайн! Код <code>COMEBACK</code> = +5,000 XSPC! 🎁",
+        "uk": "🆘 <b>Шахти простоюють!</b>\n\n3 дні офлайн! Код <code>COMEBACK</code> = +5,000 XSPC! 🎁",
+        "es": "🆘 <b>¡Minas inactivas!</b>\n\n¡3 días offline! Código <code>COMEBACK</code> = +5,000 XSPC! 🎁",
+        "zh": "🆘 <b>矿场空闲！</b>\n\n离线3天！代码 <code>COMEBACK</code> = +5,000 XSPC！🎁",
+        "ar": "🆘 <b>المناجم خاملة!</b>\n\n3 أيام دون اتصال! الرمز <code>COMEBACK</code> = +5,000 XSPC! 🎁",
+        "pt": "🆘 <b>Minas paradas!</b>\n\n3 dias offline! Código <code>COMEBACK</code> = +5.000 XSPC! 🎁",
+    },
+    "comeback_7d": {
+        "en": "🌟 <b>Special Gift!</b>\n\nA week offline! Code <code>RETURN2026</code> = +10,000 XSPC! Token Q1 2027! 💎",
+        "ru": "🌟 <b>Специальный подарок!</b>\n\nНеделю офлайн! Код <code>RETURN2026</code> = +10,000 XSPC! Токен Q1 2027! 💎",
+        "uk": "🌟 <b>Спеціальний подарунок!</b>\n\nТиждень офлайн! Код <code>RETURN2026</code> = +10,000 XSPC! Q1 2027! 💎",
+        "es": "🌟 <b>¡Regalo especial!</b>\n\n¡Semana offline! Código <code>RETURN2026</code> = +10,000 XSPC! Q1 2027! 💎",
+        "zh": "🌟 <b>特别礼物！</b>\n\n离线一周！代码 <code>RETURN2026</code> = +10,000 XSPC！Q1 2027！💎",
+        "ar": "🌟 <b>هدية خاصة!</b>\n\nأسبوع دون اتصال! <code>RETURN2026</code> = +10,000 XSPC! Q1 2027! 💎",
+        "pt": "🌟 <b>Presente especial!</b>\n\nSemana offline! Código <code>RETURN2026</code> = +10.000 XSPC! Q1 2027! 💎",
+    },
+}
+
+
+TG_LANG_MAP = {
+    'ru':'ru','uk':'uk','be':'ru','kk':'ru',
+    'es':'es','zh':'zh','zh-hans':'zh','zh-hant':'zh',
+    'ar':'ar','pt':'pt','br':'pt','en':'en',
+}
+
+def get_lang(user_id):
+    return user_langs.get(user_id, 'en')
+
+def tr(key, user_id, fallback=''):
+    lang = get_lang(user_id)
+    d = BOT_TRANSLATIONS.get(key, {})
+    return d.get(lang) or d.get('en') or fallback
+
 
 DAILY_PROMOS = ["XSPACE2026", "LAUNCH", "SPACE100", "WELCOMEGIFT",
                 "XSPC_TG", "MINEHARD", "GALAXY2026", "ASTEROID"]
@@ -32,7 +126,11 @@ def make_play_button(user_id, extra=""):
 # ═══ /start ═══
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    users.add(message.from_user.id)
+    uid = message.from_user.id
+    users.add(uid)
+    # Save user language
+    tg_lang = (message.from_user.language_code or 'en').lower().split('-')[0]
+    user_langs[uid] = TG_LANG_MAP.get(tg_lang, 'en')
     args = message.text.split()
     ref_id = None
     if len(args) > 1 and args[1].startswith("ref_"):
@@ -51,24 +149,15 @@ async def cmd_start(message: types.Message):
 
     me = await bot.get_me()
     builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text="🚀 Play XSPACECOIN!", web_app=WebAppInfo(url=webapp_url)))
+    builder.row(InlineKeyboardButton(text=tr("play_btn",uid,"🚀 Play XSPACECOIN!"), web_app=WebAppInfo(url=webapp_url)))
     builder.row(InlineKeyboardButton(
-        text="👥 Invite Friends & Earn",
+        text=tr("invite_btn",uid,"👥 Invite Friends & Earn"),
         url=f"https://t.me/share/url?url=https://t.me/{me.username}?start=ref_{message.from_user.id}"
             f"&text=🚀 Join me in XSPACECOIN — mine planets and earn XSPC tokens on TON!"
     ))
 
     await message.answer(
-        f"🪐 <b>Welcome to XSPACECOIN!</b>\n\n"
-        f"🌌 <b>Conquer the Galaxy!</b>\n"
-        f"⛏️ Mine planets · 🔑 Earn XKEY · 🏆 Reach the Sun\n"
-        f"💰 XSPC token launches Q1 2027 on TON!\n\n"
-        f"<b>📋 Commands:</b>\n"
-        f"/promo CODE — activate promo code 🎁\n"
-        f"/daily — today's free promo code 📅\n"
-        f"/notify — enable reminders 🔔\n"
-        f"/stats — game statistics 📊\n\n"
-        f"👇 Tap to start your space journey!",
+        tr('welcome', uid),
         reply_markup=builder.as_markup(),
         parse_mode="HTML",
     )
@@ -76,7 +165,10 @@ async def cmd_start(message: types.Message):
 # ═══ /play ═══
 @dp.message(Command("play"))
 async def cmd_play(message: types.Message):
-    users.add(message.from_user.id)
+    uid = message.from_user.id
+    users.add(uid)
+    tg_lang = (message.from_user.language_code or "en").lower().split("-")[0]
+    user_langs[uid] = TG_LANG_MAP.get(tg_lang, "en")
     webapp_url = f"{WEBAPP_URL}?user_id={message.from_user.id}"
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(text="🚀 Open XSPACECOIN", web_app=WebAppInfo(url=webapp_url)))
@@ -163,7 +255,10 @@ async def cmd_promo(message: types.Message):
 # ═══ /notify ═══
 @dp.message(Command("notify"))
 async def cmd_notify(message: types.Message):
-    users.add(message.from_user.id)
+    uid = message.from_user.id
+    users.add(uid)
+    tg_lang = (message.from_user.language_code or "en").lower().split("-")[0]
+    user_langs[uid] = TG_LANG_MAP.get(tg_lang, "en")
     await message.answer(
         "🔔 <b>Notifications enabled!</b>\n\n"
         "You will receive:\n"
@@ -200,87 +295,56 @@ async def cmd_stats(message: types.Message):
         parse_mode="HTML"
     )
 
-# ═══ SMART NOTIFICATION SYSTEM ═══
-
-# Messages by type — each with multiple variants for variety
-NOTIFICATION_MESSAGES = {
-    "energy": [
-        "⚡ <b>Energy is FULL!</b>\n\nYour mining energy is bursting! Come tap now before it goes to waste! 🪐",
-        "⚡ <b>Energy Restored!</b>\n\nFull tank ready! Every second offline = lost XSPC. Mine now! ⛏️",
-        "⚡ <b>Ready to Mine!</b>\n\nYour energy is 100%! Don't let it overflow — tap and earn! 🚀",
-    ],
-    "passive": [
-        "🪐 <b>Passive Income Ready!</b>\n\nYour mines have been working hard! Come collect your accumulated XSPC! 💰",
-        "⛏️ <b>Coins Waiting!</b>\n\nPassive income has been building up while you were away. Come grab it! 🤑",
-        "💎 <b>Your Mines Worked!</b>\n\nXSPC has been accumulating! Open the game to collect your passive income. 🪐",
-    ],
-    "daily": [
-        "📦 <b>Daily Rewards Waiting!</b>\n\n✅ Daily chest ready\n✅ Free wheel spin available\n✅ Combo challenge open\n\nDon't break your streak! 🔥",
-        "🎁 <b>Free Rewards Today!</b>\n\nYour daily chest, fortune wheel and combo are all waiting. Log in to claim! 🎯",
-        "🔥 <b>Streak Alert!</b>\n\nDon't lose your daily streak! Log in now to keep your rewards growing every day! 📈",
-    ],
-    "expedition": [
-        "🛸 <b>Expedition Complete!</b>\n\nYour space expedition has returned with rewards! Open the game to collect rare items! 🌟",
-        "🌌 <b>Cosmic Discovery!</b>\n\nA new expedition result is waiting for you! Rare planets and artifacts discovered! 🪐",
-    ],
-    "comeback_1day": [
-        "👋 <b>We miss you, Commander!</b>\n\nYour planets are waiting to be mined. Come back and collect your passive income! 🚀\n\n💡 Tip: Check the EARN tab for free daily rewards!",
-        "🌌 <b>The Galaxy Needs You!</b>\n\nIt's been a day since your last mining session. Your XSPC passive income is piling up! ⛏️",
-    ],
-    "comeback_3day": [
-        "🆘 <b>Your Mines Are Idle!</b>\n\nYou haven't mined in 3 days! Your passive income needs collection and your streak is at risk! 😱\n\n🎁 Use promo code <code>COMEBACK</code> for 5,000 bonus XSPC!",
-        "💤 <b>Wake Up, Commander!</b>\n\n3 days offline means you've missed tons of XSPC! Come back — the galaxy can't conquer itself! 🪐",
-    ],
-    "comeback_7day": [
-        "🌟 <b>Special Comeback Gift!</b>\n\nWe haven't seen you in a week! Come back now and use promo code <code>RETURN2026</code> for 10,000 XSPC bonus! 🎁\n\nToken launches Q1 2027 — every coin counts!",
-        "🚀 <b>Don't Miss the Launch!</b>\n\nXSPC token launches Q1 2027! You've been away 7 days — come back and stack coins before launch! 💎",
-    ],
-    "level_up_push": [
-        "🎉 <b>You're so close to leveling up!</b>\n\nJust a few more taps and you'll unlock a new planet! Come mine now! ⭐",
-    ],
-    "weekly_recap": [
-        "📊 <b>Your Weekly XSPC Report</b>\n\n",
-    ]
-}
-
-DAILY_MESSAGES = [
-    "⚡ Daily combo is waiting! Can you guess the 3 correct cards? 🎯",
-    "📦 Your daily chest is ready! Open it for XKEY rewards! 🔑",
-    "🎰 Spin the fortune wheel — your daily free spin is available!",
-    "🔥 Don't break your streak! Log in now for your daily reward!",
-    "⛏️ Your passive income is accumulating! Come collect your XSPC!",
-    "🌌 New day, new planet to conquer! Keep mining XSPC!",
-    "🚀 XSPC token launches Q1 2027 — every coin counts!",
-    "☄️ Expedition available! New cosmic event waiting for you!",
-    f"🎁 Today\'s free promo code: use /daily to get it!",
-    "💎 Have you checked your artifacts today? They give permanent bonuses!",
-    "🏆 Check the leaderboard — are you in the Top 10?",
-    "👥 Invite a friend and earn +5,000 XSPC! Share your link now!",
+# ═══ Telegram Push Notifications ═══
+# These are real Telegram messages sent when player is offline
+PUSH_MESSAGES = [
+    {
+        "type": "energy",
+        "title": "⚡ Energy Full!",
+        "text": "Your energy is fully restored! Come mine XSPC now before it goes to waste!",
+        "hours_offline": 0.5,  # Send after 30 min offline
+    },
+    {
+        "type": "passive",
+        "title": "🪐 Passive Income Ready!",
+        "text": "Your mines have been working! Come collect your passive XSPC income!",
+        "hours_offline": 2,
+    },
+    {
+        "type": "daily",
+        "title": "📦 Daily Rewards Waiting!",
+        "text": "Your daily chest, combo and streak are ready! Don't break your streak!",
+        "hours_offline": 20,
+    },
+    {
+        "type": "expedition",
+        "title": "🛸 Expedition Ready!",
+        "text": "A new cosmic expedition is available! Explore and earn rare rewards!",
+        "hours_offline": 4,
+    },
 ]
 
-async def send_notification(user_id: int, msg_type: str, extra: str = ""):
-    """Send a notification to a user by type"""
-    msgs = NOTIFICATION_MESSAGES.get(msg_type, [])
-    if not msgs:
-        return False
-    msg = random.choice(msgs)
-    if extra:
-        msg += extra
+async def send_push_to_user(user_id: int, msg_type: str):
+    """Send a specific push notification to a user"""
+    msg = next((m for m in PUSH_MESSAGES if m["type"] == msg_type), PUSH_MESSAGES[0])
     try:
         builder = InlineKeyboardBuilder()
         builder.row(make_play_button(user_id))
         await bot.send_message(
             user_id,
-            f"🪐 <b>XSPACECOIN</b>\n\n{msg}",
+            f"🪐 <b>XSPACECOIN</b>\n\n"
+            f"<b>{msg['title']}</b>\n"
+            f"{msg['text']}",
             reply_markup=builder.as_markup(),
             parse_mode="HTML"
         )
         return True
     except Exception as e:
-        logging.warning(f"Notification failed for {user_id}: {e}")
+        logging.warning(f"Push failed for {user_id}: {e}")
         users.discard(user_id)
         return False
 
+# ═══ Smart push notification system ═══
 async def poll_energy_notifications():
     """Poll server for energy-full notifications every 2 minutes"""
     while True:
@@ -295,17 +359,17 @@ async def poll_energy_notifications():
                         await send_notification(user_id, "energy")
                         await asyncio.sleep(0.05)
         except Exception as e:
-            logging.error(f"Poll energy error: {e}")
+            logging.error(f"Poll energy notifications error: {e}")
 
 async def run_smart_notifications():
-    """Smart notifications based on player activity"""
+    """Check player activity and send relevant push notifications"""
     while True:
-        await asyncio.sleep(1800)  # every 30 min
+        await asyncio.sleep(1800)  # Check every 30 minutes
 
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{API_URL}/top",
-                    timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                # Get all users from API
+                async with session.get(f"{API_URL}/top", timeout=aiohttp.ClientTimeout(total=10)) as resp:
                     top_players = await resp.json()
         except:
             top_players = []
@@ -315,13 +379,17 @@ async def run_smart_notifications():
 
         for user_id in list(users):
             try:
+                # Find player data
                 player = next((p for p in top_players if p.get("user_id") == user_id), None)
+
+                # Check last save time
                 last_save = player.get("last_save", 0) if player else 0
                 if last_save == 0:
                     continue
 
                 hours_offline = (now.timestamp() * 1000 - last_save) / 3600000
 
+                # Send appropriate notification based on offline time
                 msg_type = None
                 if 0.4 <= hours_offline <= 0.6:
                     msg_type = "energy"
@@ -333,7 +401,7 @@ async def run_smart_notifications():
                     msg_type = "daily"
 
                 if msg_type:
-                    if await send_notification(user_id, msg_type):
+                    if await send_push_to_user(user_id, msg_type):
                         sent += 1
                         await asyncio.sleep(0.1)
 
@@ -343,101 +411,20 @@ async def run_smart_notifications():
         if sent > 0:
             logging.info(f"Smart push: sent {sent} notifications")
 
-async def run_comeback_notifications():
-    """Send comeback messages to inactive players"""
-    while True:
-        await asyncio.sleep(3600)  # Check every hour
-
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{API_URL}/top",
-                    timeout=aiohttp.ClientTimeout(total=10)) as resp:
-                    all_players = await resp.json()
-        except:
-            all_players = []
-
-        now = datetime.now()
-        sent = 0
-
-        for user_id in list(users):
-            try:
-                player = next((p for p in all_players if p.get("user_id") == user_id), None)
-                last_save = player.get("last_save", 0) if player else 0
-                if last_save == 0:
-                    continue
-
-                hours_offline = (now.timestamp() * 1000 - last_save) / 3600000
-
-                # Comeback messages — send once per interval
-                msg_type = None
-                # 24-26 hours offline
-                if 24 <= hours_offline <= 26:
-                    msg_type = "comeback_1day"
-                # 71-73 hours (3 days)
-                elif 71 <= hours_offline <= 73:
-                    msg_type = "comeback_3day"
-                # 167-169 hours (7 days)
-                elif 167 <= hours_offline <= 169:
-                    msg_type = "comeback_7day"
-
-                if msg_type:
-                    if await send_notification(user_id, msg_type):
-                        sent += 1
-                        await asyncio.sleep(0.3)
-
-            except Exception as e:
-                logging.error(f"Comeback push error for {user_id}: {e}")
-
-        if sent > 0:
-            logging.info(f"Comeback: sent {sent} notifications")
-
-async def send_weekly_recap():
-    """Send weekly stats recap every Sunday at 12:00"""
-    while True:
-        now = datetime.now()
-        # Next Sunday 12:00
-        days_until_sunday = (6 - now.weekday()) % 7
-        if days_until_sunday == 0 and now.hour >= 12:
-            days_until_sunday = 7
-        target = now.replace(hour=12, minute=0, second=0, microsecond=0)
-        target = target + timedelta(days=days_until_sunday)
-        await asyncio.sleep((target - now).total_seconds())
-
-        # Get stats
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f"{API_URL}/stats",
-                    timeout=aiohttp.ClientTimeout(total=5)) as resp:
-                    stats = await resp.json()
-                    total_players = stats.get("total_players", 0)
-                    total_coins = stats.get("total_coins", 0)
-        except:
-            total_players = 0
-            total_coins = 0
-
-        sent = 0
-        for user_id in list(users):
-            try:
-                builder = InlineKeyboardBuilder()
-                builder.row(make_play_button(user_id))
-                await bot.send_message(
-                    user_id,
-                    f"📊 <b>XSPACECOIN Weekly Report</b>\n\n"
-                    f"🌍 Total Commanders: <b>{total_players:,}</b>\n"
-                    f"💰 Total XSPC Mined: <b>{total_coins:,}</b>\n"
-                    f"🚀 Token Launch: <b>Q1 2027</b>\n\n"
-                    f"Keep mining — every XSPC counts at launch! ⭐",
-                    reply_markup=builder.as_markup(),
-                    parse_mode="HTML"
-                )
-                sent += 1
-                await asyncio.sleep(0.05)
-            except:
-                users.discard(user_id)
-        logging.info(f"Weekly recap sent to {sent} users")
+# ═══ Daily notifications at 10:00 AM ═══
+DAILY_MESSAGES = [
+    "⚡ Daily combo is waiting! Can you guess the 3 correct cards? 🎯",
+    "📦 Your daily chest is ready! Open it for XKEY rewards! 🔑",
+    "🎰 Spin the fortune wheel — your daily free spin is available!",
+    "🔥 Don't break your streak! Log in now for your daily reward!",
+    "⛏️ Your passive income is accumulating! Come collect your XSPC!",
+    "🌌 New day, new planet to conquer! Keep mining XSPC!",
+    "🚀 XSPC token launches Q1 2027 — every coin counts!",
+    "☄️ Expedition available! New cosmic event waiting for you!",
+    f"🎁 Today's free promo code: use /daily to get it!",
+]
 
 async def send_daily_notifications():
-    """Daily notification at 10:00 AM"""
     while True:
         now = datetime.now()
         target = now.replace(hour=10, minute=0, second=0, microsecond=0)
@@ -476,8 +463,6 @@ async def main():
     asyncio.create_task(send_daily_notifications())
     asyncio.create_task(run_smart_notifications())
     asyncio.create_task(poll_energy_notifications())
-    asyncio.create_task(run_comeback_notifications())
-    asyncio.create_task(send_weekly_recap())
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
